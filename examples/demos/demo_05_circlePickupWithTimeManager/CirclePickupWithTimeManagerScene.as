@@ -25,14 +25,14 @@
  */
 package demos.demo_05_circlePickupWithTimeManager
 {
-    import com.pblabs.core.PBGameObject;
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.core.PBSet;
-    import com.pblabs.simpler.MouseFollowComponent;
-    import com.pblabs.simpler.SimpleSpriteRenderer;
-    import com.pblabs.simplest.SimplestSpatialComponent;
-    import com.pblabs.time.ITicked;
-    import com.pblabs.time.TimeManager;
+    import io.smash.core.SEGameObject;
+    import io.smash.core.SEGroup;
+    import io.smash.core.SESet;
+    import io.smash.simpler.MouseFollowComponent;
+    import io.smash.simpler.SimpleSpriteRenderer;
+    import io.smash.simplest.SimplestSpatialComponent;
+    import io.smash.time.ITicked;
+    import io.smash.time.TimeManager;
     
     import flash.display.Stage;
     import flash.events.Event;
@@ -43,11 +43,11 @@ package demos.demo_05_circlePickupWithTimeManager
     // 
     // Notice we implement ITicked so that we can add ourselves to the 
     // TimeManager directly.
-    public class CirclePickupWithTimeManagerScene extends PBGroup implements ITicked
+    public class CirclePickupWithTimeManagerScene extends SEGroup implements ITicked
     {
         // You will recognize this code from the GemManager in the previous
         // demo.
-        public var gemSet:PBSet;
+        public var gemSet:SESet;
         public var pickerUpper:SimpleDemoGameObject;
         public const collisionRadius:Number = 35;
         
@@ -69,7 +69,7 @@ package demos.demo_05_circlePickupWithTimeManager
             super.initialize();
             
             // Set up the PBSet for the gems.
-            gemSet = new PBSet();
+            gemSet = new SESet();
             gemSet.owningGroup = this;
             gemSet.initialize();
             

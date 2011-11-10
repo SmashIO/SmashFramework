@@ -4,18 +4,18 @@
  */
 package demos.demo_07_twoButtonDemo
 {
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.input.KeyboardKey;
-    import com.pblabs.input.KeyboardManager;
-    import com.pblabs.time.ITicked;
-    import com.pblabs.time.TimeManager;
+    import io.smash.core.SEGroup;
+    import io.smash.input.KeyboardKey;
+    import io.smash.input.KeyboardManager;
+    import io.smash.time.ITicked;
+    import io.smash.time.TimeManager;
     
     import flash.display.DisplayObject;
     import flash.display.Sprite;
     import flash.display.Stage;
 
     // ## Implementation
-    public class TwoButtonDemoScene extends PBGroup implements ITicked
+    public class TwoButtonDemoScene extends SEGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

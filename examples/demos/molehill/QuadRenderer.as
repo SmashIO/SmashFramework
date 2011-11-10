@@ -1,6 +1,6 @@
 package demos.molehill
 {
-    import com.pblabs.time.AnimatedComponent;
+    import io.smash.time.AnimatedComponent;
     
     import flash.geom.Point;
     

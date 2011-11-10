@@ -7,8 +7,8 @@
  */
 package demos.demo_01_simplestRenderer
 {
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.simplest.SimplestSpriteRenderer;
+    import io.smash.core.SEGroup;
+    import io.smash.simplest.SimplestSpriteRenderer;
     
     import flash.geom.Point;
     import demos.SimplestDemoGameObject;
@@ -25,7 +25,7 @@ package demos.demo_01_simplestRenderer
      * SimplestDemoGameObject</a> and <a href="SimplestSpriteRenderer.html">
      * SimplestSpriteRenderer</a>. Give this demo a skim then check them out.
      */
-    public class SimplestRendererScene extends PBGroup
+    public class SimplestRendererScene extends SEGroup
     {
         /**
          * ## Initialize()

@@ -1,10 +1,10 @@
 package demos.molehill
 {
-    import com.pblabs.core.IPBManager;
-    import com.pblabs.debug.Logger;
-    import com.pblabs.debug.Profiler;
-    import com.pblabs.time.IAnimated;
-    import com.pblabs.time.TimeManager;
+    import io.smash.core.ISEManager;
+    import io.smash.debug.Logger;
+    import io.smash.debug.Profiler;
+    import io.smash.time.IAnimated;
+    import io.smash.time.TimeManager;
     
     import flash.display.BitmapData;
     import flash.display.Stage;
@@ -26,7 +26,7 @@ package demos.molehill
     /**
      * Very simple Molehill quad renderer.
      */
-    public class QuadScene implements IAnimated, IPBManager
+    public class QuadScene implements IAnimated, ISEManager
     {
         [Inject]
         public var stage:Stage;

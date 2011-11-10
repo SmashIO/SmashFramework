@@ -1,10 +1,10 @@
 package demos.molehill
 {
-    import com.pblabs.PBUtil;
-    import com.pblabs.core.PBGameObject;
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.time.ITicked;
-    import com.pblabs.time.TimeManager;
+    import io.smash.SmashUtil;
+    import io.smash.core.SEGameObject;
+    import io.smash.core.SEGroup;
+    import io.smash.time.ITicked;
+    import io.smash.time.TimeManager;
     
     import flash.display.Stage;
     import flash.geom.Point;
@@ -15,7 +15,7 @@ package demos.molehill
      * 
      * If you are getting a bad FPS (<20), make sure wmode = direct
      */
-    public class MolehillScene extends PBGroup implements ITicked
+    public class MolehillScene extends SEGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;
@@ -47,7 +47,7 @@ package demos.molehill
             var go:MolehillGameObject = new MolehillGameObject();
             go.owningGroup = this;
             
-            go.render.size = new Point(PBUtil.pickWithBias(10, 100), PBUtil.pickWithBias(10, 100));
+            go.render.size = new Point(SmashUtil.pickWithBias(10, 100), SmashUtil.pickWithBias(10, 100));
             go.render.addBinding("position", "@mover.position");
 
             go.initialize();

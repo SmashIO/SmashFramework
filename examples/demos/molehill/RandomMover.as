@@ -1,13 +1,13 @@
 package demos.molehill
 {
-    import com.pblabs.core.PBComponent;
+    import io.smash.core.SEComponent;
     
     import flash.geom.Point;
     
     /**
      * Simple component that returns a new random position every time you ask.
      */
-    public class RandomMover extends PBComponent
+    public class RandomMover extends SEComponent
     {
         protected var _position:Point = new Point();
         

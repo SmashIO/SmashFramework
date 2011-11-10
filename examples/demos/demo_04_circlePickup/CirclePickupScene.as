@@ -6,12 +6,12 @@
  */
 package demos.demo_04_circlePickup
 {
-    import com.pblabs.core.PBGameObject;
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.core.PBSet;
-    import com.pblabs.simplest.SimplestMouseFollowComponent;
-    import com.pblabs.simplest.SimplestSpatialComponent;
-    import com.pblabs.simplest.SimplestSpriteRenderer;
+    import io.smash.core.SEGameObject;
+    import io.smash.core.SEGroup;
+    import io.smash.core.SESet;
+    import io.smash.simplest.SimplestMouseFollowComponent;
+    import io.smash.simplest.SimplestSpatialComponent;
+    import io.smash.simplest.SimplestSpriteRenderer;
     
     import flash.display.Stage;
     import flash.events.Event;
@@ -19,7 +19,7 @@ package demos.demo_04_circlePickup
     import demos.SimplestDemoGameObject;
     
     // ## Implementation
-    public class CirclePickupScene extends PBGroup
+    public class CirclePickupScene extends SEGroup
     {
         /**
          * PBSet for tracking active gems. Gems are the circles that we can pick
@@ -27,7 +27,7 @@ package demos.demo_04_circlePickup
          * an object is destroy()ed, it is removed from any sets that reference
          * it. So it's a great way to track of which gems are still alive. 
          */
-        public var gemSet:PBSet;
+        public var gemSet:SESet;
         
         /**
          * This manager keeps track of the active circles, and is responsible
@@ -54,7 +54,7 @@ package demos.demo_04_circlePickup
             super.initialize();
             
             // Set up the PBSet for the gems.
-            gemSet = new PBSet();
+            gemSet = new SESet();
             gemSet.owningGroup = this;
             gemSet.initialize();
             

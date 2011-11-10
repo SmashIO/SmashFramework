@@ -11,7 +11,7 @@
  */
 package demos.demo_04_circlePickup
 {
-    import com.pblabs.core.PBSet;
+    import io.smash.core.SESet;
     
     import flash.geom.Point;
     import demos.SimplestDemoGameObject;
@@ -23,7 +23,7 @@ package demos.demo_04_circlePickup
          * Reference to the PBSet holding the gems - the game objects we want
          * to pick up. This is set by whoever creates us.
          */
-        public var gemSet:PBSet;
+        public var gemSet:SESet;
         
         /**
          * Reference to the game object that is gonna do the picking up.

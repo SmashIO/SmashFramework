@@ -7,13 +7,13 @@
  */
 package demos.demo_03_mouseFollower
 {
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.simplest.SimplestMouseFollowComponent;
-    import com.pblabs.simplest.SimplestSpatialComponent;
-    import com.pblabs.simplest.SimplestSpriteRenderer;
+    import io.smash.core.SEGroup;
+    import io.smash.simplest.SimplestMouseFollowComponent;
+    import io.smash.simplest.SimplestSpatialComponent;
+    import io.smash.simplest.SimplestSpriteRenderer;
     import demos.SimplestDemoGameObject;
     
-    public class MouseFollowerScene extends PBGroup
+    public class MouseFollowerScene extends SEGroup
     {
         // ## Implementation
         // Notice that for simplicy we make a helper function to set up our

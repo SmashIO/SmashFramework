@@ -1,14 +1,14 @@
 package demos
 {
-    import com.pblabs.core.PBGameObject;
-    import com.pblabs.simpler.SimpleSpriteRenderer;
-    import com.pblabs.simplest.SimplestSpatialComponent;
+    import io.smash.core.SEGameObject;
+    import io.smash.simpler.SimpleSpriteRenderer;
+    import io.smash.simplest.SimplestSpatialComponent;
     
     /**
      * Same idea as SimplestDemoGameObject, but with different types. See
      * SimplestDemoGameObject for a fuller explanation.
      */
-    public class SimpleDemoGameObject extends PBGameObject
+    public class SimpleDemoGameObject extends SEGameObject
     {
         public var spatial:SimplestSpatialComponent;
         public var render:SimpleSpriteRenderer;

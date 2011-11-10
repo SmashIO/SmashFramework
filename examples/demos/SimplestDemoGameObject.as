@@ -1,8 +1,8 @@
 package demos
 {
-    import com.pblabs.core.PBGameObject;
-    import com.pblabs.simplest.SimplestSpriteRenderer;
-    import com.pblabs.simplest.SimplestSpatialComponent;
+    import io.smash.core.SEGameObject;
+    import io.smash.simplest.SimplestSpriteRenderer;
+    import io.smash.simplest.SimplestSpatialComponent;
     
     /**
      * If you want to use PBGameObject but have direct access to components, or
@@ -17,7 +17,7 @@ package demos
      * In this way, you can get nice typed access to components in your game 
      * object.
      */
-    public class SimplestDemoGameObject extends PBGameObject
+    public class SimplestDemoGameObject extends SEGameObject
     {
         public var spatial:SimplestSpatialComponent;
         public var render:SimplestSpriteRenderer;

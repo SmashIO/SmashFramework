@@ -1,8 +1,8 @@
 package demos.molehill
 {
-    import com.pblabs.core.PBGameObject;
+    import io.smash.core.SEGameObject;
     
-    public class MolehillGameObject extends PBGameObject
+    public class MolehillGameObject extends SEGameObject
     {
         public var render:QuadRenderer = new QuadRenderer();
         public var mover:RandomMover = new RandomMover();

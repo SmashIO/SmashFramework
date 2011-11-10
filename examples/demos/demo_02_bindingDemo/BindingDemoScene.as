@@ -15,13 +15,13 @@
  */
 package demos.demo_02_bindingDemo
 {
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.simplest.SimplestMouseFollowComponent;
-    import com.pblabs.simplest.SimplestSpatialComponent;
-    import com.pblabs.simplest.SimplestSpriteRenderer;
+    import io.smash.core.SEGroup;
+    import io.smash.simplest.SimplestMouseFollowComponent;
+    import io.smash.simplest.SimplestSpatialComponent;
+    import io.smash.simplest.SimplestSpriteRenderer;
     import demos.SimplestDemoGameObject;
     
-    public class BindingDemoScene extends PBGroup
+    public class BindingDemoScene extends SEGroup
     {
         // ## Demo Implementation
         public override function initialize():void

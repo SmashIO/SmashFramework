@@ -1,9 +1,9 @@
 /**
  * ## Introduction
  * 
- * PushButton Engine is an industrial strength open source Flash game framework.
+ * Smash Engine is an industrial strength open source Flash game framework.
  *
- * Its home page is <a href="http://PushButtonLabs.github.com/PushButtonEngine">http://PushButtonLabs.github.com/PushButtonEngine</a>.
+ * Its home page is <a href="http://SmashLabs.github.com/SmashEngine">http://SmashLabs.github.com/SmashEngine</a>.
  *
  * You can click the Jump To.. button in the top right of the page to navigate
  * to different parts of the documentation.
@@ -37,18 +37,18 @@ package
 {
     import com.greensock.OverwriteManager;
     import com.greensock.TweenMax;
-    import com.pblabs.core.PBGameObject;
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.debug.Console;
-    import com.pblabs.debug.ConsoleCommandManager;
-    import com.pblabs.debug.Logger;
-    import com.pblabs.input.KeyboardManager;
-    import com.pblabs.property.PropertyManager;
-    import com.pblabs.simplest.SimplestMouseFollowComponent;
-    import com.pblabs.simplest.SimplestSpatialComponent;
-    import com.pblabs.simplest.SimplestSpriteRenderer;
-    import com.pblabs.time.TimeManager;
-    import com.pblabs.util.TypeUtility;
+    import io.smash.core.SEGameObject;
+    import io.smash.core.SEGroup;
+    import io.smash.debug.Console;
+    import io.smash.debug.ConsoleCommandManager;
+    import io.smash.debug.Logger;
+    import io.smash.input.KeyboardManager;
+    import io.smash.property.PropertyManager;
+    import io.smash.simplest.SimplestMouseFollowComponent;
+    import io.smash.simplest.SimplestSpatialComponent;
+    import io.smash.simplest.SimplestSpriteRenderer;
+    import io.smash.time.TimeManager;
+    import io.smash.util.TypeUtility;
     
     import demos.demo_01_simplestRenderer.SimplestRendererScene;
     import demos.demo_02_bindingDemo.BindingDemoScene;
@@ -75,7 +75,7 @@ package
     /**
      * ## PBEDemos?
      * 
-     * PBEDemos is a sweet PushButton Engine demo framework. It switches 
+     * PBEDemos is a sweet Smash Engine demo framework. It switches
      * between different small PBE demo applications, using the < and > keys.
      *
      * If you are brand new to PBE, you might want to start with one of these
@@ -107,7 +107,7 @@ package
     {
         // rootGroup is a PBGroup that contains the current demo scene. It
         // provides a few dependencies that every demo needs.
-        public var rootGroup:PBGroup = new PBGroup();
+        public var rootGroup:SEGroup = new SEGroup();
 
         // We maintain a list of all the demo scenes that we'll cycle between,
         // identified by their type. (The molehill demo requires a molehill
@@ -120,7 +120,7 @@ package
         
         // Keep track of the current demo scene.
         public var currentSceneIndex:int = 0;
-        public var currentScene:PBGroup;
+        public var currentScene:SEGroup;
         
         // We have a couple of UI elements to show whether the demo is
         // paused, how to work the demo, and what demo is currently running.
@@ -298,11 +298,11 @@ package
 /**
  * ## Legal Notices
  * 
- * <i>The PushButton Engine is covered under the MIT license in its entirety,
+ * <i>The Smash Engine is covered under the MIT license in its entirety,
  * not including 3rd party components. Please read LICENSE for more 
  * information on the MIT license.</i>
  *
- * <i>Copyright 2009-2011 PushButton Labs, LLC. All rights reserved.</i>
+ * <i>Copyright 2009-2011 Smash Labs, LLC. All rights reserved.</i>
  */
 // @docco-chapter 1. First Steps
 // @docco-order 1
