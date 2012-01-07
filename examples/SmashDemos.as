@@ -1,7 +1,7 @@
 /**
  * ## Introduction
  * 
- * PushButton Engine is an industrial strength open source Flash game framework.
+ * Smash Engine is an industrial strength open source Flash game framework.
  *
  * Its home page is <a href="http://PushButtonLabs.github.com/PushButtonEngine">http://PushButtonLabs.github.com/PushButtonEngine</a>.
  *
@@ -103,7 +103,7 @@ package
       * manage this, and it makes a few standard things available to the demos.
       */
     [SWF(frameRate="32",wmode="direct")]
-    public class PBEDemos extends Sprite
+    public class SmashDemos extends Sprite
     {
         // rootGroup is a PBGroup that contains the current demo scene. It
         // provides a few dependencies that every demo needs.
@@ -133,7 +133,7 @@ package
          *
          * Initialize the demo and show the first scene.
          */
-        public function PBEDemos()
+        public function SmashDemos()
         {
             // Set up the TweenMax plugins we use. PBEDemos uses TweenMax for 
             // some nice animation effects, but TweenMax is not a standard
