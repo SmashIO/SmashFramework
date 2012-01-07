@@ -22,7 +22,7 @@ Smash needs the following compiler arguments: --keep-as3-metadata+=TypeHint,Edit
 
 * Documentation is at [http://pushbuttonengine.com/docs/](http://pushbuttonengine.com/docs/)
 * Forums are at [http://pushbuttonengine.com/forum/](http://pushbuttonengine.com/forum/)
-* Follow [@ZaaLabs](http://twitter.com/zaalabs) and/or [@jnbeck](http://twitter.com/jnbeck)
+* Follow [@ZaaLabs](http://twitter.com/zaalabs), [@jnbeck](http://twitter.com/jnbeck), [@jeremysaenz](http://twitter.com/jeremysaenz) and [@bengarney](http://twitter.com/bengarney)
 
 Contributing & Details
 ----------------------
