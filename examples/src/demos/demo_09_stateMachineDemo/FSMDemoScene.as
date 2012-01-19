@@ -6,7 +6,7 @@
 package demos.demo_09_stateMachineDemo
 {
     
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.input.KeyboardKey;
     import io.smash.input.KeyboardManager;
     import io.smash.time.ITicked;
@@ -21,7 +21,7 @@ package demos.demo_09_stateMachineDemo
     import flash.utils.Dictionary;
     
     // ## Implementation
-    public class FSMDemoScene extends SEGroup implements ITicked
+    public class FSMDemoScene extends SmashGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

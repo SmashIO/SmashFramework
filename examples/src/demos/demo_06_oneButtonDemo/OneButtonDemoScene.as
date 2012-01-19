@@ -5,18 +5,18 @@
  */
 package demos.demo_06_oneButtonDemo
 {
-    import com.pblabs.PBUtil;
-    import com.pblabs.core.PBGroup;
-    import com.pblabs.input.KeyboardKey;
-    import com.pblabs.input.KeyboardManager;
-    import com.pblabs.time.ITicked;
-    import com.pblabs.time.TimeManager;
-    
     import flash.display.Sprite;
     import flash.display.Stage;
     
+    import io.smash.SmashUtil;
+    import io.smash.core.SmashGroup;
+    import io.smash.input.KeyboardKey;
+    import io.smash.input.KeyboardManager;
+    import io.smash.time.ITicked;
+    import io.smash.time.TimeManager;
+    
     // ## Implementation
-    public class OneButtonDemoScene extends PBGroup implements ITicked
+    public class OneButtonDemoScene extends SmashGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

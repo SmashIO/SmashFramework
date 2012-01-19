@@ -1,8 +1,8 @@
 package demos.molehill
 {
     import io.smash.SmashUtil;
-    import io.smash.core.SEGameObject;
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGameObject;
+    import io.smash.core.SmashGroup;
     import io.smash.time.ITicked;
     import io.smash.time.TimeManager;
     
@@ -15,7 +15,7 @@ package demos.molehill
      * 
      * If you are getting a bad FPS (<20), make sure wmode = direct
      */
-    public class MolehillScene extends SEGroup implements ITicked
+    public class MolehillScene extends SmashGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

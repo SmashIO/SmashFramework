@@ -1,14 +1,14 @@
 /**
  * The Circle Pickup demo is our first taste of simple gameplay - move
  * the mouse to pick up objects in the game world. It demonstrates adding your
- * own manager to the game and how to use PBSet to keep track of active game
+ * own manager to the game and how to use SmashSet to keep track of active game
  * objects. It also shows a more complex game object setup.
  */
 package demos.demo_04_circlePickup
 {
-    import io.smash.core.SEGameObject;
-    import io.smash.core.SEGroup;
-    import io.smash.core.SESet;
+    import io.smash.core.SmashGameObject;
+    import io.smash.core.SmashGroup;
+    import io.smash.core.SmashSet;
     import io.smash.simplest.SimplestMouseFollowComponent;
     import io.smash.simplest.SimplestSpatialComponent;
     import io.smash.simplest.SimplestSpriteRenderer;
@@ -19,21 +19,21 @@ package demos.demo_04_circlePickup
     import demos.SimplestDemoGameObject;
     
     // ## Implementation
-    public class CirclePickupScene extends SEGroup
+    public class CirclePickupScene extends SmashGroup
     {
         /**
-         * PBSet for tracking active gems. Gems are the circles that we can pick
+         * SmashSet for tracking active gems. Gems are the circles that we can pick
          * up. Remember, a set holds references to only living objects. When
          * an object is destroy()ed, it is removed from any sets that reference
          * it. So it's a great way to track of which gems are still alive. 
          */
-        public var gemSet:SESet;
+        public var gemSet:SmashSet;
         
         /**
          * This manager keeps track of the active circles, and is responsible
          * for destroy()ing them then we pick them up (by getting close). See
          * the comments in the GemManager for more information on managers in
-         * PBE. 
+         * Smash. 
          */
         public var gemManager:GemManager = new GemManager();
         
@@ -53,8 +53,8 @@ package demos.demo_04_circlePickup
         {
             super.initialize();
             
-            // Set up the PBSet for the gems.
-            gemSet = new SESet();
+            // Set up the SmashSet for the gems.
+            gemSet = new SmashSet();
             gemSet.owningGroup = this;
             gemSet.initialize();
             
@@ -79,7 +79,7 @@ package demos.demo_04_circlePickup
         public override function destroy():void
         {
             // Only thing to clean up is the event listener. All the game
-            // objects are owned by this group (remember, we subclass PBGroup)
+            // objects are owned by this group (remember, we subclass SmashGroup)
             // so they will be cleaned up by the parent class logic.
             stage.removeEventListener(Event.ENTER_FRAME, onFrame);
 
@@ -134,7 +134,7 @@ package demos.demo_04_circlePickup
          * Create a gem at a given point. Gems are identical to the game
          * object we created in the BindingDemoScene. The only difference
          * is that we set the position based on the pos parameter, and
-         * we also add them to the gems PBSet.
+         * we also add them to the gems SmashSet.
          */
         public function makeGem(pos:Point):SimplestDemoGameObject
         {

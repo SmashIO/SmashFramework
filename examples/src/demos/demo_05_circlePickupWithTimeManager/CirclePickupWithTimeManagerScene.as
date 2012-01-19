@@ -25,9 +25,9 @@
  */
 package demos.demo_05_circlePickupWithTimeManager
 {
-    import io.smash.core.SEGameObject;
-    import io.smash.core.SEGroup;
-    import io.smash.core.SESet;
+    import io.smash.core.SmashGameObject;
+    import io.smash.core.SmashGroup;
+    import io.smash.core.SmashSet;
     import io.smash.simpler.MouseFollowComponent;
     import io.smash.simpler.SimpleSpriteRenderer;
     import io.smash.simplest.SimplestSpatialComponent;
@@ -43,11 +43,11 @@ package demos.demo_05_circlePickupWithTimeManager
     // 
     // Notice we implement ITicked so that we can add ourselves to the 
     // TimeManager directly.
-    public class CirclePickupWithTimeManagerScene extends SEGroup implements ITicked
+    public class CirclePickupWithTimeManagerScene extends SmashGroup implements ITicked
     {
         // You will recognize this code from the GemManager in the previous
         // demo.
-        public var gemSet:SESet;
+        public var gemSet:SmashSet;
         public var pickerUpper:SimpleDemoGameObject;
         public const collisionRadius:Number = 35;
         
@@ -55,7 +55,7 @@ package demos.demo_05_circlePickupWithTimeManager
         [Inject]
         public var stage:Stage;
         
-        // Get the root group's TimeManager (instantiated in PBEDemos.as). The
+        // Get the root group's TimeManager (instantiated in SmashDemos.as). The
         // TimeManager provides callbacks as frames and ticks occur, lets you 
         // schedule callbacks, allows scaling/pausing time, and does all this 
         // much more cheaply than the usual event listener/setTimeout patterns
@@ -68,8 +68,8 @@ package demos.demo_05_circlePickupWithTimeManager
         {
             super.initialize();
             
-            // Set up the PBSet for the gems.
-            gemSet = new SESet();
+            // Set up the SmashSet for the gems.
+            gemSet = new SmashSet();
             gemSet.owningGroup = this;
             gemSet.initialize();
             
@@ -106,7 +106,7 @@ package demos.demo_05_circlePickupWithTimeManager
             for(var i:int=0; i<gemSet.length; i++)
             {
                 // See if it's in range.
-                const circle:SimpleDemoGameObject = gemSet.getPBObjectAt(i) as SimpleDemoGameObject;
+                const circle:SimpleDemoGameObject = gemSet.getSmashObjectAt(i) as SimpleDemoGameObject;
                 if(Point.distance(circle.spatial.position, pickerPos) > collisionRadius)
                     continue;
                 

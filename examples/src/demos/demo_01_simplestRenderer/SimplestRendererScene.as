@@ -7,7 +7,7 @@
  */
 package demos.demo_01_simplestRenderer
 {
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.simplest.SimplestSpriteRenderer;
     
     import flash.geom.Point;
@@ -16,42 +16,42 @@ package demos.demo_01_simplestRenderer
     /**
      * Declare our demo class.
      *
-     * All demos subclass from PBGroup. Why do we do this? The short answer is
+     * All demos subclass from SmashGroup. Why do we do this? The short answer is
      * that it makes it easy to load/unload them and everything they create.
-     * PBGroups own all the objects that are added to them, and then they are
+     * SmashGroups own all the objects that are added to them, and then they are
      * destroy()ed, they destroy() everything they contain.
      *
      * This demo uses two other classes: <a href="SimplestDemoGameObject.html">
      * SimplestDemoGameObject</a> and <a href="SimplestSpriteRenderer.html">
      * SimplestSpriteRenderer</a>. Give this demo a skim then check them out.
      */
-    public class SimplestRendererScene extends SEGroup
+    public class SimplestRendererScene extends SmashGroup
     {
         /**
          * ## Initialize()
          * 
          * initialize() is called when the demo scene is instantiated.
          *
-         * Since PBGameObjects are destroyed automatically when they are in a
-         * PBGroup, and components will automatically initialize themselves,
+         * Since SmashGameObjects are destroyed automatically when they are in a
+         * SmashGroup, and components will automatically initialize themselves,
          * all we have to do is set things in motion and let them take care of
          * themselves.
          */
         public override function initialize():void
         {
-            // First, always remember to call the PBGroup superclass' implementation. It needs
+            // First, always remember to call the SmashGroup superclass' implementation. It needs
             // to do its own setup logic.
             super.initialize();
             
-            // Create a demo object. All game objects derive from PBGameObject
-            // and exist to hold subclasses of PBComponent. In PBE, nearly all
+            // Create a demo object. All game objects derive from SmashGameObject
+            // and exist to hold subclasses of SmashComponent. In Smash, nearly all
             // game logic and behavior lives inside of components.
             var go:SimplestDemoGameObject = new SimplestDemoGameObject();
             
             // Every game object is owned by a group. When the group is destroyed,
             // so are the objects in it. In this way you can clean up when (for
             // instance) a level ends. You will notice we can subclass the group
-            // class (PBGroup) to add our own interesting behavior, like spawning
+            // class (SmashGroup) to add our own interesting behavior, like spawning
             // certain objects at "level start." This is what is happening in
             // this class, SimplestRendererScene.
             go.owningGroup = this;
@@ -68,7 +68,7 @@ package demos.demo_01_simplestRenderer
             // registered under the name "render" with our new game object.
             go.initialize();
             
-            // When the scene is switched out (by the main class, PBEDemos), this
+            // When the scene is switched out (by the main class, SmashDemos), this
             // group is destroy()ed and the objects in it (ie, the game object
             // we just created) are destroy()ed too. That way we can easily 
             // and reliably clean up after ourselves.

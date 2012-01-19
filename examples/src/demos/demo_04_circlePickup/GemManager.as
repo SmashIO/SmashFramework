@@ -2,7 +2,7 @@
  * The GemManager is a simple manager class to kill objects in a set when
  * another object moves close to them. We could have put all of this logic
  * in the CirclePickupScene, and for this example, it would probably have 
- * been just fine. However, PBE is meant to be industrial strength - and in
+ * been just fine. However, Smash is meant to be industrial strength - and in
  * a large project with many game mechanics, you would have to have abstraction
  * like this to survive!
  *
@@ -11,7 +11,7 @@
  */
 package demos.demo_04_circlePickup
 {
-    import io.smash.core.SESet;
+    import io.smash.core.SmashSet;
     
     import flash.geom.Point;
     import demos.SimplestDemoGameObject;
@@ -20,10 +20,10 @@ package demos.demo_04_circlePickup
     public class GemManager
     {
         /**
-         * Reference to the PBSet holding the gems - the game objects we want
+         * Reference to the SmashSet holding the gems - the game objects we want
          * to pick up. This is set by whoever creates us.
          */
-        public var gemSet:SESet;
+        public var gemSet:SmashSet;
         
         /**
          * Reference to the game object that is gonna do the picking up.
@@ -54,7 +54,7 @@ package demos.demo_04_circlePickup
             for(var i:int=0; i<gemSet.length; i++)
             {
                 // See if the gem is in range...
-                const circle:SimplestDemoGameObject = gemSet.getPBObjectAt(i) as SimplestDemoGameObject;
+                const circle:SimplestDemoGameObject = gemSet.getSmashObjectAt(i) as SimplestDemoGameObject;
                 if(Point.distance(circle.spatial.position, pickerPos) > collisionRadius)
                     continue;
                 

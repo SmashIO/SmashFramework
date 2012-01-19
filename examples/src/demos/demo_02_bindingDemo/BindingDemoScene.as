@@ -1,12 +1,12 @@
 /**
- * Bulding off of SimplestRendererScene.as, this demo demonstrates the PBE
+ * Bulding off of SimplestRendererScene.as, this demo demonstrates the Smash
  * data binding system.
  *
  * It's often necessary to get data from one component to another in a dynamic
  * way. It's easy enough to hand-write code to copy values around, but it can
  * be error-prone and hard to maintain. It's also not data driven.
  *
- * This demo will show how to use the binding system built into PBComponent to
+ * This demo will show how to use the binding system built into SmashComponent to
  * shuffle data around, specifically, to position the renderer based on a value
  * stored in a spatial component.
  *
@@ -15,13 +15,13 @@
  */
 package demos.demo_02_bindingDemo
 {
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.simplest.SimplestMouseFollowComponent;
     import io.smash.simplest.SimplestSpatialComponent;
     import io.smash.simplest.SimplestSpriteRenderer;
     import demos.SimplestDemoGameObject;
     
-    public class BindingDemoScene extends SEGroup
+    public class BindingDemoScene extends SmashGroup
     {
         // ## Demo Implementation
         public override function initialize():void
@@ -52,7 +52,7 @@ package demos.demo_02_bindingDemo
             //
             // The weird @ syntax is actually really simple. @ tells the 
             // binding system that you are going to reference a component on
-            // the same PBGameObject as the PBComponent the binding is on. Then
+            // the same SmashGameObject as the SmashComponent the binding is on. Then
             // you tell it the component to look up by name, and the field on
             // that component to look up. In other words, "find the spatial 
             // component, get the value of its position field, then assign that

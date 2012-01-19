@@ -7,7 +7,7 @@ package demos.demo_06a_oneButtonDemoWithTween
 {
     import com.greensock.TweenMax;
     import io.smash.SmashUtil;
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.input.KeyboardKey;
     import io.smash.input.KeyboardManager;
     import io.smash.time.ITicked;
@@ -17,7 +17,7 @@ package demos.demo_06a_oneButtonDemoWithTween
     import flash.display.Stage;
     
     // ## Implementation
-    public class OneButtonWithTweenDemoScene extends SEGroup implements ITicked
+    public class OneButtonWithTweenDemoScene extends SmashGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

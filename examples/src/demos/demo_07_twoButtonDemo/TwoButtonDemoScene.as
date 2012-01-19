@@ -4,7 +4,7 @@
  */
 package demos.demo_07_twoButtonDemo
 {
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.input.KeyboardKey;
     import io.smash.input.KeyboardManager;
     import io.smash.time.ITicked;
@@ -15,7 +15,7 @@ package demos.demo_07_twoButtonDemo
     import flash.display.Stage;
 
     // ## Implementation
-    public class TwoButtonDemoScene extends SEGroup implements ITicked
+    public class TwoButtonDemoScene extends SmashGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

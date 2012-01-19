@@ -8,23 +8,23 @@
  * You can click the Jump To.. button in the top right of the page to navigate
  * to different parts of the documentation.
  *
- * PBE uses [Docco](http://jashkenas.github.com/docco/) to document itself. As
- * you read these docs, you are reading through the PBEDemos demo framework
- * that ship with PBE. (See all that code on the right hand side?) Each demo
+ * Smash uses [Docco](http://jashkenas.github.com/docco/) to document itself. As
+ * you read these docs, you are reading through the SmashDemos demo framework
+ * that ship with Smash. (See all that code on the right hand side?) Each demo
  * covers a specific feature of the engine, and by reading through the docs,
- * you'll learn all about PBE!
+ * you'll learn all about Smash!
  *
- * ## Compiling PBEDemos
+ * ## Compiling SmashDemos
  *
- * Create a new ActionScript FlashBuilder project named PBEDemos pointing at
- * your copy of PBE (specifically, the parent of the src/ folder). Set the 
+ * Create a new ActionScript FlashBuilder project named SmashDemos pointing at
+ * your copy of Smash (specifically, the parent of the src/ folder). Set the 
  * compiler options from the next section. Great! You're good to go. Compile,
  * run, and follow along.
  *
- * ## Using PBE In Your Project
+ * ## Using Smash In Your Project
  *
- * To use PBE, create a folder called com/pblabs in your source directory and 
- * copy everything from PBE's src/com/pblabs folder into it.
+ * To use Smash, create a folder called io/smash in your source directory and 
+ * copy everything from Smash's src/io/smash folder into it.
  *
  * Don't forget to add the following to your compiler options:
  *
@@ -37,8 +37,8 @@ package
 {
     import com.greensock.OverwriteManager;
     import com.greensock.TweenMax;
-    import io.smash.core.SEGameObject;
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGameObject;
+    import io.smash.core.SmashGroup;
     import io.smash.debug.Console;
     import io.smash.debug.ConsoleCommandManager;
     import io.smash.debug.Logger;
@@ -73,17 +73,17 @@ package
     import flash.text.TextFormat;
     
     /**
-     * ## PBEDemos?
+     * ## SmashDemos?
      * 
-     * PBEDemos is a sweet Smash Engine demo framework. It switches
-     * between different small PBE demo applications, using the < and > keys.
+     * SmashDemos is a sweet Smash Engine demo framework. It switches
+     * between different small Smash demo applications, using the < and > keys.
      *
-     * If you are brand new to PBE, you might want to start with one of these
+     * If you are brand new to Smash, you might want to start with one of these
      * very small demos, like
      * <a href="SimplestRendererScene.html">SimplestRendererScene.as</a>, rather
      * than digesting the demo framework.
      * 
-     * PBEDemos cycles amongst multiple demo "scenes" to show off
+     * SmashDemos cycles amongst multiple demo "scenes" to show off
      * various parts of the engine's capabilities. Use < and > to change the 
      * demo. Press ~ (tilde) to bring up the console. Type help to learn about
      * the different debug commands.
@@ -98,16 +98,16 @@ package
       *
       * Look at the code on the right and follow along!
       *
-      * PBEDemos acts to load and unload instances of the classes that implement
-      * the various PBEDemos. It contains some book-keeping and UI code to 
+      * SmashDemos acts to load and unload instances of the classes that implement
+      * the various SmashDemos. It contains some book-keeping and UI code to 
       * manage this, and it makes a few standard things available to the demos.
       */
     [SWF(frameRate="32",wmode="direct")]
     public class SmashDemos extends Sprite
     {
-        // rootGroup is a PBGroup that contains the current demo scene. It
+        // rootGroup is a SmashGroup that contains the current demo scene. It
         // provides a few dependencies that every demo needs.
-        public var rootGroup:SEGroup = new SEGroup();
+        public var rootGroup:SmashGroup = new SmashGroup();
 
         // We maintain a list of all the demo scenes that we'll cycle between,
         // identified by their type. (The molehill demo requires a molehill
@@ -120,7 +120,7 @@ package
         
         // Keep track of the current demo scene.
         public var currentSceneIndex:int = 0;
-        public var currentScene:SEGroup;
+        public var currentScene:SmashGroup;
         
         // We have a couple of UI elements to show whether the demo is
         // paused, how to work the demo, and what demo is currently running.
@@ -129,15 +129,15 @@ package
         public var pauseCaption:TextField = new TextField();
         
         /**
-         * ## PBEDemos Constructor
+         * ## SmashDemos Constructor
          *
          * Initialize the demo and show the first scene.
          */
         public function SmashDemos()
         {
-            // Set up the TweenMax plugins we use. PBEDemos uses TweenMax for 
+            // Set up the TweenMax plugins we use. SmashDemos uses TweenMax for 
             // some nice animation effects, but TweenMax is not a standard
-            // part of PBE. It is, however, a great tweening library.
+            // part of Smash. It is, however, a great tweening library.
             OverwriteManager.init(OverwriteManager.AUTO);
 
             // Set the stage to resize properly.
@@ -148,7 +148,7 @@ package
             // managers. Managers are available via dependency injection to the
             // demo scenes and objects.
             rootGroup.initialize();
-            rootGroup.name = "PBEDemoGroup";
+            rootGroup.name = "SmashDemoGroup";
             rootGroup.registerManager(Stage, stage);
             rootGroup.registerManager(PropertyManager, new PropertyManager());
             rootGroup.registerManager(ConsoleCommandManager, new ConsoleCommandManager());
@@ -174,7 +174,7 @@ package
             addChild(sceneCaption);
             
             // Set up the usage caption. This shows the user what keys will
-            // control PBEDemos.
+            // control SmashDemos.
             usageCaption.autoSize = TextFieldAutoSize.CENTER;
             usageCaption.y = stage.stageHeight - 32;
             usageCaption.x = 0;

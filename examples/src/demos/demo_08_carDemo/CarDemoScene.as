@@ -4,7 +4,7 @@
  */
 package demos.demo_08_carDemo
 {
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.input.KeyboardKey;
     import io.smash.input.KeyboardManager;
     import io.smash.time.ITicked;
@@ -17,7 +17,7 @@ package demos.demo_08_carDemo
     import flash.text.TextFormat;
     
     // ## Implementation
-    public class CarDemoScene extends SEGroup implements ITicked
+    public class CarDemoScene extends SmashGroup implements ITicked
     {
         [Inject]
         public var stage:Stage;

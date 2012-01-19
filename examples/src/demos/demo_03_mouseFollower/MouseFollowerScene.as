@@ -7,13 +7,13 @@
  */
 package demos.demo_03_mouseFollower
 {
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     import io.smash.simplest.SimplestMouseFollowComponent;
     import io.smash.simplest.SimplestSpatialComponent;
     import io.smash.simplest.SimplestSpriteRenderer;
     import demos.SimplestDemoGameObject;
     
-    public class MouseFollowerScene extends SEGroup
+    public class MouseFollowerScene extends SmashGroup
     {
         // ## Implementation
         // Notice that for simplicy we make a helper function to set up our
@@ -35,7 +35,7 @@ package demos.demo_03_mouseFollower
          */
         protected function createPartyObject():void
         {
-            // Allocate our PBGameObject subclass.
+            // Allocate our SmashGameObject subclass.
             var go:SimplestDemoGameObject = new SimplestDemoGameObject();
             go.owningGroup = this;
             

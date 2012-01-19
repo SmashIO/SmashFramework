@@ -1,11 +1,11 @@
 package demos
 {
-    import io.smash.core.SEGameObject;
+    import io.smash.core.SmashGameObject;
     import io.smash.simplest.SimplestSpriteRenderer;
     import io.smash.simplest.SimplestSpatialComponent;
     
     /**
-     * If you want to use PBGameObject but have direct access to components, or
+     * If you want to use SmashGameObject but have direct access to components, or
      * add other special behavior, you can subclass it.
      *
      * Public members that contain components are automagically added. For
@@ -17,7 +17,7 @@ package demos
      * In this way, you can get nice typed access to components in your game 
      * object.
      */
-    public class SimplestDemoGameObject extends SEGameObject
+    public class SimplestDemoGameObject extends SmashGameObject
     {
         public var spatial:SimplestSpatialComponent;
         public var render:SimplestSpriteRenderer;
