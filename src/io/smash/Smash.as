@@ -1,6 +1,6 @@
 package io.smash
 {
-    import io.smash.core.SEGroup;
+    import io.smash.core.SmashGroup;
     
     import flash.display.Stage;
 
@@ -15,11 +15,11 @@ package io.smash
         public static const IS_SHIPPING_BUILD:Boolean = false;
         
         /**
-         * To facilitate debugging, any PBGroup that you don't put in a group
+         * To facilitate debugging, any SmashGroup that you don't put in a group
          * is added here. The console lets you inspect this group with the tree
          * command. So, you can easily see the total object graph of your game
          * for debugging purposes. 
          */
-        smash_internal static var _rootGroup:SEGroup = new SEGroup("_RootGroup");
+        smash_internal static var _rootGroup:SmashGroup = new SmashGroup("_RootGroup");
     }
 }

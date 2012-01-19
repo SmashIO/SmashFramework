@@ -8,14 +8,14 @@
  */
 package io.smash.simplest
 {
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     
     import flash.display.Stage;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     
     // ## Implementation
-    public class SimplestMouseFollowComponent extends SEComponent
+    public class SimplestMouseFollowComponent extends SmashComponent
     {
         
         // Make sure we have access to the stage (via dependency injection).

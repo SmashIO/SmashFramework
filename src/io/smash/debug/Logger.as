@@ -59,9 +59,6 @@ package io.smash.debug
             // Put default listeners into the list.
             registerListener(new TraceAppender());
             
-            //if(!PBE.IS_SHIPPING_BUILD)
-            //    registerListener(new UIAppender());
-            
             // Process pending messages.
             started = true;
             

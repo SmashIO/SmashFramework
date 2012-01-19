@@ -35,7 +35,7 @@ package io.smash.debug
     public class Profiler
     {
         public static var enabled:Boolean=false;
-        public static var nameFieldWidth:int=50;
+        public static var nameFieldWidth:int=100;
         public static var indentAmount:int=3;
         
         /**

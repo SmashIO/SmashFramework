@@ -5,32 +5,32 @@ package io.smash.core
     use namespace smash_internal;
     
     /**
-     * Base class for things that have names, lifecycles, and exist in a PBSet or
-     * PBGroup.
+     * Base class for things that have names, lifecycles, and exist in a SmashSet or
+     * SmashGroup.
      * 
-     * To use a PBObject:
+     * To use a SmashObject:
      * 
-     * 1. Instantiate one. (var foo = new PBGroup();)
+     * 1. Instantiate one. (var foo = new SmashGroup();)
      * 2. Set the owning group. (foo.owningGroup = rootGroup;)
      * 3. Call initialize(). (foo.initialize();) 
      * 4. Use the object!
      * 5. When you're done, call destroy(). (foo.destroy();)
      */
-    public class SEObject
+    public class SmashObject
     {
         private var _name:String;
         private var _active:Boolean = false;
         
-        smash_internal var _owningGroup:SEGroup;
-        smash_internal var _sets:Vector.<SESet>;
+        smash_internal var _owningGroup:SmashGroup;
+        smash_internal var _sets:Vector.<SmashSet>;
         
-        public function SEObject(_name:String = null)
+        public function SmashObject(_name:String = null)
         {
             name = _name;
         }
         
         /**
-         * Name of the PBObject. Used for dynamic lookups and debugging.
+         * Name of the SmashObject. Used for dynamic lookups and debugging.
          */
         public function get name():String
         {
@@ -43,15 +43,15 @@ package io.smash.core
         public function set name(value:String):void
         {
             if(_active && _owningGroup)
-                throw new Error("Cannot change PBObject name after initialize() is called and while in a PBGroup.");
+                throw new Error("Cannot change SmashObject name after initialize() is called and while in a SmashGroup.");
             
             _name = value;
         }
 
         /**
-         * What PBSets reference this PBObject?
+         * What SmashSets reference this SmashObject?
          */
-        public function get sets():Vector.<SESet>
+        public function get sets():Vector.<SmashSet>
         {
             return _sets;
         }
@@ -59,19 +59,19 @@ package io.smash.core
         /**
          * @private
          */
-        public function get owningGroup():SEGroup
+        public function get owningGroup():SmashGroup
         {
             return _owningGroup;
         }
         
         /**
-         * The PBGroup that contains us. All PBObjects must be in a PBGroup,
+         * The SmashGroup that contains us. All SmashObjects must be in a SmashGroup,
          * and the owningGroup has to be set before calling initialize().
          */
-        public function set owningGroup(value:SEGroup):void
+        public function set owningGroup(value:SmashGroup):void
         {
             if(!value)
-                throw new Error("A PBObject must always be in a PBGroup.");
+                throw new Error("A SmashObject must always be in a SmashGroup.");
             
             if(_owningGroup)
                 _owningGroup.noteRemove(this);
@@ -80,36 +80,36 @@ package io.smash.core
             _owningGroup.noteAdd(this);
         }
         
-        smash_internal function noteSetAdd(set:SESet):void
+        smash_internal function noteSetAdd(set:SmashSet):void
         {
             if(_sets == null)
-                _sets = new Vector.<SESet>();
+                _sets = new Vector.<SmashSet>();
             _sets.push(set);            
         }
         
-        smash_internal function noteSetRemove(set:SESet):void
+        smash_internal function noteSetRemove(set:SmashSet):void
         {
             var idx:int = _sets.indexOf(set);
             if(idx == -1)
-                throw new Error("Tried to remove PBObject from a PBSet it didn't know it was in!");
+                throw new Error("Tried to remove SmashObject from a SmashSet it didn't know it was in!");
             _sets.splice(idx, 1);            
         }
         
         /**
-         * Called to initialize the PBObject. The PBObject must be in a PBGroup
+         * Called to initialize the SmashObject. The SmashObject must be in a SmashGroup
          * before calling this (ie, set owningGroup).
          */
         public function initialize():void
         {
             // Error if not in a group.
             if(_owningGroup == null)
-                throw new Error("Can't initialize a PBObject without an owning PBGroup!");
+                throw new Error("Can't initialize a SmashObject without an owning SmashGroup!");
             
             _active = true;
         }
         
         /**
-         * Called to destroy the PBObject: remove it from sets and groups, and do
+         * Called to destroy the SmashObject: remove it from sets and groups, and do
          * other end of life cleanup.
          */
         public function destroy():void

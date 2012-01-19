@@ -1,13 +1,13 @@
 package io.smash.input
 {
-    import io.smash.core.ISEManager;
+    import io.smash.core.ISmashManager;
     import io.smash.time.ITicked;
     import io.smash.time.TimeManager;
     
     import flash.display.Stage;
     import flash.events.KeyboardEvent;
     
-    public class KeyboardManager implements ITicked, ISEManager
+    public class KeyboardManager implements ITicked, ISmashManager
     {
         [Inject]
         public var stage:Stage;

@@ -5,44 +5,44 @@ package io.smash.core
     use namespace smash_internal
     
     /**
-     * PBSet provides safe references to one or more PBObjects. When the
-     * referenced PBObjects are destroy()ed, then they are automatically removed
-     * from any PBSets. 
+     * SmashSet provides safe references to one or more SmashObjects. When the
+     * referenced SmashObjects are destroy()ed, then they are automatically removed
+     * from any SmashSets. 
      */
-    public class SESet extends SEObject
+    public class SmashSet extends SmashObject
     {
-        protected var items:Vector.<SEObject> = new Vector.<SEObject>;
+        protected var items:Vector.<SmashObject> = new Vector.<SmashObject>;
         
-        public function SESet(_name:String = null)
+        public function SmashSet(_name:String = null)
         {
             super(_name);
         }
 
         /**
-         * Add a PBObject to the set. 
+         * Add a SmashObject to the set. 
          */
-        public function add(object:SEObject):void
+        public function add(object:SmashObject):void
         {
             items.push(object);
             object.noteSetAdd(this);
         }
         
         /**
-         * Remove a PBObject from the set.
+         * Remove a SmashObject from the set.
          */
-        public function remove(object:SEObject):void
+        public function remove(object:SmashObject):void
         {
             var idx:int = items.indexOf(object);
             if(idx == -1)
-                throw new Error("Requested PBObject is not in this PBSet.");
+                throw new Error("Requested SmashObject is not in this SmashSet.");
             items.splice(idx, 1);
             object.noteSetRemove(this);
         }
         
         /**
-         * Does this PBSet contain the specified object? 
+         * Does this SmashSet contain the specified object? 
          */
-        public function contains(object:SEObject):Boolean
+        public function contains(object:SmashObject):Boolean
         {
             return (items.indexOf(object) != -1);
         }
@@ -58,7 +58,7 @@ package io.smash.core
         /**
          * Return the object at the specified index of the set.
          */
-        public function getPBObjectAt(index:int):SEObject
+        public function getSmashObjectAt(index:int):SmashObject
         {
             return items[index];
         }

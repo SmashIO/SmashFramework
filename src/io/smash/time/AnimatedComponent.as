@@ -9,14 +9,14 @@
 package io.smash.time
 {
     
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     import io.smash.time.TimeManager;
     
     /**
      * Base class for components that need to perform actions every frame. This
      * needs to be subclassed to be useful.
      */
-    public class AnimatedComponent extends SEComponent implements IAnimated
+    public class AnimatedComponent extends SmashComponent implements IAnimated
     {
         /**
          * The update priority for this component. Higher numbered priorities have

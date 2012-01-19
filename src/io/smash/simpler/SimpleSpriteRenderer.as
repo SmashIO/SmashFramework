@@ -1,6 +1,6 @@
 package io.smash.simpler
 {
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     import io.smash.time.AnimatedComponent;
     
     import flash.display.Sprite;

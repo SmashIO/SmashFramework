@@ -6,15 +6,15 @@ package io.smash.core
     use namespace smash_internal;
     
     /**
-     * Base class for most game functionality. Contained in a PBGameObject.
+     * Base class for most game functionality. Contained in a SmashGameObject.
      * 
-     * Dependency injection is fulfilled based on the PBGroup containing the
-     * owning PBGameObject.
+     * Dependency injection is fulfilled based on the SmashGroup containing the
+     * owning SmashGameObject.
      * 
      * Provides a generic data binding system as well as callbacks when
-     * the component is added to or removed from a PBGameObject.
+     * the component is added to or removed from a SmashGameObject.
      */
-    public class SEComponent
+    public class SmashComponent
     {
         [Inject]
         public var propertyManager:PropertyManager;
@@ -24,7 +24,7 @@ package io.smash.core
         private var _safetyFlag:Boolean = false;
         private var _name:String;
         
-        smash_internal var _owner:SEGameObject;
+        smash_internal var _owner:SmashGameObject;
         
         public function get name():String
         {
@@ -33,20 +33,20 @@ package io.smash.core
         
         /**
          * The name of the component. Can't be changed while it is registered
-         * with an owning PBGameObject.
+         * with an owning SmashGameObject.
          */
         public function set name(value:String):void
         {
             if(_owner)
-                throw new Error("Already added to PBGameObject, can't change name of PBComponent.");
+                throw new Error("Already added to SmashGameObject, can't change name of SmashComponent.");
             
             _name = value;
         }
         
         /**
-         * What PBGameObject contains us, if any?
+         * What SmashGameObject contains us, if any?
          */
-        public function get owner():SEGameObject
+        public function get owner():SmashGameObject
         {
             return _owner;
         }
@@ -59,7 +59,7 @@ package io.smash.core
          *  
          * @param fieldName Name of a field on this object to copy data to.
          * @param propertyReference A reference to a value on another component,
-         *                          PBGameObject, or other part of the system.
+         *                          SmashGameObject, or other part of the system.
          *                          Usually "@componentName.fieldName".
          */
         public function addBinding(fieldName:String, propertyReference:String):void
@@ -121,7 +121,7 @@ package io.smash.core
         }
         
         /**
-         * Called when component is added to a PBGameObject. Do component setup
+         * Called when component is added to a SmashGameObject. Do component setup
          * logic here.
          */
         protected function onAdd():void
@@ -130,7 +130,7 @@ package io.smash.core
         }
         
         /**
-         * Called when component is removed frmo a PBGameObject. Do component
+         * Called when component is removed frmo a SmashGameObject. Do component
          * teardown logic here.
          */
         protected function onRemove():void

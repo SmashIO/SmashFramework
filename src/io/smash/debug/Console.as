@@ -10,12 +10,12 @@ package io.smash.debug
 {
     import io.smash.Smash;
     import io.smash.SmashUtil;
-    import io.smash.core.ISEManager;
-    import io.smash.core.SEComponent;
-    import io.smash.core.SEGameObject;
-    import io.smash.core.SEGroup;
-    import io.smash.core.SEObject;
-    import io.smash.core.SESet;
+    import io.smash.core.ISmashManager;
+    import io.smash.core.SmashComponent;
+    import io.smash.core.SmashGameObject;
+    import io.smash.core.SmashGroup;
+    import io.smash.core.SmashObject;
+    import io.smash.core.SmashSet;
     import io.smash.debug.ConsoleCommandManager;
     import io.smash.debug.ILogAppender;
     import io.smash.debug.LogColor;
@@ -52,7 +52,7 @@ package io.smash.debug
      * UI to display Logger output and process simple commands from the user.
      * Commands are registered via ConsoleCommandManager.
      */ 
-    public class Console extends Sprite implements ILogAppender, ITicked, ISEManager
+    public class Console extends Sprite implements ILogAppender, ITicked, ISmashManager
     {
         protected var _messageQueue:Array = [];
         protected var _maxLength:uint = 200000;
@@ -76,7 +76,7 @@ package io.smash.debug
         protected var tabCompletionCurrentEnd:int = 0;
         protected var tabCompletionCurrentOffset:int = 0;
         
-        protected var _currentGroup:SEGroup = Smash._rootGroup;
+        protected var _currentGroup:SmashGroup = Smash._rootGroup;
         protected var _currentCommandManager:ConsoleCommandManager = null;
         
         protected var keyBindings:Vector.<KeyBindingEntry> = new Vector.<KeyBindingEntry>();
@@ -125,7 +125,7 @@ package io.smash.debug
             _currentCommandManager.init();
             _currentCommandManager.registerCommand("toggleConsole", toggleConsole, "Hide or show the console.");
             _currentCommandManager.registerCommand("cd", changeDirectory, ".. to go up to parent, otherwise index or name to change to subgroup.");
-            _currentCommandManager.registerCommand("ls", listDirectory, "Show the PBGroups in the current PBGroup.");
+            _currentCommandManager.registerCommand("ls", listDirectory, "Show the SmashGroups in the current SmashGroup.");
             _currentCommandManager.registerCommand("tree", tree, "Dump all objects in current group or below.");
             _currentCommandManager.registerCommand("fps", showFps, "Toggle FPS/Memory display.");
             _currentCommandManager.registerCommand("profilerOn", profilerOn, "Turn profiler on.");
@@ -160,11 +160,11 @@ package io.smash.debug
         
         public function tree():void
         {
-            var count:int = _listPBObjects(_currentGroup, 0);
-            Logger.print(this, "Found " + count + " PBObjects.");
+            var count:int = _listSmashObjects(_currentGroup, 0);
+            Logger.print(this, "Found " + count + " SmashObjects.");
         }
         
-        protected function _listPBObjects(current:SEObject, indent:int):int
+        protected function _listSmashObjects(current:SmashObject, indent:int):int
         {
             if (!current)
                 return 0;
@@ -180,9 +180,9 @@ package io.smash.debug
             }
             
             // Recurse if it's a known type.
-            var parentSet:SESet = current as SESet;
-            var parentGroup:SEGroup = current as SEGroup;
-            var parentEntity:SEGameObject = current as SEGameObject;
+            var parentSet:SmashSet = current as SmashSet;
+            var parentGroup:SmashGroup = current as SmashGroup;
+            var parentEntity:SmashGameObject = current as SmashGameObject;
             
             var sum:int = 1;
             var i:int = 0;
@@ -190,20 +190,20 @@ package io.smash.debug
             if(parentSet)
             {
                 for(i=0; i<parentSet.length; i++)
-                    sum += _listPBObjects(parentSet.getPBObjectAt(i), indent+1);
+                    sum += _listSmashObjects(parentSet.getSmashObjectAt(i), indent+1);
             }
             else if(parentGroup)
             {
                 for(i=0; i<parentGroup.length; i++)
-                    sum += _listPBObjects(parentGroup.getPBObjectAt(i), indent+1);
+                    sum += _listSmashObjects(parentGroup.getSmashObjectAt(i), indent+1);
             }
             else if(parentEntity)
             {
                 // Get all the components. Components don't count for the sum.
-                var c:Vector.<SEComponent> = parentEntity.getAllComponents();
+                var c:Vector.<SmashComponent> = parentEntity.getAllComponents();
                 for(i=0; i<c.length; i++)
                 {
-                    var iec:SEComponent = c[i] as SEComponent;
+                    var iec:SmashComponent = c[i] as SmashComponent;
                     type = " ("+ TypeUtility.getObjectClassName(iec) +")";
                     Logger.print(this, Console.generateIndent(indent + 1) + iec.name + type);
                 }
@@ -228,7 +228,7 @@ package io.smash.debug
         {
             for(var i:int=0; i<_currentGroup.length; i++)
             {
-                var potentialGroup:SEGroup = _currentGroup.getPBObjectAt(i) as SEGroup;
+                var potentialGroup:SmashGroup = _currentGroup.getSmashObjectAt(i) as SmashGroup;
                 if(potentialGroup == null)
                     continue;
                 
@@ -266,7 +266,7 @@ package io.smash.debug
                 // Look for exact name.
                 for(var i:int=0; i<_currentGroup.length; i++)
                 {
-                    var potentialGroup:SEGroup = _currentGroup.getPBObjectAt(i) as SEGroup;
+                    var potentialGroup:SmashGroup = _currentGroup.getSmashObjectAt(i) as SmashGroup;
                     if(potentialGroup == null)
                         continue;
                     
@@ -281,7 +281,7 @@ package io.smash.debug
                 // Look for a class name match.
                 for(i=0; i<_currentGroup.length; i++)
                 {
-                    potentialGroup = _currentGroup.getPBObjectAt(i) as SEGroup;
+                    potentialGroup = _currentGroup.getSmashObjectAt(i) as SmashGroup;
                     if(potentialGroup == null)
                         continue;
                     
@@ -297,7 +297,7 @@ package io.smash.debug
                 var dirAsNumber:int = parseInt(dir);
                 if(dirAsNumber >= 0 && dirAsNumber < _currentGroup.length)
                 {
-                    _currentGroup = _currentGroup.getPBObjectAt(dirAsNumber) as SEGroup;
+                    _currentGroup = _currentGroup.getSmashObjectAt(dirAsNumber) as SmashGroup;
                     if(_currentGroup)
                     {
                         Logger.print(this, "Changed to " + _currentGroup);

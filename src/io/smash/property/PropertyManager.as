@@ -1,11 +1,11 @@
 package io.smash.property
 {
-    import io.smash.core.ISEManager;
+    import io.smash.core.ISmashManager;
     import io.smash.smash_internal;
     
     use namespace smash_internal;
     
-    public class PropertyManager implements ISEManager
+    public class PropertyManager implements ISmashManager
     {
         public function PropertyManager()
         {

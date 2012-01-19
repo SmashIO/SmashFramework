@@ -1,7 +1,7 @@
 package io.smash.property
 {
-    import io.smash.core.SEComponent;
-    import io.smash.core.SEGameObject;
+    import io.smash.core.SmashComponent;
+    import io.smash.core.SmashGameObject;
     
     public class ComponentPlugin implements IPropertyPlugin
     {
@@ -10,16 +10,16 @@ package io.smash.property
         public function resolve(context:*, cached:Array, propertyInfo:PropertyInfo):void
         {
             // Context had better be an entity.
-            var entity:SEGameObject;
-            if(context is SEGameObject)
+            var entity:SmashGameObject;
+            if(context is SmashGameObject)
                 entity = context;
-            else if(context is SEComponent)
+            else if(context is SmashComponent)
                 entity = context.owner;
             else
                 throw new Error("Can't find entity to do lookup!");
             
             // Look up the component.
-            const component:SEComponent = entity.lookupComponent(cached[1]);
+            const component:SmashComponent = entity.lookupComponent(cached[1]);
             
             if(cached.length > 2)
             {

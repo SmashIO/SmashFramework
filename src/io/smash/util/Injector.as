@@ -6,11 +6,11 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the license.txt file at the root directory of this library.
  * 
- * This file has been modified to reuse existing PBE type utility code and be
- * even simpler, which is why it is in com.pblabs.util instead of
- * com.zaalabs.imbue. This variant is maintained by the PBE team.
+ * This file has been modified to reuse existing Smash type utility code and be
+ * even simpler, which is why it is in io.smash.util instead of
+ * com.zaalabs.imbue. This variant is maintained by the Smash team.
  * 
- * Other changes by PBE team:
+ * Other changes by Smash team:
  *      - Error if injection can't be fulfilled.
  *      - Parent injector support.
  ******************************************************************************/

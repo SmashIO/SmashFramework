@@ -8,23 +8,23 @@
  * You could think of SimplestSpriteRenderer as being a "view" in an MVC
  * context.
  *
- * This component demonstrates three important parts of PBE:
+ * This component demonstrates three important parts of Smash:
  * 
  *  1. **Component lifecycle.** Components have onAdd called when they 
- *  are added to a PBGameObject, and onRemove called when they are
- *  are removed. They are automatically removed when the PBGameObject
+ *  are added to a SmashGameObject, and onRemove called when they are
+ *  are removed. They are automatically removed when the SmashGameObject
  *  is destroy()ed. So they are ideal for doing setup/teardown of
  *  your component. We use them here to add and remove the Sprite to
  *  the Stage.
  *  2. **Dependency injection.** Values registered with the owning
- *  PBGroup are available for injection. Injection is really simple,
+ *  SmashGroup are available for injection. Injection is really simple,
  *  you just make a public var of the type you want and annotate it
- *  with [Inject]. When the component is added to a PBGameObject,
- *  the PBGameObject automatically does injection using its owning
- *  PBGroup. We use this to get at the Stage we should be using.
+ *  with [Inject]. When the component is added to a SmashGameObject,
+ *  the SmashGameObject automatically does injection using its owning
+ *  SmashGroup. We use this to get at the Stage we should be using.
  *  3. **Data bindings.** Many application frameworks (like Flex/MXML)
  *  allow you to automatically pull data from one place in your app
- *  to another. In PBE, every component has a list of "bindings" -
+ *  to another. In Smash, every component has a list of "bindings" -
  *  sources to pull data into the component. We'll discuss bindings
  *  in more detail elsewhere, but it's important to call
  *  applyBindings() to make sure they are applied before your
@@ -32,7 +32,7 @@
  */
 package io.smash.simplest
 {
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     
     import flash.display.Sprite;
     import flash.display.Stage;
@@ -41,10 +41,10 @@ package io.smash.simplest
 
     /**
      * ## SimplestSpriteRenderer
-     * Every component inherits from PBComponent. Beyond that, everything
+     * Every component inherits from SmashComponent. Beyond that, everything
      * a component can do is optional.
      */
-    public class SimplestSpriteRenderer extends SEComponent
+    public class SimplestSpriteRenderer extends SmashComponent
     {
         // The Sprite instance we'll manage.
         public var sprite:Sprite = new Sprite();
@@ -55,7 +55,7 @@ package io.smash.simplest
         
         // Any public variable with [Inject] before it will be injected. stage
         // requires an instance of Stage be available; if one is not 
-        // registered on the PBGroup that this component's PBGameObject belongs
+        // registered on the SmashGroup that this component's SmashGameObject belongs
         // to, then you'll get an error when you try to initialize this 
         // component.
         [Inject]
@@ -85,8 +85,8 @@ package io.smash.simplest
         }
 
         // ## Initialization and Destruction
-        // onAdd and onRemove are called by PBE when a component is added or
-        // removed from a PBGameObject. They are the best places to do startup
+        // onAdd and onRemove are called by Smash when a component is added or
+        // removed from a SmashGameObject. They are the best places to do startup
         // and shutdown logic. The constructor is not as good of a place,
         // because injection won't have happened and if the user is setting
         // any properties on the component, they can't be set till after the

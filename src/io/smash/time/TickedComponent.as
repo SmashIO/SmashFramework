@@ -9,13 +9,13 @@
 package io.smash.time
 {
     
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     
     /**
      * Base class for components that need to perform actions every tick. This
      * needs to be subclassed to be useful.
      */
-    public class TickedComponent extends SEComponent implements ITicked
+    public class TickedComponent extends SmashComponent implements ITicked
     {
         /**
          * The update priority for this component. Higher numbered priorities have

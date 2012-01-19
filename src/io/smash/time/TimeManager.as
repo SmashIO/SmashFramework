@@ -11,9 +11,9 @@ package io.smash.time
     
     import io.smash.Smash;
     import io.smash.SmashUtil;
-    import io.smash.core.ISEManager;
-    import io.smash.core.SEComponent;
-    import io.smash.core.SEGroup;
+    import io.smash.core.ISmashManager;
+    import io.smash.core.SmashComponent;
+    import io.smash.core.SmashGroup;
     import io.smash.debug.Logger;
     import io.smash.debug.Profiler;
     import io.smash.util.IPrioritizable;
@@ -42,7 +42,7 @@ package io.smash.time
      * @see ITickedObject
      * @see IAnimatedObject
      */
-    public class TimeManager implements ISEManager
+    public class TimeManager implements ISmashManager
     {
         [Inject]
         public var stage:Stage;
@@ -55,7 +55,7 @@ package io.smash.time
         /**
          * The number of ticks that will happen every second.
          */
-        public const TICKS_PER_SECOND:int = 30;
+        public const TICKS_PER_SECOND:int = 60;
         
         /**
          * The rate at which ticks are fired, in seconds.
@@ -680,7 +680,7 @@ package io.smash.time
             for(var i:int=0; i< queue.length; ++i)
             {
                 var item:IPrioritizable = queue[i];
-                var component:SEComponent = item as SEComponent;
+                var component:SmashComponent = item as SmashComponent;
                 var hasOwner:String = "no";
                 if(component && component.owner)
                     hasOwner = "yes";

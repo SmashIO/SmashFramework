@@ -11,11 +11,11 @@
  */
 package io.smash.simplest
 {
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     
     import flash.geom.Point;
     
-    public class SimplestSpatialComponent extends SEComponent
+    public class SimplestSpatialComponent extends SmashComponent
     {
         public var position:Point = new Point();
     }

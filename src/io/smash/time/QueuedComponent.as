@@ -8,7 +8,7 @@
  ******************************************************************************/
 package io.smash.time
 {
-    import io.smash.core.SEComponent;
+    import io.smash.core.SmashComponent;
     import io.smash.time.TimeManager;
     
     /**
@@ -22,7 +22,7 @@ package io.smash.time
      * no allocations are required beyond the initial allocation of the
      * ThinkingComponent.</p>
      */
-    public class QueuedComponent extends SEComponent implements IQueued
+    public class QueuedComponent extends SmashComponent implements IQueued
     {
         protected var _nextThinkTime:int;
         protected var _nextThinkCallback:Function;

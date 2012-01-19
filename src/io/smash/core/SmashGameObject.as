@@ -9,16 +9,16 @@ package io.smash.core
     use namespace smash_internal;
     
     /**
-     * Container class for PBComponent. Most game objects are made by 
-     * instantiating PBGameObject and filling it with one or more PBComponent
+     * Container class for SmashComponent. Most game objects are made by 
+     * instantiating SmashGameObject and filling it with one or more SmashComponent
      * instances.
      */
-    public class SEGameObject extends SEObject
+    public class SmashGameObject extends SmashObject
     {
         private var _deferring:Boolean = true;
         private var _components:Dictionary = new Dictionary();
         
-        public function SEGameObject(_name:String = null)
+        public function SmashGameObject(_name:String = null)
         {
             super(_name);
         }
@@ -32,7 +32,7 @@ package io.smash.core
          * If true, then components that are added aren't registered until 
          * deferring is set to false. This is used when you are adding a lot of
          * components, or you are adding components with cyclical dependencies
-         * and need them to all be present on the PBGameObject before their
+         * and need them to all be present on the SmashGameObject before their
          * onAdd methods are called.
          */
         public function set deferring(value:Boolean):void
@@ -58,7 +58,7 @@ package io.smash.core
                             continue;
                         
                         // It's a deferral, so init it...
-                        doInitialize(_components[key] as SEComponent);
+                        doInitialize(_components[key] as SmashComponent);
                         
                         // ... and nuke the entry.
                         _components[key] = null;
@@ -74,7 +74,7 @@ package io.smash.core
             _deferring = value;
         }
         
-        protected function doInitialize(component:SEComponent):void
+        protected function doInitialize(component:SmashComponent):void
         {
             component._owner = this;
             owningGroup.injectInto(component);
@@ -82,15 +82,15 @@ package io.smash.core
         }
         
         /**
-         * Add a component to the PBGameObject. Subject to the deferring flag,
+         * Add a component to the SmashGameObject. Subject to the deferring flag,
          * the component will be initialized immediately.
          * 
-         * If there is a public var on this PBGameObject (ie, you've subclassed
-         * PBGameObject) with the same name as the component has, it will be
+         * If there is a public var on this SmashGameObject (ie, you've subclassed
+         * SmashGameObject) with the same name as the component has, it will be
          * populated with a reference to the component. This way you can get
          * typed access to components on your game objects.
          */
-        public function addComponent(component:SEComponent, name:String = null):void
+        public function addComponent(component:SmashComponent, name:String = null):void
         {
             if(name)
                 component.name = name;
@@ -118,10 +118,10 @@ package io.smash.core
         /**
          * Remove a component from this game object.
          */
-        public function removeComponent(component:SEComponent):void
+        public function removeComponent(component:SmashComponent):void
         {
             if(component.owner != this)
-                throw new Error("Tried to remove a component that does not belong to this PBGameObject.");
+                throw new Error("Tried to remove a component that does not belong to this SmashGameObject.");
             
             if(this.hasOwnProperty(component.name) && this[component.name] == component)
                 this[component.name] = null;
@@ -137,16 +137,16 @@ package io.smash.core
          */
         public function lookupComponent(name:String):*
         {
-            return _components[name] as SEComponent;
+            return _components[name] as SmashComponent;
         }
         
         /**
          * Get a fresh Vector with references to all the components in this
          * game object.
          */
-        public function getAllComponents():Vector.<SEComponent>
+        public function getAllComponents():Vector.<SmashComponent>
         {
-            var out:Vector.<SEComponent> = new Vector.<SEComponent>();
+            var out:Vector.<SmashComponent> = new Vector.<SmashComponent>();
             for(var key:String in _components)
                 out.push(_components[key]);
             return out;
@@ -155,8 +155,8 @@ package io.smash.core
         /**
          * Initialize the game object! This is done in a couple of stages.
          * 
-         * First, the PBObject initialization is performed.
-         * Second, we look for any components in public vars on the PBGameObject.
+         * First, the SmashObject initialization is performed.
+         * Second, we look for any components in public vars on the SmashGameObject.
          * This allows you to get at them by direct typed references instead of
          * doing lookups. If we find any, we add them to the game object.
          * Third, we turn off the deferring flag, so any components you've added
@@ -173,7 +173,7 @@ package io.smash.core
             for each(var key:String in TypeUtility.getListOfPublicFields(this))
             {
                 // Only consider components.
-                if(!(this[key] is SEComponent))
+                if(!(this[key] is SmashComponent))
                     continue;
                 
                 // Don't double initialize.
@@ -181,10 +181,10 @@ package io.smash.core
                     continue;
                 
                 // OK, add the component.
-                const nc:SEComponent = this[key] as SEComponent;
+                const nc:SmashComponent = this[key] as SmashComponent;
                 
                 if(nc.name != null && nc.name != "" && nc.name != key)
-                    throw new Error("PBComponent has name '" + nc.name + "' but is set into field named '" + key + "', these need to match!");
+                    throw new Error("SmashComponent has name '" + nc.name + "' but is set into field named '" + key + "', these need to match!");
                 
                 nc.name = key;
                 addComponent(nc);
@@ -206,7 +206,7 @@ package io.smash.core
         }
         
         /**
-         * Removes any components on this game object, then does normal PBObject
+         * Removes any components on this game object, then does normal SmashObject
          * destruction (ie, remove from any groups or sets).
          */
         public override function destroy():void
