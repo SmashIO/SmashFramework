@@ -242,7 +242,7 @@ package io.smash
          * nested typed vectors of objects. In the destination object class, add a TypeHint to the
          * field that contains the Vector like so:
          *
-         * [TypeHint (type="liddles.models.BodyPartDescription")]
+         * [TypeHint (type="example.models.BodyPartDescription")]
          * public var parts:Vector.<BodyPartDescription>;
          *
          * @param source Object to read fields from.

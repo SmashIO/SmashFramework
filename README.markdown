@@ -9,9 +9,9 @@ written by others, and some written by you. There are lots of great libraries
 for game development on Flash, and Smash Engine helps you use them more 
 effectively.
 
-Smash Engine is a fork of the popular PushButton Engine (version 2.0).  PushButton Engine was used by ZaaLabs, PushButton Labs, Playdom, Zynga, Hive7 and other developers in commercial games.
+Smash Engine is a fork of the popular PushButton Engine (version 2.0).  PushButton Engine was used by PushButton Labs, Playdom, Zynga, Hive7, ZaaLabs and other developers in commercial games.
 
-Unfortunately, PushButton Labs [closed its doors](http://pushbuttonlabs.com/) in late 2011.  Smash is the same 
+Unfortunately, PushButton Labs [closed its doors](http://pushbuttonlabs.com/) in late 2011.  Smash Engine is the same commercial grade engine you're used to with PushButton Engine.
 
 Next Steps
 ----------
@@ -27,10 +27,10 @@ Smash needs the following compiler arguments: --keep-as3-metadata+=TypeHint,Edit
 Contributing & Details
 ----------------------
 
-Visit the official Smash repository at GitHub: [http://github.com/ZaaLabs/SmashEngine](http://github.com/ZaaLabs/SmashEngine). Follow it for updates. Fork Smash and submit your improvements!  ([Forking Instructions](http://help.github.com/forking/))
+Visit the official Smash Engine repository at GitHub: [http://github.com/SmashIO/SmashEngine](http://github.com/SmashIO/SmashEngine). Follow it for updates. Fork Smash and submit your improvements!  ([Forking Instructions](http://help.github.com/forking/))
 
-The Smash Core Engine is covered under the MIT license in its entirety,
+The Smash Engine is covered under the MIT license in its entirety,
 not including 3rd party components. Please read LICENSE for more 
 information on the MIT license.
 
-Copyright 2011-2012 ZaaLabs, Ltd. All rights reserved.
+Copyright 2011-2012 SmashIO. All rights reserved.
