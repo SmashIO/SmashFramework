@@ -21,7 +21,7 @@ Open SmashDemos.as and start reading. The repo includes several demo application
 Smash needs the following compiler arguments: --keep-as3-metadata+=TypeHint,EditorData,Embed,Inject,PostInject
 
 * Documentation is inline with the code.
-* Follow [@ZaaLabs](http://twitter.com/zaalabs), [@jnbeck](http://twitter.com/jnbeck), [@jeremysaenz](http://twitter.com/jeremysaenz) and [@bengarney](http://twitter.com/bengarney)
+* Follow [@ZaaLabs](http://twitter.com/zaalabs), [@jnbeck](http://twitter.com/jnbeck) and [@jeremysaenz](http://twitter.com/jeremysaenz)
 
 Contributing & Details
 ----------------------
