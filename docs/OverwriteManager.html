@@ -1,0 +1,379 @@
+<!DOCTYPE html>  <html> <head>   <title>OverwriteManager.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="PBEDemos.html">                 PBEDemos.as               </a>                                           <a class="source" href="SimpleDemoGameObject.html">                 SimpleDemoGameObject.as               </a>                                           <a class="source" href="SimplestDemoGameObject.html">                 SimplestDemoGameObject.as               </a>                                           <a class="source" href="OverwriteManager.html">                 OverwriteManager.as               </a>                                           <a class="source" href="TimelineLite.html">                 TimelineLite.as               </a>                                           <a class="source" href="TimelineMax.html">                 TimelineMax.as               </a>                                           <a class="source" href="TweenAlign.html">                 TweenAlign.as               </a>                                           <a class="source" href="TweenLite.html">                 TweenLite.as               </a>                                           <a class="source" href="TweenMax.html">                 TweenMax.as               </a>                                           <a class="source" href="TweenNano.html">                 TweenNano.as               </a>                                           <a class="source" href="PBE.html">                 PBE.as               </a>                                           <a class="source" href="PBUtil.html">                 PBUtil.as               </a>                                           <a class="source" href="pb_internal.html">                 pb_internal.as               </a>                                           <a class="source" href="SimplestRendererScene.html">                 SimplestRendererScene.as               </a>                                           <a class="source" href="BindingDemoScene.html">                 BindingDemoScene.as               </a>                                           <a class="source" href="MouseFollowerScene.html">                 MouseFollowerScene.as               </a>                                           <a class="source" href="CirclePickupScene.html">                 CirclePickupScene.as               </a>                                           <a class="source" href="GemManager.html">                 GemManager.as               </a>                                           <a class="source" href="CirclePickupWithTimeManagerScene.html">                 CirclePickupWithTimeManagerScene.as               </a>                                           <a class="source" href="OneButtonDemoScene.html">                 OneButtonDemoScene.as               </a>                                           <a class="source" href="TwoButtonDemoScene.html">                 TwoButtonDemoScene.as               </a>                                           <a class="source" href="CarDemoScene.html">                 CarDemoScene.as               </a>                                           <a class="source" href="FSMDemoScene.html">                 FSMDemoScene.as               </a>                                           <a class="source" href="AGALMiniAssembler.html">                 AGALMiniAssembler.as               </a>                                           <a class="source" href="MolehillGameObject.html">                 MolehillGameObject.as               </a>                                           <a class="source" href="MolehillScene.html">                 MolehillScene.as               </a>                                           <a class="source" href="QuadRenderer.html">                 QuadRenderer.as               </a>                                           <a class="source" href="QuadScene.html">                 QuadScene.as               </a>                                           <a class="source" href="RandomMover.html">                 RandomMover.as               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               OverwriteManager.as             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="err">﻿</span><span class="cm">/**</span>
+<span class="cm"> * VERSION: 6.1</span>
+<span class="cm"> * DATE: 2010-12-20</span>
+<span class="cm"> * AS3 (AS2 is also available)</span>
+<span class="cm"> * UPDATES AND DOCS AT: http://www.greensock.com/overwritemanager/</span>
+<span class="cm"> **/</span>
+<span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">greensock</span> <span class="p">{</span>
+	<span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">greensock</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="o">*;</span>
+	
+<span class="cm">/**</span>
+<span class="cm"> * OverwriteManager resolves conflicts between tweens and controls if (and how) existing tweens of the same</span>
+<span class="cm"> * target are overwritten. Think of it as a referee or traffic cop for tweens. For example, let&#39;s say you have</span>
+<span class="cm"> * a button with &lt;code&gt;ROLL_OVER&lt;/code&gt; and &lt;code&gt;ROLL_OUT&lt;/code&gt; handlers that tween an object&#39;s alpha and the user rolls their mouse</span>
+<span class="cm"> * over/out/over/out quickly. Most likely, you&#39;d want each new tween to overwrite the other immediately so</span>
+<span class="cm"> * that you don&#39;t end up with multiple tweens vying for control of the alpha property. That describes</span>
+<span class="cm"> * the &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt; mode which is the default mode of TweenLite when it is not used in conjunction with</span>
+<span class="cm"> * TweenMax, TimelineLite, or TimelineMax. This keeps things small and fast. However, it isn&#39;t ideal for </span>
+<span class="cm"> * setting up sequences because as soon as you create subsequent tweens of the same target in the sequence, </span>
+<span class="cm"> * the previous one gets overwritten. And what if you have a tween that is controling 3 properties and </span>
+<span class="cm"> * then you create another tween that only controls one of those properties? You may want the first tween </span>
+<span class="cm"> * to continue tweening the other 2 (non-overlapping) properties. This describes the &lt;code&gt;AUTO&lt;/code&gt; mode which is </span>
+<span class="cm"> * the default whenever TweenMax, TimelineLite, or TimelineMax is used in your swf. OverwriteManager</span>
+<span class="cm"> * offers quite a few other modes to choose from in fact:</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;ul&gt;</span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; NONE (0):&lt;/b&gt; </span>
+<span class="cm"> * 					&lt;ol&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; Never&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Nothing&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Nothing&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Excellent&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you know that your tweens won&#39;t conflict and you want maximum speed.&lt;/li&gt;</span>
+<span class="cm"> * 					&lt;/ol&gt;</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * 				</span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; ALL_IMMEDIATE (1):&lt;/b&gt; </span>
+<span class="cm"> * 					&lt;ol&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; Immediately when the tween is created.&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; All tweens of the same target (regardless of timing or overlapping properties).&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Excellent&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you want the tween to take priority over all other tweens of the </span>
+<span class="cm"> * 											 same target, like on button rollovers/rollouts. However, this mode is </span>
+<span class="cm"> * 											 bad for setting up sequences.&lt;/li&gt;</span>
+<span class="cm"> * 					&lt;/ol&gt;</span>
+<span class="cm"> * 					This is the default mode for TweenLite unless TweenMax, TimelineLite, </span>
+<span class="cm"> * 					or TimelineMax are used in the SWF (in which case &lt;code&gt;AUTO&lt;/code&gt; is the default mode).</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * 					</span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; AUTO (2):&lt;/b&gt; </span>
+<span class="cm"> * 					&lt;ol&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm"> * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Only tweens of the same target that are active (running). Tweens that haven&#39;t started yet are immune.&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Only individual overlapping tweening properties. If all tweening properties </span>
+<span class="cm"> * 										  have been overwritten, the entire tween will be killed as well.&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good when there aren&#39;t many overlapping tweens; fair when there are.&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; Virtually all situations. This mode does the best job overall of handling </span>
+<span class="cm"> * 											 overwriting in an intuitive way and is excellent for sequencing. &lt;/li&gt;</span>
+<span class="cm"> * 					&lt;/ol&gt;</span>
+<span class="cm"> * 					This is the default mode when TweenMax, TimelineLite, or TimelineMax is used in your swf (those classes</span>
+<span class="cm"> * 					automatically init() OverwriteManager in &lt;code&gt;AUTO&lt;/code&gt; mode unless you have already initted OverwriteManager manually).</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * 					</span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; CONCURRENT (3):&lt;/b&gt; </span>
+<span class="cm"> * 					&lt;ol&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm"> * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Only tweens of the same target that are active (running). Tweens that haven&#39;t started yet are immune.&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you want the target object to only be controled by one tween at a time. Good</span>
+<span class="cm"> * 											 for sequencing although AUTO mode is typically better because it will only kill</span>
+<span class="cm"> * 											 individual overlapping properties instead of entire tweens.&lt;/li&gt;</span>
+<span class="cm"> * 					&lt;/ol&gt;</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * 				</span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; ALL_ONSTART (4):&lt;/b&gt; </span>
+<span class="cm"> * 					&lt;ol&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm"> * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; All tweens of the same target (regardless of timing or overlapping properties).&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you want a tween to take priority and wipe out all other tweens of the </span>
+<span class="cm"> * 											 same target even if they start later. This mode is rarely used.&lt;/li&gt;</span>
+<span class="cm"> * 					&lt;/ol&gt;</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; PREEXISTING (5):&lt;/b&gt; </span>
+<span class="cm"> * 					&lt;ol&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm"> * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Only the tweens of the same target that were created before this tween was created </span>
+<span class="cm"> * 										  (regardless of timing or overlapping properties). Virtually identical to &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt;</span>
+<span class="cm"> * 										  except that &lt;code&gt;PREEXISTING&lt;/code&gt; doesn&#39;t run its overwriting routines until it renders for the</span>
+<span class="cm"> * 										  first time, meaning that if it has a delay, other tweens won&#39;t be overwritten until the delay expires.&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good&lt;/li&gt;</span>
+<span class="cm"> * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When the order in which your code runs plays a critical role, like when tweens</span>
+<span class="cm"> * 											 that you create later should always take precidence over previously created ones</span>
+<span class="cm"> * 											 regardless of when they&#39;re scheduled to run. If &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt; is great except</span>
+<span class="cm"> * 											 that you want to wait on overwriting until the tween begins, &lt;code&gt;PREEXISTING&lt;/code&gt; is perfect.&lt;/li&gt;</span>
+<span class="cm"> * 					&lt;/ol&gt;</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * 	&lt;/ul&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * With the exception of &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt; (which performs overwriting immediatly when the tween is created), </span>
+<span class="cm"> * all overwriting occurs when a tween renders for the first time. So if your tween has a delay of 1 second,</span>
+<span class="cm"> * it will not overwrite any tweens until that point. &lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * You can define a default overwriting mode for all tweens using the &lt;code&gt;OverwriteManager.init()&lt;/code&gt; method, like:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		OverwriteManager.init(OverwriteManager.AUTO);&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * If you want to override the default mode in a particular tween, just use the &lt;code&gt;overwrite&lt;/code&gt; special </span>
+<span class="cm"> * property. You can use the static constant or the corresponding number. The following two lines produce </span>
+<span class="cm"> * the same results:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		TweenMax.to(mc, 1, {x:100, overwrite:OverwriteManager.PREXISTING});&lt;br /&gt;</span>
+<span class="cm"> * 		TweenMax.to(mc, 1, {x:100, overwrite:5});&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * OverwriteManager is a separate, optional class for TweenLite primarily because of file size concerns. </span>
+<span class="cm"> * Without initting OverwriteManager, TweenLite can only recognize modes 0 and 1 (&lt;code&gt;NONE&lt;/code&gt; and &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt;). </span>
+<span class="cm"> * However, TweenMax, TimelineLite, and TimelineMax automatically init() OverwriteManager in &lt;code&gt;AUTO&lt;/code&gt; mode </span>
+<span class="cm"> * unless you have already initted OverwriteManager manually. You do not need to take any additional steps</span>
+<span class="cm"> * to use AUTO mode if you&#39;re using any of those classes somewhere in your project. Keep in mind too that setting </span>
+<span class="cm"> * the default OverwriteManager mode will affect TweenLite and TweenMax tweens.&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;b&gt;EXAMPLES:&lt;/b&gt;&lt;br /&gt;&lt;br /&gt; </span>
+<span class="cm"> * </span>
+<span class="cm"> * 	To start OverwriteManager in &lt;code&gt;AUTO&lt;/code&gt; mode (the default) and then do a simple TweenLite tween, simply do:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		import com.greensock.OverwriteManager;&lt;br /&gt;</span>
+<span class="cm"> * 		import com.greensock.TweenLite;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		OverwriteManager.init(OverwriteManager.AUTO);&lt;br /&gt;</span>
+<span class="cm"> * 		TweenLite.to(mc, 2, {x:300});&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 	You can also define overwrite behavior in individual tweens, like so:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 		import com.greensock.OverwriteManager;&lt;br /&gt;</span>
+<span class="cm"> * 		import com.greensock.TweenLite;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		OverwriteManager.init(2);&lt;br /&gt;</span>
+<span class="cm"> * 		TweenLite.to(mc, 2, {x:&quot;300&quot;, y:&quot;100&quot;});&lt;br /&gt;</span>
+<span class="cm"> * 		TweenLite.to(mc, 1, {alpha:0.5, overwrite:1}); //or use the constant OverwriteManager.ALL_IMMEDIATE&lt;br /&gt;</span>
+<span class="cm"> * 		TweenLite.to(mc, 3, {x:200, rotation:30, overwrite:2}); //or use the constant OverwriteManager.AUTO&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 	OverwriteManager&#39;s mode can be changed anytime after init() is called, like.&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		OverwriteManager.mode = OverwriteManager.CONCURRENT;&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;b&gt;Copyright 2011, GreenSock. All rights reserved.&lt;/b&gt; This work is subject to the terms in &lt;a href=&quot;http://www.greensock.com/terms_of_use.html&quot;&gt;http://www.greensock.com/terms_of_use.html&lt;/a&gt; or for corporate Club GreenSock members, the software agreement that was issued with the corporate membership.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @author Jack Doyle, jack@greensock.com</span>
+<span class="cm"> */</span>	 
+	<span class="kd">final</span> <span class="kd">public</span> <span class="kd">class</span> <span class="nx">OverwriteManager</span> <span class="p">{</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">version</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">6.1</span><span class="o">;</span>
+		<span class="cm">/** Won&#39;t overwrite any other tweens **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">NONE</span><span class="o">:</span><span class="nb">int</span> 			<span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="cm">/** Overwrites all existing tweens of the same target immediately when the tween is created **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">ALL_IMMEDIATE</span><span class="o">:</span><span class="nb">int</span> 	<span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="cm">/** Only overwrites individual overlapping tweening properties in other tweens of the same target. TweenMax, TimelineLite, and TimelineMax automatically init() OverwriteManager in this mode if you haven&#39;t already called OverwriteManager.init(). **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">AUTO</span><span class="o">:</span><span class="nb">int</span> 			<span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+		<span class="cm">/** Overwrites tweens of the same target that are active when the tween renders for the first time. **/</span> 
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">CONCURRENT</span><span class="o">:</span><span class="nb">int</span> 		<span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+		<span class="cm">/** Overwrites all tweens of the same target (regardless of overlapping properties or timing) when the tween renders for the first time as opposed to ALL_IMMEDIATE which performs overwriting immediately when the tween is created. **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">ALL_ONSTART</span><span class="o">:</span><span class="nb">int</span> 	<span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+		<span class="cm">/** Overwrites tweens of the same target that existed before this tween regardless of their start/end time or active state or overlapping properties. **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">PREEXISTING</span><span class="o">:</span><span class="nb">int</span> 	<span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+		<span class="cm">/** The default overwrite mode for all TweenLite and TweenMax instances **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">mode</span><span class="o">:</span><span class="nb">int</span><span class="o">;</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">enabled</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+		
+		<span class="cm">/** </span>
+<span class="cm">		 * Initializes OverwriteManager and sets the default management mode. Options include: </span>
+<span class="cm">		 * &lt;ul&gt;</span>
+<span class="cm">		 * 		&lt;li&gt;&lt;b&gt; NONE (0):&lt;/b&gt; </span>
+<span class="cm">		 * 					&lt;ol&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; Never&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Nothing&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Nothing&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Excellent&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you know that your tweens won&#39;t conflict and you want maximum speed.&lt;/li&gt;</span>
+<span class="cm">		 * 					&lt;/ol&gt;</span>
+<span class="cm">		 * 		&lt;/li&gt;</span>
+<span class="cm">		 * 				</span>
+<span class="cm">		 * 		&lt;li&gt;&lt;b&gt; ALL_IMMEDIATE (1):&lt;/b&gt; </span>
+<span class="cm">		 * 					&lt;ol&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; Immediately when the tween is created.&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; All tweens of the same target (regardless of timing or overlapping properties).&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Excellent&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you want the tween to take priority over all other tweens of the </span>
+<span class="cm">		 * 											 same target, like on button rollovers/rollouts. However, this mode is </span>
+<span class="cm">		 * 											 bad for setting up sequences.&lt;/li&gt;</span>
+<span class="cm">		 * 					&lt;/ol&gt;</span>
+<span class="cm">		 * 					This is the default mode for TweenLite unless TweenMax, TimelineLite, </span>
+<span class="cm">		 * 					or TimelineMax are used in the SWF (in which case &lt;code&gt;AUTO&lt;/code&gt; is the default mode).</span>
+<span class="cm">		 * 		&lt;/li&gt;</span>
+<span class="cm">		 * 					</span>
+<span class="cm">		 * 		&lt;li&gt;&lt;b&gt; AUTO (2):&lt;/b&gt; </span>
+<span class="cm">		 * 					&lt;ol&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm">		 * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Only tweens of the same target that are active (running). Tweens that haven&#39;t started yet are immune.&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Only individual overlapping tweening properties. If all tweening properties </span>
+<span class="cm">		 * 										  have been overwritten, the entire tween will be killed as well.&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good when there aren&#39;t many overlapping tweens; fair when there are.&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; Virtually all situations. This mode does the best job overall of handling </span>
+<span class="cm">		 * 											 overwriting in an intuitive way and is excellent for sequencing. &lt;/li&gt;</span>
+<span class="cm">		 * 					&lt;/ol&gt;</span>
+<span class="cm">		 * 					This is the default mode when TweenMax, TimelineLite, or TimelineMax is used in your swf (those classes</span>
+<span class="cm">		 * 					automatically init() OverwriteManager in &lt;code&gt;AUTO&lt;/code&gt; mode unless you have already initted OverwriteManager manually).</span>
+<span class="cm">		 * 		&lt;/li&gt;</span>
+<span class="cm">		 * 					</span>
+<span class="cm">		 * 		&lt;li&gt;&lt;b&gt; CONCURRENT (3):&lt;/b&gt; </span>
+<span class="cm">		 * 					&lt;ol&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm">		 * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Only tweens of the same target that are active (running). Tweens that haven&#39;t started yet are immune.&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you want the target object to only be controled by one tween at a time. Good</span>
+<span class="cm">		 * 											 for sequencing although AUTO mode is typically better because it will only kill</span>
+<span class="cm">		 * 											 individual overlapping properties instead of entire tweens.&lt;/li&gt;</span>
+<span class="cm">		 * 					&lt;/ol&gt;</span>
+<span class="cm">		 * 		&lt;/li&gt;</span>
+<span class="cm">		 * 				</span>
+<span class="cm">		 * 		&lt;li&gt;&lt;b&gt; ALL_ONSTART (4):&lt;/b&gt; </span>
+<span class="cm">		 * 					&lt;ol&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm">		 * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; All tweens of the same target (regardless of timing or overlapping properties).&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When you want a tween to take priority and wipe out all other tweens of the </span>
+<span class="cm">		 * 											 same target even if they start later. This mode is rarely used.&lt;/li&gt;</span>
+<span class="cm">		 * 					&lt;/ol&gt;</span>
+<span class="cm">		 * 		&lt;/li&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * 		&lt;li&gt;&lt;b&gt; PREEXISTING (5):&lt;/b&gt; </span>
+<span class="cm">		 * 					&lt;ol&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;When:&lt;/b&gt; The first time the tween renders (you can &lt;code&gt;invalidate()&lt;/code&gt; a tween to force it </span>
+<span class="cm">		 * 										 to re-init and run its overwriting routine again next time it renders)&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Finds:&lt;/b&gt; Only the tweens of the same target that were created before this tween was created </span>
+<span class="cm">		 * 										  (regardless of timing or overlapping properties). Virtually identical to &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt;</span>
+<span class="cm">		 * 										  except that &lt;code&gt;PREEXISTING&lt;/code&gt; doesn&#39;t run its overwriting routines until it renders for the</span>
+<span class="cm">		 * 										  first time, meaning that if it has a delay, other tweens won&#39;t be overwritten until the delay expires.&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Kills:&lt;/b&gt; Every tween found&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Performance:&lt;/b&gt; Very good&lt;/li&gt;</span>
+<span class="cm">		 * 						&lt;li&gt;&lt;b&gt;Good for:&lt;/b&gt; When the order in which your code runs plays a critical role, like when tweens</span>
+<span class="cm">		 * 											 that you create later should always take precidence over previously created ones</span>
+<span class="cm">		 * 											 regardless of when they&#39;re scheduled to run. If &lt;code&gt;ALL_IMMEDIATE&lt;/code&gt; is great except</span>
+<span class="cm">		 * 											 that you want to wait on overwriting until the tween begins, &lt;code&gt;PREEXISTING&lt;/code&gt; is perfect.&lt;/li&gt;</span>
+<span class="cm">		 * 					&lt;/ol&gt;</span>
+<span class="cm">		 * 		&lt;/li&gt;</span>
+<span class="cm">		 * 	&lt;/ul&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param defaultMode The default mode that OverwriteManager should use.</span>
+<span class="cm">		 **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">init</span><span class="p">(</span><span class="nx">defaultMode</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">:</span><span class="nb">int</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">TweenLite</span><span class="p">.</span><span class="nx">version</span> <span class="o">&lt;</span> <span class="mf">11.6</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Warning: Your TweenLite class needs to be updated to work with OverwriteManager (or you may need to clear your ASO files). Please download and install the latest version from http://www.tweenlite.com.&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="nx">TweenLite</span><span class="p">.</span><span class="nx">overwriteManager</span> <span class="o">=</span> <span class="nx">OverwriteManager</span><span class="o">;</span>
+			<span class="nx">mode</span> <span class="o">=</span> <span class="nx">defaultMode</span><span class="o">;</span>
+			<span class="nx">enabled</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="k">return</span> <span class="nx">mode</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** </span>
+<span class="cm">		 * @private </span>
+<span class="cm">		 * @return Boolean value indicating whether or not properties may have changed on the target when overwriting occurred. For example, when a motionBlur (plugin) is disabled, it swaps out a BitmapData for the target and may alter the alpha. We need to know this in order to determine whether or not the new tween should be re-initted() with the changed properties. </span>
+<span class="cm">		 **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">manageOverwrites</span><span class="p">(</span><span class="nx">tween</span><span class="o">:</span><span class="nx">TweenLite</span><span class="o">,</span> <span class="nx">props</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">targetTweens</span><span class="o">:</span><span class="nb">Array</span><span class="o">,</span> <span class="nx">mode</span><span class="o">:</span><span class="nb">int</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span><span class="o">,</span> <span class="nx">changed</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">,</span> <span class="nx">curTween</span><span class="o">:</span><span class="nx">TweenLite</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">mode</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">var</span> <span class="nx">l</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">targetTweens</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+				<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">curTween</span> <span class="o">=</span> <span class="nx">targetTweens</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span> <span class="o">!=</span> <span class="nx">tween</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">setEnabled</span><span class="p">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="p">))</span> <span class="p">{</span>
+							<span class="nx">changed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">mode</span> <span class="o">==</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">break</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">return</span> <span class="nx">changed</span><span class="o">;</span>
+			<span class="p">}</span>
+			</pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>NOTE: Add 0.0000000001 to overcome floating point errors that can cause the startTime to be VERY slightly off (when a tween's currentTime property is set for example)</p>             </td>             <td class="code">               <div class="highlight"><pre>			<span class="k">var</span> <span class="nx">startTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">+</span> <span class="mf">0.0000000001</span><span class="o">,</span> <span class="nx">overlaps</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="p">[]</span><span class="o">,</span> <span class="nx">cousins</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="p">[]</span><span class="o">,</span> <span class="nx">cCount</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="nx">oCount</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="nx">i</span> <span class="o">=</span> <span class="nx">targetTweens</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+			<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">curTween</span> <span class="o">=</span> <span class="nx">targetTweens</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span> <span class="o">==</span> <span class="nx">tween</span> <span class="o">||</span> <span class="nx">curTween</span><span class="p">.</span><span class="nx">gc</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">initted</span> <span class="o">&amp;&amp;</span> <span class="nx">startTime</span> <span class="o">-</span> <span class="nx">curTween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">&lt;=</span> <span class="mf">0.0000000002</span><span class="p">))</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>ignore</p>             </td>             <td class="code">               <div class="highlight"><pre>				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">timeline</span> <span class="o">!=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">timeline</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">getGlobalPaused</span><span class="p">(</span><span class="nx">curTween</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">cousins</span><span class="p">[</span><span class="nx">cCount</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="nx">curTween</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">&lt;=</span> <span class="nx">startTime</span> <span class="o">&amp;&amp;</span> <span class="nx">curTween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">+</span> <span class="nx">curTween</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">+</span> <span class="mf">0.0000000001</span> <span class="o">&gt;</span> <span class="nx">startTime</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">cachedPaused</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">startTime</span> <span class="o">-</span> <span class="nx">curTween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">&lt;=</span> <span class="mf">0.0000000002</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">overlaps</span><span class="p">[</span><span class="nx">oCount</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="nx">curTween</span><span class="o">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="nx">cCount</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//tweens that are nested in other timelines may have various offsets and timeScales so we need to translate them to a global/root one to see how they compare.</span>
+				<span class="k">var</span> <span class="nx">combinedTimeScale</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">,</span> <span class="nx">combinedStartTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nx">startTime</span><span class="o">,</span> <span class="nx">cousin</span><span class="o">:</span><span class="nx">TweenCore</span><span class="o">,</span> <span class="nx">cousinStartTime</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">timeline</span><span class="o">:</span><span class="nx">SimpleTimeline</span><span class="o">;</span>
+				<span class="nx">timeline</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">timeline</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="nx">timeline</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">combinedTimeScale</span> <span class="o">*=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">;</span>
+					<span class="nx">combinedStartTime</span> <span class="o">+=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="o">;</span>
+					<span class="nx">timeline</span> <span class="o">=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">timeline</span><span class="o">;</span>
+				<span class="p">}</span>
+				<span class="nx">startTime</span> <span class="o">=</span> <span class="nx">combinedTimeScale</span> <span class="o">*</span> <span class="nx">combinedStartTime</span><span class="o">;</span>
+				<span class="nx">i</span> <span class="o">=</span> <span class="nx">cCount</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">cousin</span> <span class="o">=</span> <span class="nx">cousins</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="nx">combinedTimeScale</span> <span class="o">=</span> <span class="nx">cousin</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">;</span>
+					<span class="nx">combinedStartTime</span> <span class="o">=</span> <span class="nx">cousin</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="o">;</span>
+					<span class="nx">timeline</span> <span class="o">=</span> <span class="nx">cousin</span><span class="p">.</span><span class="nx">timeline</span><span class="o">;</span>
+					<span class="k">while</span> <span class="p">(</span><span class="nx">timeline</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">combinedTimeScale</span> <span class="o">*=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">;</span>
+						<span class="nx">combinedStartTime</span> <span class="o">+=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="o">;</span>
+						<span class="nx">timeline</span> <span class="o">=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">timeline</span><span class="o">;</span>
+					<span class="p">}</span>
+					<span class="nx">cousinStartTime</span> <span class="o">=</span> <span class="nx">combinedTimeScale</span> <span class="o">*</span> <span class="nx">combinedStartTime</span><span class="o">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">cousinStartTime</span> <span class="o">&lt;=</span> <span class="nx">startTime</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">cousinStartTime</span> <span class="o">+</span> <span class="p">(</span><span class="nx">cousin</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">*</span> <span class="nx">combinedTimeScale</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.0000000001</span> <span class="o">&gt;</span> <span class="nx">startTime</span> <span class="o">||</span> <span class="nx">cousin</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">overlaps</span><span class="p">[</span><span class="nx">oCount</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="nx">cousin</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="nx">oCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">changed</span><span class="o">;</span>
+			<span class="p">}</span>
+			
+			<span class="nx">i</span> <span class="o">=</span> <span class="nx">oCount</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">mode</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">curTween</span> <span class="o">=</span> <span class="nx">overlaps</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">killVars</span><span class="p">(</span><span class="nx">props</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">changed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">curTween</span><span class="p">.</span><span class="nx">cachedPT1</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">curTween</span><span class="p">.</span><span class="nx">initted</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">curTween</span><span class="p">.</span><span class="nx">setEnabled</span><span class="p">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span> <span class="c1">//if all property tweens have been overwritten, kill the tween.</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">TweenLite</span><span class="p">(</span><span class="nx">overlaps</span><span class="p">[</span><span class="nx">i</span><span class="p">]).</span><span class="nx">setEnabled</span><span class="p">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="p">))</span> <span class="p">{</span> <span class="c1">//flags for garbage collection</span>
+						<span class="nx">changed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">changed</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getGlobalPaused</span><span class="p">(</span><span class="nx">tween</span><span class="o">:</span><span class="nx">TweenCore</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">paused</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+			<span class="k">while</span> <span class="p">(</span><span class="nx">tween</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cachedPaused</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">paused</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span> <span class="c1">//we don&#39;t just return true immediately here because of an odd bug in Flash that could (in EXTREMELY rare circumstances) throw an error. </span>
+					<span class="k">break</span><span class="o">;</span>
+				<span class="p">}</span>
+				<span class="nx">tween</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">timeline</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">paused</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+	<span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

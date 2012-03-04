@@ -1,0 +1,449 @@
+<!DOCTYPE html>  <html> <head>   <title>TweenNano.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="PBEDemos.html">                 PBEDemos.as               </a>                                           <a class="source" href="SimpleDemoGameObject.html">                 SimpleDemoGameObject.as               </a>                                           <a class="source" href="SimplestDemoGameObject.html">                 SimplestDemoGameObject.as               </a>                                           <a class="source" href="OverwriteManager.html">                 OverwriteManager.as               </a>                                           <a class="source" href="TimelineLite.html">                 TimelineLite.as               </a>                                           <a class="source" href="TimelineMax.html">                 TimelineMax.as               </a>                                           <a class="source" href="TweenAlign.html">                 TweenAlign.as               </a>                                           <a class="source" href="TweenLite.html">                 TweenLite.as               </a>                                           <a class="source" href="TweenMax.html">                 TweenMax.as               </a>                                           <a class="source" href="TweenNano.html">                 TweenNano.as               </a>                                           <a class="source" href="PBE.html">                 PBE.as               </a>                                           <a class="source" href="PBUtil.html">                 PBUtil.as               </a>                                           <a class="source" href="pb_internal.html">                 pb_internal.as               </a>                                           <a class="source" href="SimplestRendererScene.html">                 SimplestRendererScene.as               </a>                                           <a class="source" href="BindingDemoScene.html">                 BindingDemoScene.as               </a>                                           <a class="source" href="MouseFollowerScene.html">                 MouseFollowerScene.as               </a>                                           <a class="source" href="CirclePickupScene.html">                 CirclePickupScene.as               </a>                                           <a class="source" href="GemManager.html">                 GemManager.as               </a>                                           <a class="source" href="CirclePickupWithTimeManagerScene.html">                 CirclePickupWithTimeManagerScene.as               </a>                                           <a class="source" href="OneButtonDemoScene.html">                 OneButtonDemoScene.as               </a>                                           <a class="source" href="TwoButtonDemoScene.html">                 TwoButtonDemoScene.as               </a>                                           <a class="source" href="CarDemoScene.html">                 CarDemoScene.as               </a>                                           <a class="source" href="FSMDemoScene.html">                 FSMDemoScene.as               </a>                                           <a class="source" href="AGALMiniAssembler.html">                 AGALMiniAssembler.as               </a>                                           <a class="source" href="MolehillGameObject.html">                 MolehillGameObject.as               </a>                                           <a class="source" href="MolehillScene.html">                 MolehillScene.as               </a>                                           <a class="source" href="QuadRenderer.html">                 QuadRenderer.as               </a>                                           <a class="source" href="QuadScene.html">                 QuadScene.as               </a>                                           <a class="source" href="RandomMover.html">                 RandomMover.as               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               TweenNano.as             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * VERSION: 1.05</span>
+<span class="cm"> * DATE: 2010-05-11</span>
+<span class="cm"> * AS3 (AS2 is also available)</span>
+<span class="cm"> * UPDATES AND DOCUMENTATION AT: http://www.TweenNano.com</span>
+<span class="cm"> **/</span>
+<span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">greensock</span> <span class="p">{</span>
+	<span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="o">*;</span>
+	<span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="o">*;</span>
+	<span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="o">*;</span>
+<span class="cm">/**</span>
+<span class="cm"> * 	TweenNano is a super-lightweight (1.6k in AS3 and 2k in AS2) version of &lt;a href=&quot;http://www.TweenLite.com&quot;&gt;TweenLite&lt;/a&gt; </span>
+<span class="cm"> *  and is only recommended for situations where you absolutely cannot afford the extra 3.1k (4.7k total) that the normal </span>
+<span class="cm"> *  TweenLite engine would cost and your project doesn&#39;t require any plugins. Normally, it is much better to use </span>
+<span class="cm"> *  TweenLite because of the additional flexibility it provides via plugins and its compatibility with TimelineLite and TimelineMax. </span>
+<span class="cm"> *  TweenNano can do everything TweenLite can do with the following exceptions:</span>
+<span class="cm"> * 	&lt;ul&gt;</span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; No Plugins &lt;/b&gt;- One of the great things about TweenLite is that you can activate</span>
+<span class="cm"> * 			plugins in order to add features (like autoAlpha, tint, blurFilter, etc.). TweenNano, however, </span>
+<span class="cm"> * 			doesn&#39;t work with plugins. &lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; Incompatible with TimelineLite and TimelineMax &lt;/b&gt;- Complex sequencing and management of groups of </span>
+<span class="cm"> * 			tweens can be much easier with TimelineLite and TimelineMax, but TweenNano instances cannot be inserted into</span>
+<span class="cm"> * 			TimelineLite or TimelineMax instances.&lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; Slight speed decrease &lt;/b&gt;- Under very heavy loads, TweenNano won&#39;t perform quite as well as TweenLite, but</span>
+<span class="cm"> * 			it is extremely unlikely that you&#39;d notice unless you&#39;re tweening thousands of objects simultaneously.&lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt; Fewer overwrite modes &lt;/b&gt;- You can either overwrite all or none of the existing tweens of the same </span>
+<span class="cm"> * 			object (overwrite:true or overwrite:false) in TweenNano. TweenLite, however, can use OverwriteManager to expand </span>
+<span class="cm"> * 			its capabilities and use modes like AUTO, CONCURRENT, PREEXISTING, and ALL_ONSTART</span>
+<span class="cm"> * 			(see &lt;a href=&quot;http://www.greensock.com/overwritemanager/&quot;&gt;http://www.greensock.com/overwritemanager/&lt;/a&gt;</span>
+<span class="cm"> * 			for details).&lt;/li&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		&lt;li&gt;&lt;b&gt;Compared to TweenLite, TweenNano is missing the following methods/properties:&lt;/b&gt;</span>
+<span class="cm"> * 			&lt;ul&gt;</span>
+<span class="cm"> * 				&lt;li&gt;pause()&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;play()&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;resume()&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;restart()&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;reverse()&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;invalidate()&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;onStart&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;onInit&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;defaultEase&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;easeParams&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;currentTime&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;startTime&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;totalTime&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;paused&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;reversed&lt;/li&gt;</span>
+<span class="cm"> * 				&lt;li&gt;totalDuration&lt;/li&gt;</span>
+<span class="cm"> * 			&lt;/ul&gt;</span>
+<span class="cm"> * 		&lt;/li&gt;</span>
+<span class="cm"> * 	&lt;/ul&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;hr/&gt;	</span>
+<span class="cm"> * &lt;b&gt;SPECIAL PROPERTIES:&lt;/b&gt;</span>
+<span class="cm"> * &lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * Any of the following special properties can optionally be passed in through the vars object (the third parameter):</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;ul&gt;</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; delay : Number&lt;/b&gt;			Amount of delay in seconds (or frames for frames-based tweens) before the tween should begin.&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; useFrames : Boolean&lt;/b&gt;		If useFrames is set to true, the tweens&#39;s timing mode will be based on frames. </span>
+<span class="cm"> * 										Otherwise, it will be based on seconds/time.&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; ease : Function&lt;/b&gt;			Use any standard easing equation to control the rate of change. For example, </span>
+<span class="cm"> * 										&lt;code&gt;Elastic.easeOut&lt;/code&gt;. The Default is Regular.easeOut.&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; onUpdate : Function&lt;/b&gt;		A function that should be called every time the tween&#39;s time/position is updated </span>
+<span class="cm"> * 										(on every frame while the timeline is active)&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; onUpdateParams : Array&lt;/b&gt;	An Array of parameters to pass the onUpdate function&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; onComplete : Function&lt;/b&gt;	A function that should be called when the tween has finished &lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; onCompleteParams : Array&lt;/b&gt; An Array of parameters to pass the onComplete function.&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; immediateRender : Boolean&lt;/b&gt; Normally when you create a from() tween, it renders the starting state immediately even</span>
+<span class="cm"> * 										  if you define a delay which in typical &quot;animate in&quot; scenarios is very desirable, but</span>
+<span class="cm"> * 										  if you prefer to override this behavior and have the from() tween render only after any </span>
+<span class="cm"> * 										  delay has elapsed, set &lt;code&gt;immediateRender&lt;/code&gt; to false. &lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt;&lt;b&gt; overwrite : Boolean&lt;/b&gt;		Controls how other tweens of the same object are handled when this tween is created. Here are the options:</span>
+<span class="cm"> * 										&lt;ul&gt;</span>
+<span class="cm"> * 			  							&lt;li&gt;&lt;b&gt; false (NONE):&lt;/b&gt; No tweens are overwritten. This is the fastest mode, but you need to be careful not </span>
+<span class="cm"> * 													to create any tweens with overlapping properties of the same object that run at the same time, </span>
+<span class="cm"> * 													otherwise they&#39;ll conflict with each other. &lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 												   		TweenNano.to(mc, 1, {x:100, y:200});&lt;br /&gt;</span>
+<span class="cm"> * 														TweenNano.to(mc, 1, {x:300, delay:2, overwrite:false}); //does NOT overwrite the previous tween.&lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm"> * 											</span>
+<span class="cm"> * 										&lt;li&gt;&lt;b&gt; true (ALL_IMMEDIATE):&lt;/b&gt; This is the default mode in TweenNano. All tweens of the same target</span>
+<span class="cm"> * 													are completely overwritten immediately when the tween is created, regardless of whether or </span>
+<span class="cm"> * 													not any of the properties overlap. &lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 												   		TweenNano.to(mc, 1, {x:100, y:200});&lt;br /&gt;</span>
+<span class="cm"> * 														TweenNano.to(mc, 1, {x:300, delay:2, overwrite:true}); //immediately overwrites the previous tween&lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm"> * 										&lt;/ul&gt;&lt;/li&gt;</span>
+<span class="cm"> * 	&lt;/ul&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;b&gt;EXAMPLES:&lt;/b&gt; &lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 	Tween the the MovieClip &quot;mc&quot; to an alpha value of 0.5 (50% transparent) and an x-coordinate of 120 </span>
+<span class="cm"> * 	over the course of 1.5 seconds like so:&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * &lt;code&gt;</span>
+<span class="cm"> * 		import com.greensock.TweenNano;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		TweenNano.to(mc, 1.5, {alpha:0.5, x:120});</span>
+<span class="cm"> * 	&lt;/code&gt;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> *  </span>
+<span class="cm"> * 	To tween the &quot;mc&quot; MovieClip&#39;s alpha property to 0.5, its x property to 120 using the &lt;code&gt;Back.easeOut&lt;/code&gt; easing </span>
+<span class="cm"> *  function, delay starting the whole tween by 2 seconds, and then call a function named &quot;onFinishTween&quot; when it </span>
+<span class="cm"> *  has completed (it will have a duration of 5 seconds) and pass a few parameters to that function (a value of </span>
+<span class="cm"> *  5 and a reference to the mc), you&#39;d do so like:&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 	&lt;code&gt;</span>
+<span class="cm"> * 		import com.greensock.TweenNano;&lt;br /&gt;</span>
+<span class="cm"> * 		import com.greensock.easing.Back;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		TweenNano.to(mc, 5, {alpha:0.5, x:120, ease:Back.easeOut, delay:2, onComplete:onFinishTween, onCompleteParams:[5, mc]});&lt;br /&gt;</span>
+<span class="cm"> * 		function onFinishTween(param1:Number, param2:MovieClip):void {&lt;br /&gt;</span>
+<span class="cm"> * 			trace(&quot;The tween has finished! param1 = &quot; + param1 + &quot;, and param2 = &quot; + param2);&lt;br /&gt;</span>
+<span class="cm"> * 		}</span>
+<span class="cm"> * 	&lt;/code&gt;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> *  </span>
+<span class="cm"> * 	If you have a MovieClip on the stage that is already in it&#39;s end position and you just want to animate it into </span>
+<span class="cm"> * 	place over 5 seconds (drop it into place by changing its y property to 100 pixels higher on the screen and </span>
+<span class="cm"> * 	dropping it from there), you could:&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> *  &lt;code&gt;</span>
+<span class="cm"> * 		import com.greensock.TweenNano;&lt;br /&gt;</span>
+<span class="cm"> * 		import com.greensock.easing.Elastic;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		TweenNano.from(mc, 5, {y:&quot;-100&quot;, ease:Elastic.easeOut});		</span>
+<span class="cm"> *  &lt;/code&gt;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;b&gt;NOTES:&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * &lt;ul&gt;</span>
+<span class="cm"> * 	&lt;li&gt; The base TweenNano class adds about 1.6k to your Flash file.&lt;/li&gt;</span>
+<span class="cm"> * 	  </span>
+<span class="cm"> * 	&lt;li&gt; Passing values as Strings will make the tween relative to the current value. For example, if you do</span>
+<span class="cm"> * 	  &lt;code&gt;TweenNano.to(mc, 2, {x:&quot;-20&quot;});&lt;/code&gt; it&#39;ll move the mc.x to the left 20 pixels which is the same as doing</span>
+<span class="cm"> * 	  &lt;code&gt;TweenNano.to(mc, 2, {x:mc.x - 20});&lt;/code&gt; You could also cast it like: &lt;code&gt;TweenNano.to(mc, 2, {x:String(myVariable)});&lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	&lt;li&gt; Kill all tweens for a particular object anytime with the &lt;code&gt;TweenNano.killTweensOf(mc); &lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm"> * 	  </span>
+<span class="cm"> * 	&lt;li&gt; You can kill all delayedCalls to a particular function using &lt;code&gt;TweenNano.killTweensOf(myFunction);&lt;/code&gt;</span>
+<span class="cm"> * 	  This can be helpful if you want to preempt a call.&lt;/li&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> *  &lt;li&gt; If some of your tweens don&#39;t appear to be working, read about the &lt;code&gt;overwrite&lt;/code&gt; special property</span>
+<span class="cm"> * 		above - it is most likely an overwriting issue that could be solved by adding &lt;code&gt;overwrite:false&lt;/code&gt; to your vars object.&lt;/li&gt;</span>
+<span class="cm"> * 	  </span>
+<span class="cm"> * 	&lt;li&gt; Use the &lt;code&gt;TweenNano.from()&lt;/code&gt; method to animate things into place. For example, if you have things set up on </span>
+<span class="cm"> * 	  the stage in the spot where they should end up, and you just want to animate them into place, you can </span>
+<span class="cm"> * 	  pass in the beginning x and/or y and/or alpha (or whatever properties you want).&lt;/li&gt;</span>
+<span class="cm"> * 	  </span>
+<span class="cm"> * 	&lt;li&gt; If you find this class useful, please consider joining Club GreenSock which not only helps to sustain</span>
+<span class="cm"> * 	  ongoing development, but also gets you bonus plugins, classes and other benefits that are ONLY available </span>
+<span class="cm"> * 	  to members. Learn more at &lt;a href=&quot;http://www.greensock.com/club/&quot;&gt;http://www.greensock.com/club/&lt;/a&gt;&lt;/li&gt;</span>
+<span class="cm"> * &lt;/ul&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;b&gt;Copyright 2011, GreenSock. All rights reserved.&lt;/b&gt; This work is subject to the terms in &lt;a href=&quot;http://www.greensock.com/terms_of_use.html&quot;&gt;http://www.greensock.com/terms_of_use.html&lt;/a&gt; or for corporate Club GreenSock members, the software agreement that was issued with the corporate membership.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @author Jack Doyle, jack@greensock.com</span>
+<span class="cm"> */</span>	 
+	<span class="kd">public</span> <span class="kd">class</span> <span class="nx">TweenNano</span> <span class="p">{</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_time</span><span class="o">:</span><span class="nb">Number</span><span class="o">;</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_frame</span><span class="o">:</span><span class="nb">uint</span><span class="o">;</span>
+		<span class="cm">/** @private Holds references to all our tweens based on their targets (an Array for each target) **/</span>
+		<span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_masterList</span><span class="o">:</span><span class="nb">Dictionary</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Dictionary</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span> 
+		<span class="cm">/** @private A reference to the Shape that we use to drive all our ENTER_FRAME events. **/</span>
+		<span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_shape</span><span class="o">:</span><span class="nb">Shape</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Shape</span><span class="p">();</span> 
+		<span class="cm">/** @private Indicates whether or not the TweenNano class has been initted. **/</span>
+		<span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_tnInitted</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span> 
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_reservedProps</span><span class="o">:</span><span class="nb">Object</span> <span class="o">=</span> <span class="p">{</span><span class="nx">ease</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">delay</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">useFrames</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">overwrite</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">onComplete</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">onCompleteParams</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">runBackwards</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">immediateRender</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">onUpdate</span><span class="o">:</span><span class="mi">1</span><span class="o">,</span> <span class="nx">onUpdateParams</span><span class="o">:</span><span class="mi">1</span><span class="p">};</span>
+	
+		<span class="cm">/** Duration of the tween in seconds (or in frames if &quot;useFrames&quot; is true). **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">duration</span><span class="o">:</span><span class="nb">Number</span><span class="o">;</span> 
+		<span class="cm">/** Stores variables (things like &quot;alpha&quot;, &quot;y&quot; or whatever we&#39;re tweening, as well as special properties like &quot;onComplete&quot;). **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="o">;</span> 
+		<span class="cm">/** @private Start time in seconds (or frames for frames-based tweens) **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">startTime</span><span class="o">:</span><span class="nb">Number</span><span class="o">;</span>
+		<span class="cm">/** Target object whose properties this tween affects. This can be ANY object, not just a DisplayObject. **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">target</span><span class="o">:</span><span class="nb">Object</span><span class="o">;</span>
+		<span class="cm">/** @private Indicates whether or not the tween is currently active **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">active</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span> 
+		<span class="cm">/** @private Flagged for garbage collection **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">gc</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+		<span class="cm">/** Indicates that frames should be used instead of seconds for timing purposes. So if useFrames is true and the tween&#39;s duration is 10, it would mean that the tween should take 10 frames to complete, not 10 seconds. **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">useFrames</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+		<span class="cm">/** @private result of _ease(this.time, 0, 1, this.duration). Usually between 0 and 1, but not always (like with Elastic.easeOut). **/</span>
+		<span class="kd">public</span> <span class="k">var</span> <span class="nx">ratio</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		
+		<span class="cm">/** @private Easing method to use which determines how the values animate over time. Examples are Elastic.easeOut and Strong.easeIn. Many are found in the fl.motion.easing package or com.greensock.easing. **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_ease</span><span class="o">:</span><span class="nb">Function</span><span class="o">;</span>
+		<span class="cm">/** @private Indicates whether or not init() has been called (where all the tween property start/end value information is recorded) **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_initted</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+		<span class="cm">/** @private Contains parsed data for each property that&#39;s being tweened (property name, start, and change) **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_propTweens</span><span class="o">:</span><span class="nb">Array</span><span class="o">;</span> 
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Constructor</span>
+<span class="cm">		 *  </span>
+<span class="cm">		 * @param target Target object whose properties this tween affects. This can be ANY object, not just a DisplayObject. </span>
+<span class="cm">		 * @param duration Duration in seconds (or in frames if &quot;useFrames&quot; is true)</span>
+<span class="cm">		 * @param vars An object containing the end values of the properties you&#39;re tweening, like {x:100, y:50}. It can also contain special properties like &quot;onComplete&quot;, &quot;ease&quot;, &quot;delay&quot;, etc.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">TweenNano</span><span class="p">(</span><span class="nx">target</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">duration</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_tnInitted</span><span class="p">)</span> <span class="p">{</span>			
+				<span class="nx">_time</span> <span class="o">=</span> <span class="nf">getTimer</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.001</span><span class="o">;</span>
+				<span class="nx">_frame</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+				<span class="nx">_shape</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">ENTER_FRAME</span><span class="o">,</span> <span class="nx">updateAll</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+				<span class="nx">_tnInitted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">vars</span> <span class="o">=</span> <span class="nx">vars</span><span class="o">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="nx">duration</span><span class="o">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="nx">duration</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">delay</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">immediateRender</span> <span class="o">!=</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">target</span> <span class="o">=</span> <span class="nx">target</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">ease</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_ease</span> <span class="o">=</span> <span class="nx">TweenNano</span><span class="p">.</span><span class="nx">easeOut</span><span class="o">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">_ease</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">ease</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="nx">_propTweens</span> <span class="o">=</span> <span class="p">[];</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">useFrames</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="nx">vars</span><span class="p">.</span><span class="nx">useFrames</span> <span class="o">==</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="k">var</span> <span class="nx">delay</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;delay&quot;</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">)</span> <span class="o">?</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">delay</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">startTime</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">useFrames</span><span class="p">)</span> <span class="o">?</span> <span class="nx">_frame</span> <span class="o">+</span> <span class="nx">delay</span> <span class="o">:</span> <span class="nx">_time</span> <span class="o">+</span> <span class="nx">delay</span><span class="o">;</span>
+			
+			<span class="k">var</span> <span class="nx">a</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">_masterList</span><span class="p">[</span><span class="nx">target</span><span class="p">];</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">a</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="nb">int</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">overwrite</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">overwrite</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span> 
+				<span class="nx">_masterList</span><span class="p">[</span><span class="nx">target</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">this</span><span class="p">];</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+			<span class="p">}</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">immediateRender</span> <span class="o">==</span> <span class="kc">true</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">active</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">renderTime</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * @private</span>
+<span class="cm">		 * Initializes the property tweens, determining their start values and amount of change. </span>
+<span class="cm">		 * Also triggers overwriting if necessary and sets the _hasUpdate variable.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">init</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">p</span><span class="o">:</span><span class="nb">String</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">p</span> <span class="k">in</span> <span class="nx">_reservedProps</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">_propTweens</span><span class="p">[</span><span class="nx">_propTweens</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">p</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">target</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span><span class="o">,</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">[</span><span class="nx">p</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;number&quot;</span><span class="p">)</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">target</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span> <span class="o">:</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">[</span><span class="nx">p</span><span class="p">])];</span> <span class="c1">//[property, start, change]</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">runBackwards</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">var</span> <span class="nx">pt</span><span class="o">:</span><span class="nb">Array</span><span class="o">;</span>
+				<span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">_propTweens</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">pt</span> <span class="o">=</span> <span class="nx">_propTweens</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="nx">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+					<span class="nx">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="nx">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="nx">_initted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Renders the tween at a particular time (or frame number for frames-based tweens)</span>
+<span class="cm">		 * WITHOUT changing its startTime, meaning if the tween is in progress when you call</span>
+<span class="cm">		 * renderTime(), it will not adjust the tween&#39;s timing to continue from the new time. </span>
+<span class="cm">		 * The time is based simply on the overall duration. For example, if a tween&#39;s duration</span>
+<span class="cm">		 * is 3, renderTime(1.5) would render it at the halfway finished point.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param time time (or frame number for frames-based tweens) to render.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">renderTime</span><span class="p">(</span><span class="nx">time</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_initted</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">init</span><span class="p">();</span>
+			<span class="p">}</span>
+			<span class="k">var</span> <span class="nx">pt</span><span class="o">:</span><span class="nb">Array</span><span class="o">,</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">_propTweens</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&gt;=</span> <span class="k">this</span><span class="p">.</span><span class="nx">duration</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">time</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">duration</span><span class="o">;</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">ratio</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">ratio</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">ratio</span> <span class="o">=</span> <span class="nx">_ease</span><span class="p">(</span><span class="nx">time</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">duration</span><span class="p">);</span>			
+			<span class="p">}</span>
+			<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">pt</span> <span class="o">=</span> <span class="nx">_propTweens</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">target</span><span class="p">[</span><span class="nx">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">ratio</span> <span class="o">*</span> <span class="nx">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span> 
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdate</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdate</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdateParams</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">==</span> <span class="k">this</span><span class="p">.</span><span class="nx">duration</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">complete</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Forces the tween to completion.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param skipRender To skip rendering the final state of the tween, set skipRender to true. </span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">complete</span><span class="p">(</span><span class="nx">skipRender</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">skipRender</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">renderTime</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">duration</span><span class="p">);</span>
+				<span class="k">return</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="nx">kill</span><span class="p">();</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onComplete</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onComplete</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onCompleteParams</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** Kills the tween, stopping it immediately. **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">kill</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">gc</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		</pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>---- STATIC FUNCTIONS -------------------------------------------------------------------------</p>             </td>             <td class="code">               <div class="highlight"><pre>		
+		<span class="cm">/**</span>
+<span class="cm">		 * Static method for creating a TweenNano instance which can be more intuitive for some developers </span>
+<span class="cm">		 * and shields them from potential garbage collection issues that could arise when assigning a</span>
+<span class="cm">		 * tween instance to a variable that persists. The following lines of code all produce exactly </span>
+<span class="cm">		 * the same result: &lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * var myTween:TweenNano = new TweenNano(mc, 1, {x:100}); &lt;br /&gt;</span>
+<span class="cm">		 * TweenNano.to(mc, 1, {x:100}); &lt;br /&gt;</span>
+<span class="cm">		 * var myTween:TweenNano = TweenNano.to(mc, 1, {x:100});&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param target Target object whose properties this tween affects. This can be ANY object, not just a DisplayObject. </span>
+<span class="cm">		 * @param duration Duration in seconds (or frames if &quot;useFrames&quot; is true)</span>
+<span class="cm">		 * @param vars An object containing the end values of the properties you&#39;re tweening, like {x:100, y:50}. It can also contain special properties like &quot;onComplete&quot;, &quot;ease&quot;, &quot;delay&quot;, etc.</span>
+<span class="cm">		 * @return TweenNano instance</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">to</span><span class="p">(</span><span class="nx">target</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">duration</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="p">)</span><span class="o">:</span><span class="nx">TweenNano</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">new</span> <span class="nx">TweenNano</span><span class="p">(</span><span class="nx">target</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span> <span class="nx">vars</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Static method for creating a TweenNano instance that tweens in the opposite direction</span>
+<span class="cm">		 * compared to a TweenNano.to() tween. In other words, you define the START values in the </span>
+<span class="cm">		 * vars object instead of the end values, and the tween will use the current values as </span>
+<span class="cm">		 * the end values. This can be very useful for animating things into place on the stage</span>
+<span class="cm">		 * because you can build them in their end positions and do some simple TweenNano.from()</span>
+<span class="cm">		 * calls to animate them into place. &lt;b&gt;NOTE:&lt;/b&gt; By default, &lt;code&gt;immediateRender&lt;/code&gt;</span>
+<span class="cm">		 * is &lt;code&gt;true&lt;/code&gt; in from() tweens, meaning that they immediately render their starting state </span>
+<span class="cm">		 * regardless of any delay that is specified. You can override this behavior by passing </span>
+<span class="cm">		 * &lt;code&gt;immediateRender:false&lt;/code&gt; in the &lt;code&gt;vars&lt;/code&gt; object so that it will wait to </span>
+<span class="cm">		 * render until the tween actually begins. To illustrate the default behavior, the following code </span>
+<span class="cm">		 * will immediately set the &lt;code&gt;alpha&lt;/code&gt; of &lt;code&gt;mc&lt;/code&gt; to 0 and then wait 2 seconds </span>
+<span class="cm">		 * before tweening the &lt;code&gt;alpha&lt;/code&gt; back to 1 over the course of 1.5 seconds:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * TweenNano.from(mc, 1.5, {alpha:0, delay:2});&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param target Target object whose properties this tween affects. This can be ANY object, not just a DisplayObject. </span>
+<span class="cm">		 * @param duration Duration in seconds (or frames if &quot;useFrames&quot; is true)</span>
+<span class="cm">		 * @param vars An object containing the start values of the properties you&#39;re tweening like {x:100, y:50}. It can also contain special properties like &quot;onComplete&quot;, &quot;ease&quot;, &quot;delay&quot;, etc.</span>
+<span class="cm">		 * @return TweenNano instance</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">from</span><span class="p">(</span><span class="nx">target</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">duration</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="p">)</span><span class="o">:</span><span class="nx">TweenNano</span> <span class="p">{</span>
+			<span class="nx">vars</span><span class="p">.</span><span class="nx">runBackwards</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="s2">&quot;immediateRender&quot;</span> <span class="k">in</span> <span class="nx">vars</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">vars</span><span class="p">.</span><span class="nx">immediateRender</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">new</span> <span class="nx">TweenNano</span><span class="p">(</span><span class="nx">target</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span> <span class="nx">vars</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Provides a simple way to call a function after a set amount of time (or frames). You can</span>
+<span class="cm">		 * optionally pass any number of parameters to the function too. For example:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * TweenNano.delayedCall(1, myFunction, [&quot;param1&quot;, 2]); &lt;br /&gt;</span>
+<span class="cm">		 * function myFunction(param1:String, param2:Number):void { &lt;br /&gt;</span>
+<span class="cm">		 *     trace(&quot;called myFunction and passed params: &quot; + param1 + &quot;, &quot; + param2); &lt;br /&gt;</span>
+<span class="cm">		 * } &lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param delay Delay in seconds (or frames if &quot;useFrames&quot; is true) before the function should be called</span>
+<span class="cm">		 * @param onComplete Function to call</span>
+<span class="cm">		 * @param onCompleteParams An Array of parameters to pass the function.</span>
+<span class="cm">		 * @param useFrames If the delay should be measured in frames instead of seconds, set useFrames to true (default is false)</span>
+<span class="cm">		 * @return TweenNano instance</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">delayedCall</span><span class="p">(</span><span class="nx">delay</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">onComplete</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="nx">onCompleteParams</span><span class="o">:</span><span class="nb">Array</span><span class="o">=</span><span class="kc">null</span><span class="o">,</span> <span class="nx">useFrames</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">TweenNano</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">new</span> <span class="nx">TweenNano</span><span class="p">(</span><span class="nx">onComplete</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="p">{</span><span class="nx">delay</span><span class="o">:</span><span class="nx">delay</span><span class="o">,</span> <span class="nx">onComplete</span><span class="o">:</span><span class="nx">onComplete</span><span class="o">,</span> <span class="nx">onCompleteParams</span><span class="o">:</span><span class="nx">onCompleteParams</span><span class="o">,</span> <span class="nx">useFrames</span><span class="o">:</span><span class="nx">useFrames</span><span class="o">,</span> <span class="nx">overwrite</span><span class="o">:</span><span class="mi">0</span><span class="p">});</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * @private</span>
+<span class="cm">		 * Updates active tweens and activates those whose startTime is before the _time/_frame.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param e ENTER_FRAME Event</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">updateAll</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="nb">Event</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="nx">_frame</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">;</span>
+			<span class="nx">_time</span> <span class="o">=</span> <span class="nf">getTimer</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.001</span><span class="o">;</span>
+			<span class="k">var</span> <span class="nx">ml</span><span class="o">:</span><span class="nb">Dictionary</span> <span class="o">=</span> <span class="nx">_masterList</span><span class="o">,</span> <span class="nx">a</span><span class="o">:</span><span class="nb">Array</span><span class="o">,</span> <span class="nx">tgt</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span><span class="o">,</span> <span class="nx">t</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">tween</span><span class="o">:</span><span class="nx">TweenNano</span><span class="o">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">tgt</span> <span class="k">in</span> <span class="nx">ml</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">a</span> <span class="o">=</span> <span class="nx">ml</span><span class="p">[</span><span class="nx">tgt</span><span class="p">];</span>
+				<span class="nx">i</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">tween</span> <span class="o">=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="nx">t</span> <span class="o">=</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">useFrames</span><span class="p">)</span> <span class="o">?</span> <span class="nx">_frame</span> <span class="o">:</span> <span class="nx">_time</span><span class="o">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">active</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">gc</span> <span class="o">&amp;&amp;</span> <span class="nx">t</span> <span class="o">&gt;=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">startTime</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">tween</span><span class="p">.</span><span class="nx">renderTime</span><span class="p">(</span><span class="nx">t</span> <span class="o">-</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">startTime</span><span class="p">);</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">gc</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">a</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="o">,</span> <span class="mi">1</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">delete</span> <span class="nx">ml</span><span class="p">[</span><span class="nx">tgt</span><span class="p">];</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Kills all the tweens of a particular object, optionally forcing them to completion too.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param target Object whose tweens should be immediately killed</span>
+<span class="cm">		 * @param complete Indicates whether or not the tweens should be forced to completion before being killed.</span>
+<span class="cm">		 */</span>
+		 <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">killTweensOf</span><span class="p">(</span><span class="nx">target</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">complete</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">target</span> <span class="k">in</span> <span class="nx">_masterList</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">complete</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">var</span> <span class="nx">a</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">_masterList</span><span class="p">[</span><span class="nx">target</span><span class="p">];</span>
+					<span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+					<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">TweenNano</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]).</span><span class="nx">gc</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">TweenNano</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]).</span><span class="nx">complete</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="nx">delete</span> <span class="nx">_masterList</span><span class="p">[</span><span class="nx">target</span><span class="p">];</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">private</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">easeOut</span><span class="p">(</span><span class="nx">t</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">b</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">c</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">d</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nb">Number</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="nx">t</span> <span class="o">/=</span> <span class="nx">d</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nx">t</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+	<span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

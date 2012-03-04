@@ -1,0 +1,838 @@
+<!DOCTYPE html>  <html> <head>   <title>TimelineMax.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="PBEDemos.html">                 PBEDemos.as               </a>                                           <a class="source" href="SimpleDemoGameObject.html">                 SimpleDemoGameObject.as               </a>                                           <a class="source" href="SimplestDemoGameObject.html">                 SimplestDemoGameObject.as               </a>                                           <a class="source" href="OverwriteManager.html">                 OverwriteManager.as               </a>                                           <a class="source" href="TimelineLite.html">                 TimelineLite.as               </a>                                           <a class="source" href="TimelineMax.html">                 TimelineMax.as               </a>                                           <a class="source" href="TweenAlign.html">                 TweenAlign.as               </a>                                           <a class="source" href="TweenLite.html">                 TweenLite.as               </a>                                           <a class="source" href="TweenMax.html">                 TweenMax.as               </a>                                           <a class="source" href="TweenNano.html">                 TweenNano.as               </a>                                           <a class="source" href="PBE.html">                 PBE.as               </a>                                           <a class="source" href="PBUtil.html">                 PBUtil.as               </a>                                           <a class="source" href="pb_internal.html">                 pb_internal.as               </a>                                           <a class="source" href="SimplestRendererScene.html">                 SimplestRendererScene.as               </a>                                           <a class="source" href="BindingDemoScene.html">                 BindingDemoScene.as               </a>                                           <a class="source" href="MouseFollowerScene.html">                 MouseFollowerScene.as               </a>                                           <a class="source" href="CirclePickupScene.html">                 CirclePickupScene.as               </a>                                           <a class="source" href="GemManager.html">                 GemManager.as               </a>                                           <a class="source" href="CirclePickupWithTimeManagerScene.html">                 CirclePickupWithTimeManagerScene.as               </a>                                           <a class="source" href="OneButtonDemoScene.html">                 OneButtonDemoScene.as               </a>                                           <a class="source" href="TwoButtonDemoScene.html">                 TwoButtonDemoScene.as               </a>                                           <a class="source" href="CarDemoScene.html">                 CarDemoScene.as               </a>                                           <a class="source" href="FSMDemoScene.html">                 FSMDemoScene.as               </a>                                           <a class="source" href="AGALMiniAssembler.html">                 AGALMiniAssembler.as               </a>                                           <a class="source" href="MolehillGameObject.html">                 MolehillGameObject.as               </a>                                           <a class="source" href="MolehillScene.html">                 MolehillScene.as               </a>                                           <a class="source" href="QuadRenderer.html">                 QuadRenderer.as               </a>                                           <a class="source" href="QuadScene.html">                 QuadScene.as               </a>                                           <a class="source" href="RandomMover.html">                 RandomMover.as               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               TimelineMax.as             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * VERSION: 1.66</span>
+<span class="cm"> * DATE: 2011-01-25</span>
+<span class="cm"> * AS3 (AS2 version is also available)</span>
+<span class="cm"> * UPDATES AND DOCS AT: http://www.greensock.com/timelinemax/</span>
+<span class="cm"> **/</span>
+<span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">greensock</span> <span class="p">{</span>
+	<span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">greensock</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="o">*;</span>
+	<span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">greensock</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">TweenEvent</span><span class="o">;</span>
+	
+	<span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="o">*;</span>
+<span class="cm">/**</span>
+<span class="cm"> * 	TimelineMax extends TimelineLite, offering exactly the same functionality plus useful </span>
+<span class="cm"> *  (but non-essential) features like AS3 event dispatching, repeat, repeatDelay, yoyo, </span>
+<span class="cm"> *  currentLabel, addCallback(), removeCallback(), tweenTo(), tweenFromTo(), getLabelAfter(), getLabelBefore(),</span>
+<span class="cm"> * 	and getActive() (and probably more in the future). It is the ultimate sequencing tool. </span>
+<span class="cm"> *  Think of a TimelineMax instance like a virtual MovieClip timeline or a container where </span>
+<span class="cm"> *  you place tweens (or other timelines) over the course of time. You can:</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * &lt;ul&gt;</span>
+<span class="cm"> * 		&lt;li&gt; build sequences easily by adding tweens with the append(), prepend(), insert(), appendMultiple(), </span>
+<span class="cm"> * 			prependMultiple(), and insertMultiple() methods. Tweens can overlap as much as you want and you have </span>
+<span class="cm"> * 			complete control over where they get placed on the timeline.&lt;/li&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		&lt;li&gt; add labels, play(), stop(), gotoAndPlay(), gotoAndStop(), restart(), tweenTo() and even reverse()! &lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; nest timelines within timelines as deeply as you want.&lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; set the progress of the timeline using its &lt;code&gt;currentProgress&lt;/code&gt; property. For example, to skip to</span>
+<span class="cm"> * 		  the halfway point, set &lt;code&gt;myTimeline.currentProgress = 0.5&lt;/code&gt;.&lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt; tween the &lt;code&gt;currentTime&lt;/code&gt;, &lt;code&gt;totalTime&lt;/code&gt;, &lt;code&gt;currentProgress&lt;/code&gt;, or &lt;code&gt;totalProgress&lt;/code&gt; </span>
+<span class="cm"> * 		 property to fastforward/rewind the timeline. You could </span>
+<span class="cm"> * 		  even attach a slider to one of these properties to give the user the ability to drag </span>
+<span class="cm"> * 		  forwards/backwards through the whole timeline.&lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt; add onStart, onUpdate, onComplete, onReverseComplete, and/or onRepeat callbacks using the </span>
+<span class="cm"> * 		  constructor&#39;s &lt;code&gt;vars&lt;/code&gt; object.&lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; speed up or slow down the entire timeline with its &lt;code&gt;timeScale&lt;/code&gt; property. You can even tween</span>
+<span class="cm"> * 		  this property to gradually speed up or slow down the timeline.&lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt; use the insertMultiple(), appendMultiple(), or prependMultiple() methods to create </span>
+<span class="cm"> * 			complex sequences including various alignment modes and staggering capabilities.  </span>
+<span class="cm"> * 			Works great in conjunction with TweenMax.allTo() too. &lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt; base the timing on frames instead of seconds if you prefer. Please note, however, that</span>
+<span class="cm"> * 		  the timeline&#39;s timing mode dictates its childrens&#39; timing mode as well. &lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; kill the tweens of a particular object inside the timeline with killTweensOf() or get the tweens of an object</span>
+<span class="cm"> * 		  with getTweensOf() or get all the tweens/timelines in the timeline with getChildren()&lt;/li&gt;</span>
+<span class="cm"> * 		  </span>
+<span class="cm"> * 		&lt;li&gt; set the timeline to repeat any number of times or indefinitely. You can even set a delay</span>
+<span class="cm"> * 		  between each repeat cycle and/or cause the repeat cycles to yoyo, appearing to reverse</span>
+<span class="cm"> * 		  every other cycle. &lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; listen for START, UPDATE, REPEAT, REVERSE_COMPLETE, and COMPLETE events.&lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; get the active tweens in the timeline with getActive().&lt;/li&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		&lt;li&gt; add callbacks (function calls) anywhere in the timeline that call a function of your choosing when </span>
+<span class="cm"> * 			the &quot;virtual playhead&quot; passes a particular spot.&lt;/li&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		&lt;li&gt; Get the &lt;code&gt;currentLabel&lt;/code&gt; or find labels at various positions in the timeline</span>
+<span class="cm"> * 			using getLabelAfter() and getLabelBefore()&lt;/li&gt;</span>
+<span class="cm"> * 	&lt;/ul&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * &lt;b&gt;EXAMPLE:&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		import com.greensock.~~;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//create the timeline and add an onComplete call to myFunction when the timeline completes&lt;br /&gt;</span>
+<span class="cm"> * 		var myTimeline:TimelineMax = new TimelineMax({onComplete:myFunction});&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//add a tween&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.append(new TweenLite(mc, 1, {x:200, y:100}));&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//add another tween at the end of the timeline (makes sequencing easy)&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.append(new TweenLite(mc, 0.5, {alpha:0}));&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//repeat the entire timeline twice&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.repeat = 2;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//delay the repeat by 0.5 seconds each time.&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.repeatDelay = 0.5;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//pause the timeline (stop() works too)&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.pause();&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//reverse it anytime...&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.reverse();&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//Add a &quot;spin&quot; label 3-seconds into the timeline.&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.addLabel(&quot;spin&quot;, 3);&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//insert a rotation tween at the &quot;spin&quot; label (you could also define the insert point as the time instead of a label)&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.insert(new TweenLite(mc, 2, {rotation:&quot;360&quot;}), &quot;spin&quot;); &lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//go to the &quot;spin&quot; label and play the timeline from there...&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.gotoAndPlay(&quot;spin&quot;);&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * 		//call myCallbackwhen the &quot;virtual playhead&quot; travels past the 1.5-second point.</span>
+<span class="cm"> * 		myTimeline.addCallback(myCallback, 1.5);</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//add a tween to the beginning of the timeline, pushing all the other existing tweens back in time&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.prepend(new TweenMax(mc, 1, {tint:0xFF0000}));&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		//nest another TimelineMax inside your timeline...&lt;br /&gt;</span>
+<span class="cm"> * 		var nestedTimeline:TimelineMax = new TimelineMax();&lt;br /&gt;</span>
+<span class="cm"> * 		nestedTimeline.append(new TweenLite(mc2, 1, {x:200}));&lt;br /&gt;</span>
+<span class="cm"> * 		myTimeline.append(nestedTimeline);&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 		</span>
+<span class="cm"> * 	&lt;code&gt;insertMultiple()&lt;/code&gt; and &lt;code&gt;appendMultiple()&lt;/code&gt; provide some very powerful sequencing tools as well, </span>
+<span class="cm"> *  allowing you to add an Array of tweens/timelines and optionally align them with &lt;code&gt;SEQUENCE&lt;/code&gt; or &lt;code&gt;START&lt;/code&gt; </span>
+<span class="cm"> *  modes, and even stagger them if you want. For example, to insert 3 tweens into the timeline, aligning their start times but </span>
+<span class="cm"> *  staggering them by 0.2 seconds, &lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 		myTimeline.insertMultiple([new TweenLite(mc, 1, {y:&quot;100&quot;}),</span>
+<span class="cm"> * 								   new TweenLite(mc2, 1, {x:120}),</span>
+<span class="cm"> * 								   new TweenLite(mc3, 1, {alpha:0.5})], </span>
+<span class="cm"> * 								   0, </span>
+<span class="cm"> * 								   TweenAlign.START, </span>
+<span class="cm"> * 								   0.2);&lt;/code&gt;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 								   </span>
+<span class="cm"> * 	You can use the constructor&#39;s &lt;code&gt;vars&lt;/code&gt; object to do all the setup too, like:&lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 		var myTimeline:TimelineMax = new TimelineMax({tweens:[new TweenLite(mc1, 1, {y:&quot;100&quot;}), TweenMax.to(mc2, 1, {tint:0xFF0000})], align:TweenAlign.SEQUENCE, onComplete:myFunction, repeat:2, repeatDelay:1});&lt;/code&gt;&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> * 	</span>
+<span class="cm"> * 	If that confuses you, don&#39;t worry. Just use the &lt;code&gt;append()&lt;/code&gt;, &lt;code&gt;insert()&lt;/code&gt;, and &lt;code&gt;prepend()&lt;/code&gt; methods to build your</span>
+<span class="cm"> * 	sequence. But power users will likely appreciate the quick, compact way they can set up sequences now. &lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm"> *  </span>
+<span class="cm"> *</span>
+<span class="cm"> * &lt;b&gt;NOTES:&lt;/b&gt;</span>
+<span class="cm"> * &lt;ul&gt;</span>
+<span class="cm"> * 	&lt;li&gt; TimelineMax automatically inits the OverwriteManager class to prevent unexpected overwriting behavior in sequences.</span>
+<span class="cm"> * 	  The default mode is &lt;code&gt;AUTO&lt;/code&gt;, but you can set it to whatever you want with &lt;code&gt;OverwriteManager.init()&lt;/code&gt;</span>
+<span class="cm"> * 	 (see &lt;a href=&quot;http://www.greensock.com/overwritemanager/&quot;&gt;http://www.greensock.com/overwritemanager/&lt;/a&gt;)&lt;/li&gt;</span>
+<span class="cm"> * 	&lt;li&gt; TimelineMax adds about 4.9k to your SWF (not including OverwriteManager).&lt;/li&gt;</span>
+<span class="cm"> * &lt;/ul&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;b&gt;Copyright 2011, GreenSock. All rights reserved.&lt;/b&gt; This work is subject to the terms in &lt;a href=&quot;http://www.greensock.com/terms_of_use.html&quot;&gt;http://www.greensock.com/terms_of_use.html&lt;/a&gt; or for corporate Club GreenSock members, the software agreement that was issued with the corporate membership.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @author Jack Doyle, jack@greensock.com</span>
+<span class="cm"> **/</span>
+	<span class="kd">public</span> <span class="kd">class</span> <span class="nx">TimelineMax</span> <span class="kd">extends</span> <span class="nx">TimelineLite</span> <span class="kd">implements</span> <span class="nb">IEventDispatcher</span> <span class="p">{</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">static</span> <span class="kd">const</span> <span class="nx">version</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">1.66</span><span class="o">;</span>
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_repeat</span><span class="o">:</span><span class="nb">int</span><span class="o">;</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_repeatDelay</span><span class="o">:</span><span class="nb">Number</span><span class="o">;</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_cyclesComplete</span><span class="o">:</span><span class="nb">int</span><span class="o">;</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_dispatcher</span><span class="o">:</span><span class="nb">EventDispatcher</span><span class="o">;</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="k">var</span> <span class="nx">_hasUpdateListener</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+		
+		<span class="cm">/** </span>
+<span class="cm">		 * Works in conjunction with the repeat property, determining the behavior of each cycle; when &lt;code&gt;yoyo&lt;/code&gt; is true, </span>
+<span class="cm">		 * the timeline will go back and forth, appearing to reverse every other cycle (this has no affect on the &lt;code&gt;reversed&lt;/code&gt; property though). </span>
+<span class="cm">		 * So if repeat is 2 and &lt;code&gt;yoyo&lt;/code&gt; is false, it will look like: start - 1 - 2 - 3 - 1 - 2 - 3 - 1 - 2 - 3 - end. </span>
+<span class="cm">		 * But if repeat is 2 and &lt;code&gt;yoyo&lt;/code&gt; is true, it will look like: start - 1 - 2 - 3 - 3 - 2 - 1 - 1 - 2 - 3 - end.  </span>
+<span class="cm">		 **/</span>
+		 <span class="kd">public</span> <span class="k">var</span> <span class="nx">yoyo</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Constructor. &lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;b&gt;SPECIAL PROPERTIES&lt;/b&gt;&lt;br /&gt;</span>
+<span class="cm">		 * The following special properties may be passed in via the constructor&#39;s vars parameter, like</span>
+<span class="cm">		 * &lt;code&gt;new TimelineMax({paused:true, onComplete:myFunction, repeat:2, yoyo:true})&lt;/code&gt; </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;ul&gt;</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; delay : Number&lt;/b&gt;				Amount of delay in seconds (or frames for frames-based timelines) before the timeline should begin.&lt;/li&gt;</span>
+<span class="cm">		 * 								</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; useFrames : Boolean&lt;/b&gt;			If &lt;code&gt;useFrames&lt;/code&gt; is set to true, the timeline&#39;s timing mode will be based on frames. </span>
+<span class="cm">		 * 											Otherwise, it will be based on seconds/time. NOTE: a TimelineLite&#39;s timing mode is </span>
+<span class="cm">		 * 											always determined by its parent timeline. &lt;/li&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 *  &lt;li&gt;&lt;b&gt; paused : Boolean&lt;/b&gt; 			Sets the initial paused state of the timeline (by default, timelines automatically begin playing immediately)&lt;/li&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; reversed : Boolean&lt;/b&gt;			If true, the timeline will be reversed initially. This does NOT force it to the very end and start </span>
+<span class="cm">		 * 											playing backwards. It simply affects the orientation of the timeline, so if &lt;code&gt;reversed&lt;/code&gt; is set to </span>
+<span class="cm">		 * 											true initially, it will appear not to play because it is already at the beginning. To cause it to</span>
+<span class="cm">		 * 											play backwards from the end, set reversed to true and then set the &lt;code&gt;currentProgress&lt;/code&gt; property to 1 immediately</span>
+<span class="cm">		 * 											after creating the timeline.&lt;/li&gt;</span>
+<span class="cm">		 * 									</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; tweens : Array&lt;/b&gt;				To immediately insert several tweens into the timeline, use the &lt;code&gt;tweens&lt;/code&gt; special property</span>
+<span class="cm">		 * 											to pass in an Array of TweenLite/TweenMax/TimelineLite/TimelineMax instances. You can use this in conjunction</span>
+<span class="cm">		 * 											with the &lt;code&gt;align&lt;/code&gt; and &lt;code&gt;stagger&lt;/code&gt; special properties to set up complex sequences with minimal code.</span>
+<span class="cm">		 * 											These values simply get passed to the &lt;code&gt;insertMultiple()&lt;/code&gt; method.&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; align : String&lt;/b&gt;				Only used in conjunction with the &lt;code&gt;tweens&lt;/code&gt; special property when multiple tweens are</span>
+<span class="cm">		 * 											to be inserted immediately through the constructor. The value simply gets passed to the </span>
+<span class="cm">		 * 											&lt;code&gt;insertMultiple()&lt;/code&gt; method. The default is &lt;code&gt;TweenAlign.NORMAL&lt;/code&gt;. Options are:</span>
+<span class="cm">		 * 											&lt;ul&gt;</span>
+<span class="cm">		 * 												&lt;li&gt;&lt;b&gt; TweenAlign.SEQUENCE:&lt;/b&gt; aligns the tweens one-after-the-other in a sequence&lt;/li&gt;</span>
+<span class="cm">		 * 												&lt;li&gt;&lt;b&gt; TweenAlign.START:&lt;/b&gt; aligns the start times of all of the tweens (ignores delays)&lt;/li&gt;</span>
+<span class="cm">		 * 												&lt;li&gt;&lt;b&gt; TweenAlign.NORMAL:&lt;/b&gt; aligns the start times of all the tweens (honors delays)&lt;/li&gt;</span>
+<span class="cm">		 * 											&lt;/ul&gt;The &lt;code&gt;align&lt;/code&gt; special property does &lt;b&gt;not&lt;/b&gt; force all child tweens/timelines to maintain</span>
+<span class="cm">		 * 											relative positioning, so for example, if you use TweenAlign.SEQUENCE and then later change the duration</span>
+<span class="cm">		 * 											of one of the nested tweens, it does &lt;b&gt;not&lt;/b&gt; force all subsequent timelines to change their position</span>
+<span class="cm">		 * 											on the timeline. The &lt;code&gt;align&lt;/code&gt; special property only affects the alignment of the tweens that are</span>
+<span class="cm">		 * 											initially placed into the timeline through the &lt;code&gt;tweens&lt;/code&gt; special property of the &lt;code&gt;vars&lt;/code&gt; object.&lt;/li&gt;</span>
+<span class="cm">		 * 										</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; stagger : Number&lt;/b&gt;			Only used in conjunction with the &lt;code&gt;tweens&lt;/code&gt; special property when multiple tweens are</span>
+<span class="cm">		 * 											to be inserted immediately. It staggers the tweens by a set amount of time (in seconds) (or</span>
+<span class="cm">		 * 											in frames if &lt;code&gt;useFrames&lt;/code&gt; is true). For example, if the stagger value is 0.5 and the &lt;code&gt;align&lt;/code&gt; </span>
+<span class="cm">		 * 											property is set to &lt;code&gt;TweenAlign.START&lt;/code&gt;, the second tween will start 0.5 seconds after the first one </span>
+<span class="cm">		 * 											starts, then 0.5 seconds later the third one will start, etc. If the align property is </span>
+<span class="cm">		 * 											&lt;code&gt;TweenAlign.SEQUENCE&lt;/code&gt;, there would be 0.5 seconds added between each tween. This value simply gets </span>
+<span class="cm">		 * 											passed to the &lt;code&gt;insertMultiple()&lt;/code&gt; method. Default is 0.&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onStart : Function&lt;/b&gt;			A function that should be called when the timeline begins (the &lt;code&gt;currentProgress&lt;/code&gt; won&#39;t necessarily</span>
+<span class="cm">		 * 											be zero when onStart is called. For example, if the timeline is created and then its &lt;code&gt;currentProgress&lt;/code&gt;</span>
+<span class="cm">		 * 											property is immediately set to 0.5 or if its &lt;code&gt;currentTime&lt;/code&gt; property is set to something other than zero,</span>
+<span class="cm">		 * 											onStart will still get fired because it is the first time the timeline is getting rendered.)&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onStartParams : Array&lt;/b&gt;		An Array of parameters to pass the onStart function.&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onUpdate : Function&lt;/b&gt;			A function that should be called every time the timeline&#39;s time/position is updated </span>
+<span class="cm">		 * 											(on every frame while the timeline is active)&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onUpdateParams : Array&lt;/b&gt;		An Array of parameters to pass the onUpdate function&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onComplete : Function&lt;/b&gt;		A function that should be called when the timeline has finished &lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onCompleteParams : Array&lt;/b&gt;	An Array of parameters to pass the onComplete function&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onReverseComplete : Function&lt;/b&gt; A function that should be called when the timeline has reached its starting point again after having been reversed &lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onReverseCompleteParams : Array&lt;/b&gt; An Array of parameters to pass the onReverseComplete functions&lt;/li&gt;</span>
+<span class="cm">		 *  </span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onRepeat : Function&lt;/b&gt;			A function that should be called every time the timeline repeats &lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onRepeatParams : Array&lt;/b&gt;		An Array of parameters to pass the onRepeat function&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; autoRemoveChildren : Boolean&lt;/b&gt; If autoRemoveChildren is set to true, as soon as child tweens/timelines complete,</span>
+<span class="cm">		 * 											they will automatically get killed/removed. This is normally undesireable because</span>
+<span class="cm">		 * 											it prevents going backwards in time (like if you want to reverse() or set the </span>
+<span class="cm">		 * 											&lt;code&gt;currentProgress&lt;/code&gt; value to a lower value, etc.). It can, however, improve speed and memory</span>
+<span class="cm">		 * 											management. TweenLite&#39;s root timelines use &lt;code&gt;autoRemoveChildren:true&lt;/code&gt;.&lt;/li&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; repeat : int&lt;/b&gt;				Number of times that the timeline should repeat. To repeat indefinitely, use -1.&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; repeatDelay : Number&lt;/b&gt;		Amount of time in seconds (or frames for frames-based timelines) between repeats.&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; yoyo : Boolean&lt;/b&gt; 				Works in conjunction with the repeat property, determining the behavior of each </span>
+<span class="cm">		 * 											cycle. When &lt;code&gt;yoyo&lt;/code&gt; is true, the timeline will go back and forth, appearing to reverse </span>
+<span class="cm">		 * 											every other cycle (this has no affect on the &lt;code&gt;reversed&lt;/code&gt; property though). So if repeat is</span>
+<span class="cm">		 * 											2 and yoyo is false, it will look like: start - 1 - 2 - 3 - 1 - 2 - 3 - 1 - 2 - 3 - end. But </span>
+<span class="cm">		 * 											if repeat is 2 and yoyo is true, it will look like: start - 1 - 2 - 3 - 3 - 2 - 1 - 1 - 2 - 3 - end. &lt;/li&gt;</span>
+<span class="cm">		 * 									</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onStartListener : Function&lt;/b&gt;	A function to which the TimelineMax instance should dispatch a TweenEvent when it begins.</span>
+<span class="cm">		 * 	  										This is the same as doing &lt;code&gt;myTimeline.addEventListener(TweenEvent.START, myFunction);&lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm">		 * 	</span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onUpdateListener : Function&lt;/b&gt;	A function to which the TimelineMax instance should dispatch a TweenEvent every time it </span>
+<span class="cm">		 * 											updates values.	This is the same as doing &lt;code&gt;myTimeline.addEventListener(TweenEvent.UPDATE, myFunction);&lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm">		 * 	  </span>
+<span class="cm">		 * 	&lt;li&gt;&lt;b&gt; onCompleteListener : Function&lt;/b&gt;	A function to which the TimelineMax instance should dispatch a TweenEvent when it completes.</span>
+<span class="cm">		 * 	  											This is the same as doing &lt;code&gt;myTimeline.addEventListener(TweenEvent.COMPLETE, myFunction);&lt;/code&gt;&lt;/li&gt;</span>
+<span class="cm">		 * 	&lt;/ul&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param vars optionally pass in special properties like useFrames, onComplete, onCompleteParams, onUpdate, onUpdateParams, onStart, onStartParams, tweens, align, stagger, delay, autoRemoveChildren, onCompleteListener, onStartListener, onUpdateListener, repeat, repeatDelay, and/or yoyo.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">TimelineMax</span><span class="p">(</span><span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">super</span><span class="p">(</span><span class="nx">vars</span><span class="p">);</span>
+			<span class="nx">_repeat</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeat</span><span class="p">)</span> <span class="o">?</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeat</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="nx">_repeatDelay</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeatDelay</span><span class="p">)</span> <span class="o">?</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeatDelay</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="nx">_cyclesComplete</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">==</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">cacheIsDirty</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onCompleteListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdateListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStartListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeatListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onReverseCompleteListener</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">initDispatcher</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * If you want a function to be called at a particular time or label, use addCallback. When you add</span>
+<span class="cm">		 * a callback, it is technically considered a zero-duration tween, so if you getChildren() there will be</span>
+<span class="cm">		 * a tween returned for each callback. You can discern a callback from other tweens by the fact that</span>
+<span class="cm">		 * their target is a function and the duration is zero. </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param function the function to be called</span>
+<span class="cm">		 * @param timeOrLabel the time in seconds (or frames for frames-based timelines) or label at which the callback should be inserted. For example, myTimeline.addCallback(myFunction, 3) would call myFunction() 3-seconds into the timeline, and myTimeline.addCallback(myFunction, &quot;myLabel&quot;) would call it at the &quot;myLabel&quot; label.</span>
+<span class="cm">		 * @param params an Array of parameters to pass the callback</span>
+<span class="cm">		 * @return TweenLite instance</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">addCallback</span><span class="p">(</span><span class="nx">callback</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="nx">timeOrLabel</span><span class="o">:*,</span> <span class="nx">params</span><span class="o">:</span><span class="nb">Array</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span><span class="o">:</span><span class="nx">TweenLite</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">cb</span><span class="o">:</span><span class="nx">TweenLite</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TweenLite</span><span class="p">(</span><span class="nx">callback</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="p">{</span><span class="nx">onComplete</span><span class="o">:</span><span class="nx">callback</span><span class="o">,</span> <span class="nx">onCompleteParams</span><span class="o">:</span><span class="nx">params</span><span class="o">,</span> <span class="nx">overwrite</span><span class="o">:</span><span class="mi">0</span><span class="o">,</span> <span class="nx">immediateRender</span><span class="o">:</span><span class="kc">false</span><span class="p">});</span>
+			<span class="nx">insert</span><span class="p">(</span><span class="nx">cb</span><span class="o">,</span> <span class="nx">timeOrLabel</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">cb</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Removes a callback from a particular time or label. If timeOrLabel is null, all callbacks of that</span>
+<span class="cm">		 * particular function are removed from the timeline.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param function callback function to be removed</span>
+<span class="cm">		 * @param timeOrLabel the time in seconds (or frames for frames-based timelines) or label from which the callback should be removed. For example, &lt;code&gt;myTimeline.removeCallback(myFunction, 3)&lt;/code&gt; would remove the callback from 3-seconds into the timeline, and &lt;code&gt;myTimeline.removeCallback(myFunction, &quot;myLabel&quot;)&lt;/code&gt; would remove it from the &quot;myLabel&quot; label, and &lt;code&gt;myTimeline.removeCallback(myFunction, null)&lt;/code&gt; would remove ALL callbacks of that function regardless of where they are on the timeline.</span>
+<span class="cm">		 * @return true if any callbacks were successfully found and removed. false otherwise.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">removeCallback</span><span class="p">(</span><span class="nx">callback</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="nx">timeOrLabel</span><span class="o">:*=</span><span class="kc">null</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">timeOrLabel</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">killTweensOf</span><span class="p">(</span><span class="nx">callback</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nx">timeOrLabel</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">timeOrLabel</span> <span class="k">in</span> <span class="nx">_labels</span><span class="p">))</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+					<span class="p">}</span>
+					<span class="nx">timeOrLabel</span> <span class="o">=</span> <span class="nx">_labels</span><span class="p">[</span><span class="nx">timeOrLabel</span><span class="p">];</span>
+				<span class="p">}</span>
+				<span class="k">var</span> <span class="nx">a</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">getTweensOf</span><span class="p">(</span><span class="nx">callback</span><span class="o">,</span> <span class="kc">false</span><span class="p">)</span><span class="o">,</span> <span class="nx">success</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+				<span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">cachedStartTime</span> <span class="o">==</span> <span class="nx">timeOrLabel</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">remove</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="nx">as</span> <span class="nx">TweenCore</span><span class="p">);</span>
+						<span class="nx">success</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">return</span> <span class="nx">success</span><span class="o">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Creates a linear tween that essentially scrubs the playhead to a particular time or label and then stops. For </span>
+<span class="cm">		 * example, to make the TimelineMax play to the &quot;myLabel2&quot; label, simply do: &lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * myTimeline.tweenTo(&quot;myLabel2&quot;); &lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * If you want advanced control over the tween, like adding an onComplete or changing the ease or adding a delay, </span>
+<span class="cm">		 * just pass in a vars object with the appropriate properties. For example, to tween to the 5-second point on the </span>
+<span class="cm">		 * timeline and then call a function named &lt;code&gt;myFunction&lt;/code&gt; and pass in a parameter that&#39;s references this </span>
+<span class="cm">		 * TimelineMax and use a Strong.easeOut ease, you&#39;d do: &lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * myTimeline.tweenTo(5, {onComplete:myFunction, onCompleteParams:[myTimeline], ease:Strong.easeOut});&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * Remember, this method simply creates a TweenLite instance that tweens the &lt;code&gt;currentTime&lt;/code&gt; property of your timeline. </span>
+<span class="cm">		 * So you can store a reference to that tween if you want, and you can kill() it anytime. Also note that &lt;code&gt;tweenTo()&lt;/code&gt;</span>
+<span class="cm">		 * does &lt;b&gt;NOT&lt;/b&gt; affect the timeline&#39;s &lt;code&gt;reversed&lt;/code&gt; property. So if your timeline is oriented normally</span>
+<span class="cm">		 * (not reversed) and you tween to a time/label that precedes the current time, it will appear to go backwards</span>
+<span class="cm">		 * but the &lt;code&gt;reversed&lt;/code&gt; property will &lt;b&gt;not&lt;/b&gt; change to &lt;code&gt;true&lt;/code&gt;. Also note that &lt;code&gt;tweenTo()&lt;/code&gt;</span>
+<span class="cm">		 * pauses the timeline immediately before tweening its &lt;code&gt;currentTime&lt;/code&gt; property, and it stays paused after the tween completes.</span>
+<span class="cm">		 * If you need to resume playback, you could always use an onComplete to call the &lt;code&gt;resume()&lt;/code&gt; method.&lt;br /&gt;&lt;br /&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * If you plan to sequence multiple playhead tweens one-after-the-other, it is typically better to use </span>
+<span class="cm">		 * &lt;code&gt;tweenFromTo()&lt;/code&gt; so that you can define the starting point and ending point, allowing the </span>
+<span class="cm">		 * duration to be accurately determined immediately. </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @see #tweenFromTo()</span>
+<span class="cm">		 * @param timeOrLabel The destination time in seconds (or frame if the timeline is frames-based) or label to which the timeline should play. For example, myTimeline.tweenTo(5) would play from wherever the timeline is currently to the 5-second point whereas myTimeline.tweenTo(&quot;myLabel&quot;) would play to wherever &quot;myLabel&quot; is on the timeline.</span>
+<span class="cm">		 * @param vars An optional vars object that will be passed to the TweenLite instance. This allows you to define an onComplete, ease, delay, or any other TweenLite special property. onInit is the only special property that is not available (tweenTo() sets it internally)</span>
+<span class="cm">		 * @return TweenLite instance that handles tweening the timeline to the desired time/label.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">tweenTo</span><span class="p">(</span><span class="nx">timeOrLabel</span><span class="o">:*,</span> <span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span><span class="o">:</span><span class="nx">TweenLite</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">varsCopy</span><span class="o">:</span><span class="nb">Object</span> <span class="o">=</span> <span class="p">{</span><span class="nx">ease</span><span class="o">:</span><span class="nx">easeNone</span><span class="o">,</span> <span class="nx">overwrite</span><span class="o">:</span><span class="mi">2</span><span class="o">,</span> <span class="nx">useFrames</span><span class="o">:</span><span class="k">this</span><span class="p">.</span><span class="nx">useFrames</span><span class="o">,</span> <span class="nx">immediateRender</span><span class="o">:</span><span class="kc">false</span><span class="p">};</span>
+			<span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">p</span><span class="o">:</span><span class="nb">String</span> <span class="k">in</span> <span class="nx">vars</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">varsCopy</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span> <span class="o">=</span> <span class="nx">vars</span><span class="p">[</span><span class="nx">p</span><span class="p">];</span>
+			<span class="p">}</span>
+			<span class="nx">varsCopy</span><span class="p">.</span><span class="nx">onInit</span> <span class="o">=</span> <span class="nx">onInitTweenTo</span><span class="o">;</span>
+			<span class="nx">varsCopy</span><span class="p">.</span><span class="nx">onInitParams</span> <span class="o">=</span> <span class="p">[</span><span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">NaN</span><span class="p">];</span>
+			<span class="nx">varsCopy</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="nx">parseTimeOrLabel</span><span class="p">(</span><span class="nx">timeOrLabel</span><span class="p">);</span>
+			<span class="k">var</span> <span class="nx">tl</span><span class="o">:</span><span class="nx">TweenLite</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TweenLite</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nb">Number</span><span class="p">(</span><span class="nx">varsCopy</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">)</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span><span class="p">)</span> <span class="o">/</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="p">)</span> <span class="o">||</span> <span class="mf">0.001</span><span class="o">,</span> <span class="nx">varsCopy</span><span class="p">);</span>
+			<span class="nx">tl</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onInitParams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">tl</span><span class="o">;</span>
+			<span class="k">return</span> <span class="nx">tl</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Creates a linear tween that essentially scrubs the playhead from a particular time or label to another </span>
+<span class="cm">		 * time or label and then stops. If you plan to sequence multiple playhead tweens one-after-the-other, </span>
+<span class="cm">		 * &lt;code&gt;tweenFromTo()&lt;/code&gt; is better to use than &lt;code&gt;tweenTo()&lt;/code&gt; because it allows the duration </span>
+<span class="cm">		 * to be determined immediately, ensuring that subsequent tweens that are appended to a sequence are </span>
+<span class="cm">		 * positioned appropriately. For example, to make the TimelineMax play from the label &quot;myLabel1&quot; to the &quot;myLabel2&quot; </span>
+<span class="cm">		 * label, and then from &quot;myLabel2&quot; back to the beginning (a time of 0), simply do: &lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * var playheadTweens:TimelineMax = new TimelineMax(); &lt;br /&gt;</span>
+<span class="cm">		 * playheadTweens.append( myTimeline.tweenFromTo(&quot;myLabel1&quot;, &quot;myLabel2&quot;) );&lt;br /&gt;</span>
+<span class="cm">		 * playheadTweens.append( myTimeline.tweenFromTo(&quot;myLabel2&quot;, 0); &lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * If you want advanced control over the tween, like adding an onComplete or changing the ease or adding a delay, </span>
+<span class="cm">		 * just pass in a vars object with the appropriate properties. For example, to tween from the start (0) to the </span>
+<span class="cm">		 * 5-second point on the timeline and then call a function named &lt;code&gt;myFunction&lt;/code&gt; and pass in a parameter </span>
+<span class="cm">		 * that&#39;s references this TimelineMax and use a Strong.easeOut ease, you&#39;d do: &lt;br /&gt;&lt;br /&gt;&lt;code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * myTimeline.tweenFromTo(0, 5, {onComplete:myFunction, onCompleteParams:[myTimeline], ease:Strong.easeOut});&lt;br /&gt;&lt;br /&gt;&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * Remember, this method simply creates a TweenLite instance that tweens the &lt;code&gt;currentTime&lt;/code&gt; property of your timeline. </span>
+<span class="cm">		 * So you can store a reference to that tween if you want, and you can &lt;code&gt;kill()&lt;/code&gt; it anytime. Also note that &lt;code&gt;tweenFromTo()&lt;/code&gt;</span>
+<span class="cm">		 * does &lt;b&gt;NOT&lt;/b&gt; affect the timeline&#39;s &lt;code&gt;reversed&lt;/code&gt; property. So if your timeline is oriented normally</span>
+<span class="cm">		 * (not reversed) and you tween to a time/label that precedes the current time, it will appear to go backwards</span>
+<span class="cm">		 * but the &lt;code&gt;reversed&lt;/code&gt; property will &lt;b&gt;not&lt;/b&gt; change to &lt;code&gt;true&lt;/code&gt;. Also note that &lt;code&gt;tweenFromTo()&lt;/code&gt;</span>
+<span class="cm">		 * pauses the timeline immediately before tweening its &lt;code&gt;currentTime&lt;/code&gt; property, and it stays paused after the tween completes.</span>
+<span class="cm">		 * If you need to resume playback, you could always use an onComplete to call the &lt;code&gt;resume()&lt;/code&gt; method.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @see #tweenTo()</span>
+<span class="cm">		 * @param fromTimeOrLabel The beginning time in seconds (or frame if the timeline is frames-based) or label from which the timeline should play. For example, &lt;code&gt;myTimeline.tweenTo(0, 5)&lt;/code&gt; would play from 0 (the beginning) to the 5-second point whereas &lt;code&gt;myTimeline.tweenFromTo(&quot;myLabel1&quot;, &quot;myLabel2&quot;)&lt;/code&gt; would play from &quot;myLabel1&quot; to &quot;myLabel2&quot;.</span>
+<span class="cm">		 * @param toTimeOrLabel The destination time in seconds (or frame if the timeline is frames-based) or label to which the timeline should play. For example, &lt;code&gt;myTimeline.tweenTo(0, 5)&lt;/code&gt; would play from 0 (the beginning) to the 5-second point whereas &lt;code&gt;myTimeline.tweenFromTo(&quot;myLabel1&quot;, &quot;myLabel2&quot;)&lt;/code&gt; would play from &quot;myLabel1&quot; to &quot;myLabel2&quot;.</span>
+<span class="cm">		 * @param vars An optional vars object that will be passed to the TweenLite instance. This allows you to define an onComplete, ease, delay, or any other TweenLite special property. onInit is the only special property that is not available (&lt;code&gt;tweenFromTo()&lt;/code&gt; sets it internally)</span>
+<span class="cm">		 * @return TweenLite instance that handles tweening the timeline between the desired times/labels.</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">tweenFromTo</span><span class="p">(</span><span class="nx">fromTimeOrLabel</span><span class="o">:*,</span> <span class="nx">toTimeOrLabel</span><span class="o">:*,</span> <span class="nx">vars</span><span class="o">:</span><span class="nb">Object</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span><span class="o">:</span><span class="nx">TweenLite</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">tl</span><span class="o">:</span><span class="nx">TweenLite</span> <span class="o">=</span> <span class="nx">tweenTo</span><span class="p">(</span><span class="nx">toTimeOrLabel</span><span class="o">,</span> <span class="nx">vars</span><span class="p">);</span>
+			<span class="nx">tl</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onInitParams</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parseTimeOrLabel</span><span class="p">(</span><span class="nx">fromTimeOrLabel</span><span class="p">);</span>
+			<span class="nx">tl</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nb">Number</span><span class="p">(</span><span class="nx">tl</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">)</span> <span class="o">-</span> <span class="nx">tl</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onInitParams</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">;</span>
+			<span class="k">return</span> <span class="nx">tl</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">private</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">onInitTweenTo</span><span class="p">(</span><span class="nx">tween</span><span class="o">:</span><span class="nx">TweenLite</span><span class="o">,</span> <span class="nx">timeline</span><span class="o">:</span><span class="nx">TimelineMax</span><span class="o">,</span> <span class="nx">fromTime</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="nx">timeline</span><span class="p">.</span><span class="nx">paused</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">isNaN</span><span class="p">(</span><span class="nx">fromTime</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="nx">fromTime</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">!=</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//don&#39;t make the duration zero - if it&#39;s supposed to be zero, don&#39;t worry because it&#39;s already initting the tween and will complete immediately, effectively making the duration zero anyway. If we make duration zero, the tween won&#39;t run at all.</span>
+				<span class="nx">tween</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nb">Number</span><span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">)</span> <span class="o">-</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">)</span> <span class="o">/</span> <span class="nx">timeline</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">private</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">easeNone</span><span class="p">(</span><span class="nx">t</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">b</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">c</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">d</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nb">Number</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">t</span> <span class="o">/</span> <span class="nx">d</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">override</span> <span class="kd">public</span> <span class="kd">function</span> <span class="nx">renderTime</span><span class="p">(</span><span class="nx">time</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="o">,</span> <span class="nx">force</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">gc</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">setEnabled</span><span class="p">(</span><span class="kc">true</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedPaused</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span> <span class="c1">//so that if the user renders a tween (as opposed to the timeline rendering it), the timeline is forced to re-render and align it with the proper time/frame on the next rendering cycle. Maybe the tween already finished but the user manually re-renders it as halfway done.</span>
+			<span class="p">}</span>
+			<span class="k">var</span> <span class="nx">totalDur</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cacheIsDirty</span><span class="p">)</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalDuration</span><span class="o">,</span> <span class="nx">prevTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span><span class="o">,</span> <span class="nx">prevTotalTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span><span class="o">,</span> <span class="nx">prevStart</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="o">,</span> <span class="nx">prevTimeScale</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">,</span> <span class="nx">tween</span><span class="o">:</span><span class="nx">TweenCore</span><span class="o">,</span> <span class="nx">isComplete</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">,</span> <span class="nx">rendered</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">,</span> <span class="nx">repeated</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">,</span> <span class="nx">next</span><span class="o">:</span><span class="nx">TweenCore</span><span class="o">,</span> <span class="nx">dur</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">prevPaused</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedPaused</span><span class="o">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&gt;=</span> <span class="nx">totalDur</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">_rawPrevTime</span> <span class="o">&lt;=</span> <span class="nx">totalDur</span> <span class="o">&amp;&amp;</span> <span class="nx">_rawPrevTime</span> <span class="o">!=</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">=</span> <span class="nx">totalDur</span><span class="o">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedReversed</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">&amp;&amp;</span> <span class="nx">_repeat</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+						<span class="nx">forceChildrenToBeginning</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+						<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span><span class="o">;</span>
+						<span class="nx">forceChildrenToEnd</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+					<span class="p">}</span>
+					<span class="nx">isComplete</span> <span class="o">=</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">hasPausedChild</span><span class="p">();</span>
+					<span class="nx">rendered</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">isComplete</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">time</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">_rawPrevTime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span> <span class="c1">//In order to accommodate zero-duration timelines, we must discern the momentum/direction of time in order to render values properly when the &quot;playhead&quot; goes past 0 in the forward direction or lands directly on it, and also when it moves past it in the backward direction (from a postitive time to a negative time).</span>
+						<span class="nx">force</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> 
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">_rawPrevTime</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//In order to accommodate zero-duration timelines, we must discern the momentum/direction of time in order to render values properly when the &quot;playhead&quot; goes past 0 in the forward direction or lands directly on it, and also when it moves past it in the backward direction (from a postitive time to a negative time).</span>
+						<span class="nx">force</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+						<span class="nx">isComplete</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">initted</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">force</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">_rawPrevTime</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">_rawPrevTime</span> <span class="o">!=</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+					<span class="nx">forceChildrenToBeginning</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+					<span class="nx">rendered</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedReversed</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">isComplete</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="nx">time</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="nx">_rawPrevTime</span> <span class="o">=</span> <span class="nx">time</span><span class="o">;</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_repeat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">var</span> <span class="nx">cycleDuration</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">+</span> <span class="nx">_repeatDelay</span><span class="o">;</span>
+				<span class="k">var</span> <span class="nx">prevCycles</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">_cyclesComplete</span><span class="o">;</span>
+				<span class="nx">_cyclesComplete</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="sr">/ cycleDuration) &gt;&gt; 0; /</span><span class="o">/</span><span class="nx">rounds</span> <span class="nx">result</span><span class="o">,</span> <span class="nx">like</span> <span class="nb">int</span><span class="p">()</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">_cyclesComplete</span> <span class="o">==</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">/</span> <span class="nx">cycleDuration</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">_cyclesComplete</span><span class="o">--;</span> <span class="c1">//otherwise when rendered exactly at the end time, it will act as though it is repeating (at the beginning)</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">prevCycles</span> <span class="o">!=</span> <span class="nx">_cyclesComplete</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">repeated</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="p">}</span>
+				
+				<span class="k">if</span> <span class="p">(</span><span class="nx">isComplete</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">&amp;&amp;</span> <span class="nx">_repeat</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="sr">/ cycleDuration) - _cyclesComplete) * cycleDuration; /</span><span class="o">/</span><span class="nx">originally</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">%</span> <span class="nx">cycleDuration</span> <span class="nx">but</span> <span class="nx">floating</span> <span class="nx">point</span> <span class="nx">errors</span> <span class="nx">caused</span> <span class="nx">problems</span><span class="o">,</span> <span class="nx">so</span> <span class="nx">I</span> <span class="nx">normalized</span> <span class="nx">it</span><span class="p">.</span> <span class="p">(</span><span class="mi">4</span> <span class="o">%</span> <span class="mf">0.8</span> <span class="nx">should</span> <span class="nx">be</span> <span class="mi">0</span> <span class="nx">but</span> <span class="nx">Flash</span> <span class="nx">reports</span> <span class="nx">it</span> <span class="nx">as</span> <span class="mf">0.79999999</span><span class="o">!</span><span class="p">)</span>
+					
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">&amp;&amp;</span> <span class="nx">_cyclesComplete</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span><span class="o">;</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">&gt;=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span><span class="o">;</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">_cyclesComplete</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+				<span class="p">}</span>
+				
+				<span class="k">if</span> <span class="p">(</span><span class="nx">repeated</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isComplete</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">!=</span> <span class="nx">prevTime</span> <span class="o">||</span> <span class="nx">force</span><span class="p">))</span> <span class="p">{</span>
+					
+					<span class="cm">/*</span>
+<span class="cm">					  make sure children at the end/beginning of the timeline are rendered properly. If, for example, </span>
+<span class="cm">					  a 3-second long timeline rendered at 2.9 seconds previously, and now renders at 3.2 seconds (which</span>
+<span class="cm">					  would get transated to 2.8 seconds if the timeline yoyos or 0.2 seconds if it just repeats), there</span>
+<span class="cm">					  could be a callback or a short tween that&#39;s at 2.95 or 3 seconds in which wouldn&#39;t render. So </span>
+<span class="cm">					  we need to push the timeline to the end (and/or beginning depending on its yoyo value).</span>
+<span class="cm">					*/</span>
+					
+					<span class="k">var</span> <span class="nx">forward</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">||</span> <span class="p">(</span><span class="nx">_cyclesComplete</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">));</span>
+					<span class="k">var</span> <span class="nx">prevForward</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">||</span> <span class="p">(</span><span class="nx">prevCycles</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">));</span>
+					<span class="k">var</span> <span class="nx">wrap</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="nx">forward</span> <span class="o">==</span> <span class="nx">prevForward</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">prevCycles</span> <span class="o">&gt;</span> <span class="nx">_cyclesComplete</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">prevForward</span> <span class="o">=</span> <span class="o">!</span><span class="nx">prevForward</span><span class="o">;</span>
+					<span class="p">}</span>
+					
+					<span class="k">if</span> <span class="p">(</span><span class="nx">prevForward</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">prevTime</span> <span class="o">=</span> <span class="nx">forceChildrenToEnd</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">wrap</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">prevTime</span> <span class="o">=</span> <span class="nx">forceChildrenToBeginning</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+						<span class="p">}</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+						<span class="nx">prevTime</span> <span class="o">=</span> <span class="nx">forceChildrenToBeginning</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">wrap</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">prevTime</span> <span class="o">=</span> <span class="nx">forceChildrenToEnd</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="nx">rendered</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+				<span class="p">}</span>
+				
+			<span class="p">}</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">==</span> <span class="nx">prevTotalTime</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">force</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span><span class="o">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">initted</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">initted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="p">}</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="nx">prevTotalTime</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">suppressEvents</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStart</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStart</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStartParams</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">_dispatcher</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="k">new</span> <span class="nx">TweenEvent</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">START</span><span class="p">));</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			
+			<span class="k">if</span> <span class="p">(</span><span class="nx">rendered</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>already rendered, so ignore</p>             </td>             <td class="code">               <div class="highlight"><pre>			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">-</span> <span class="nx">prevTime</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">tween</span> <span class="o">=</span> <span class="nx">_firstChild</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="nx">tween</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">next</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">nextNode</span><span class="o">;</span> <span class="c1">//record it here because the value could change after rendering...</span>
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedPaused</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">prevPaused</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//in case a tween pauses the timeline when rendering</span>
+						<span class="k">break</span><span class="o">;</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">active</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cachedPaused</span> <span class="o">&amp;&amp;</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">&lt;=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">gc</span><span class="p">))</span> <span class="p">{</span>
+						
+						<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cachedReversed</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">tween</span><span class="p">.</span><span class="nx">renderTime</span><span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">-</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="p">)</span> <span class="o">*</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+							<span class="nx">dur</span> <span class="o">=</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cacheIsDirty</span><span class="p">)</span> <span class="o">?</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">:</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTotalDuration</span><span class="o">;</span>
+							<span class="nx">tween</span><span class="p">.</span><span class="nx">renderTime</span><span class="p">(</span><span class="nx">dur</span> <span class="o">-</span> <span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">-</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="p">)</span> <span class="o">*</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="p">)</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+						<span class="p">}</span>
+						
+					<span class="p">}</span>
+					
+					<span class="nx">tween</span> <span class="o">=</span> <span class="nx">next</span><span class="o">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">tween</span> <span class="o">=</span> <span class="nx">_lastChild</span><span class="o">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="nx">tween</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">next</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">prevNode</span><span class="o">;</span> <span class="c1">//record it here because the value could change after rendering...</span>
+					<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedPaused</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">prevPaused</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//in case a tween pauses the timeline when rendering</span>
+						<span class="k">break</span><span class="o">;</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">active</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cachedPaused</span> <span class="o">&amp;&amp;</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">&lt;=</span> <span class="nx">prevTime</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">gc</span><span class="p">))</span> <span class="p">{</span>
+						
+						<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cachedReversed</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">tween</span><span class="p">.</span><span class="nx">renderTime</span><span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">-</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="p">)</span> <span class="o">*</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+							<span class="nx">dur</span> <span class="o">=</span> <span class="p">(</span><span class="nx">tween</span><span class="p">.</span><span class="nx">cacheIsDirty</span><span class="p">)</span> <span class="o">?</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">:</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTotalDuration</span><span class="o">;</span>
+							<span class="nx">tween</span><span class="p">.</span><span class="nx">renderTime</span><span class="p">(</span><span class="nx">dur</span> <span class="o">-</span> <span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">-</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedStartTime</span><span class="p">)</span> <span class="o">*</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="p">)</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+						<span class="p">}</span>
+						
+					<span class="p">}</span> 
+					
+					<span class="nx">tween</span> <span class="o">=</span> <span class="nx">next</span><span class="o">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_hasUpdate</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">suppressEvents</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdate</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdateParams</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_hasUpdateListener</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">suppressEvents</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="k">new</span> <span class="nx">TweenEvent</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">UPDATE</span><span class="p">));</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">repeated</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">suppressEvents</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeat</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeat</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeatParams</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">_dispatcher</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="k">new</span> <span class="nx">TweenEvent</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">REPEAT</span><span class="p">));</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">isComplete</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">prevStart</span> <span class="o">==</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedStartTime</span> <span class="o">||</span> <span class="nx">prevTimeScale</span> <span class="o">!=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTimeScale</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">totalDur</span> <span class="o">&gt;=</span> <span class="k">this</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span> <span class="c1">//if one of the tweens that was rendered altered this timeline&#39;s startTime (like if an onComplete reversed the timeline) or if it added more tweens to the timeline, we shouldn&#39;t run complete() because it probably isn&#39;t complete. If it is, don&#39;t worry, because whatever call altered the startTime would have called complete() if it was necessary at the new time. The only exception is the timeScale property.</span>
+				<span class="nx">complete</span><span class="p">(</span><span class="kc">true</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Forces the timeline to completion.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param skipRender to skip rendering the final state of the timeline, set skipRender to true. </span>
+<span class="cm">		 * @param suppressEvents If true, no events or callbacks will be triggered for this render (like onComplete, onUpdate, onReverseComplete, etc.)</span>
+<span class="cm">		 */</span>
+		<span class="kd">override</span> <span class="kd">public</span> <span class="kd">function</span> <span class="nx">complete</span><span class="p">(</span><span class="nx">skipRender</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="kd">super</span><span class="p">.</span><span class="nx">complete</span><span class="p">(</span><span class="nx">skipRender</span><span class="o">,</span> <span class="nx">suppressEvents</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">suppressEvents</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedReversed</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="k">new</span> <span class="nx">TweenEvent</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">REVERSE_COMPLETE</span><span class="p">));</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="k">new</span> <span class="nx">TweenEvent</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">COMPLETE</span><span class="p">));</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns the tweens/timelines that are currently active in the timeline.</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param nested determines whether or not tweens and/or timelines that are inside nested timelines should be returned. If you only want the &quot;top level&quot; tweens/timelines, set this to false.</span>
+<span class="cm">		 * @param tweens determines whether or not tweens (TweenLite and TweenMax instances) should be included in the results</span>
+<span class="cm">		 * @param timelines determines whether or not timelines (TimelineLite and TimelineMax instances) should be included in the results</span>
+<span class="cm">		 * @return an Array of active tweens/timelines</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">getActive</span><span class="p">(</span><span class="nx">nested</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span> <span class="nx">tweens</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span> <span class="nx">timelines</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nb">Array</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">a</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="p">[]</span><span class="o">,</span> <span class="nx">all</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">getChildren</span><span class="p">(</span><span class="nx">nested</span><span class="o">,</span> <span class="nx">tweens</span><span class="o">,</span> <span class="nx">timelines</span><span class="p">)</span><span class="o">,</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span><span class="o">;</span>
+			<span class="k">var</span> <span class="nx">l</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">all</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+			<span class="k">var</span> <span class="nx">cnt</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="o">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">TweenCore</span><span class="p">(</span><span class="nx">all</span><span class="p">[</span><span class="nx">i</span><span class="p">]).</span><span class="nx">active</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">a</span><span class="p">[</span><span class="nx">cnt</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="nx">all</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">a</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @inheritDoc **/</span>
+		<span class="kd">override</span> <span class="kd">public</span> <span class="kd">function</span> <span class="nx">invalidate</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="nx">_repeat</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeat</span><span class="p">)</span> <span class="o">?</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeat</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="nx">_repeatDelay</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeatDelay</span><span class="p">)</span> <span class="o">?</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">repeatDelay</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">=</span> <span class="nb">Boolean</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">==</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onCompleteListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdateListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStartListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeatListener</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onReverseCompleteListener</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">initDispatcher</span><span class="p">();</span>
+			<span class="p">}</span>
+			<span class="nx">setDirtyCache</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+			<span class="kd">super</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns the next label (if any) that occurs AFTER the time parameter. It makes no difference</span>
+<span class="cm">		 * if the timeline is reversed. A label that is positioned exactly at the same time as the &lt;code&gt;time&lt;/code&gt;</span>
+<span class="cm">		 * parameter will be ignored. </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param time Time after which the label is searched for. If you do not pass a time in, the currentTime will be used. </span>
+<span class="cm">		 * @return Name of the label that is after the time passed to getLabelAfter()</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">getLabelAfter</span><span class="p">(</span><span class="nx">time</span><span class="o">:</span><span class="nb">Number</span><span class="o">=</span><span class="kc">NaN</span><span class="p">)</span><span class="o">:</span><span class="nb">String</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">time</span> <span class="o">&amp;&amp;</span> <span class="nx">time</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//faster than isNan()</span>
+				<span class="nx">time</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">var</span> <span class="nx">labels</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">getLabelsArray</span><span class="p">();</span>
+			<span class="k">var</span> <span class="nx">l</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">labels</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="o">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">labels</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">time</span> <span class="o">&gt;</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">labels</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span><span class="o">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns the previous label (if any) that occurs BEFORE the time parameter. It makes no difference</span>
+<span class="cm">		 * if the timeline is reversed. A label that is positioned exactly at the same time as the &lt;code&gt;time&lt;/code&gt;</span>
+<span class="cm">		 * parameter will be ignored. </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @param time Time before which the label is searched for. If you do not pass a time in, the currentTime will be used. </span>
+<span class="cm">		 * @return Name of the label that is before the time passed to getLabelBefore()</span>
+<span class="cm">		 */</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">getLabelBefore</span><span class="p">(</span><span class="nx">time</span><span class="o">:</span><span class="nb">Number</span><span class="o">=</span><span class="kc">NaN</span><span class="p">)</span><span class="o">:</span><span class="nb">String</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">time</span> <span class="o">&amp;&amp;</span> <span class="nx">time</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//faster than isNan()</span>
+				<span class="nx">time</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">var</span> <span class="nx">labels</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">getLabelsArray</span><span class="p">();</span>
+			<span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">labels</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+			<span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">labels</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">time</span> <span class="o">&lt;</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">labels</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span><span class="o">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @private Returns an Array of label objects, each with a &quot;time&quot; and &quot;name&quot; property, in the order that they occur in the timeline. **/</span>
+		<span class="kd">protected</span> <span class="kd">function</span> <span class="nx">getLabelsArray</span><span class="p">()</span><span class="o">:</span><span class="nb">Array</span> <span class="p">{</span>
+			<span class="k">var</span> <span class="nx">a</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="p">[];</span>
+			<span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">p</span><span class="o">:</span><span class="nb">String</span> <span class="k">in</span> <span class="nx">_labels</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nx">time</span><span class="o">:</span><span class="nx">_labels</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span><span class="o">,</span> <span class="nx">name</span><span class="o">:</span><span class="nx">p</span><span class="p">};</span>
+			<span class="p">}</span>
+			<span class="nx">a</span><span class="p">.</span><span class="nx">sortOn</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="o">,</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">NUMERIC</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">a</span><span class="o">;</span>
+		<span class="p">}</span>
+		</pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>---- EVENT DISPATCHING ----------------------------------------------------------------------------------------------------------</p>             </td>             <td class="code">               <div class="highlight"><pre>		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">protected</span> <span class="kd">function</span> <span class="nx">initDispatcher</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">EventDispatcher</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStartListener</span> <span class="nx">is</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">START</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onStartListener</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdateListener</span> <span class="nx">is</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">UPDATE</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onUpdateListener</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+				<span class="nx">_hasUpdateListener</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onCompleteListener</span> <span class="nx">is</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">COMPLETE</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onCompleteListener</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeatListener</span> <span class="nx">is</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">REPEAT</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onRepeatListener</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onReverseCompleteListener</span> <span class="nx">is</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">REVERSE_COMPLETE</span><span class="o">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vars</span><span class="p">.</span><span class="nx">onReverseCompleteListener</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">addEventListener</span><span class="p">(</span><span class="nx">type</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">listener</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="nx">useCapture</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span> <span class="nx">priority</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="nx">useWeakReference</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">initDispatcher</span><span class="p">();</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">==</span> <span class="nx">TweenEvent</span><span class="p">.</span><span class="nx">UPDATE</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_hasUpdateListener</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="p">}</span>
+			<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">listener</span><span class="o">,</span> <span class="nx">useCapture</span><span class="o">,</span> <span class="nx">priority</span><span class="o">,</span> <span class="nx">useWeakReference</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">removeEventListener</span><span class="p">(</span><span class="nx">type</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">listener</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="nx">useCapture</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">listener</span><span class="o">,</span> <span class="nx">useCapture</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">hasEventListener</span><span class="p">(</span><span class="nx">type</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">hasEventListener</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">willTrigger</span><span class="p">(</span><span class="nx">type</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">willTrigger</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="cm">/** @private **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="nb">Event</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="p">(</span><span class="nx">_dispatcher</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="nx">_dispatcher</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		</pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>---- GETTERS / SETTERS -------------------------------------------------------------------------------------------------------</p>             </td>             <td class="code">               <div class="highlight"><pre>		
+		
+		
+		<span class="cm">/** </span>
+<span class="cm">		 * Value between 0 and 1 indicating the overall progress of the timeline according to its &lt;code&gt;totalDuration&lt;/code&gt; </span>
+<span class="cm"> 		 * where 0 is at the beginning, 0.5 is halfway finished, and 1 is finished. &lt;code&gt;currentProgress&lt;/code&gt;, </span>
+<span class="cm"> 		 * by contrast, describes the progress according to the timeline&#39;s duration which does not</span>
+<span class="cm"> 		 * include repeats and repeatDelays. For example, if a TimelineMax instance is set </span>
+<span class="cm"> 		 * to repeat once, at the end of the first cycle &lt;code&gt;totalProgress&lt;/code&gt; would only be 0.5 </span>
+<span class="cm">		 * whereas &lt;code&gt;currentProgress&lt;/code&gt; would be 1. If you tracked both properties over the course of the </span>
+<span class="cm">		 * tween, you&#39;d see &lt;code&gt;currentProgress&lt;/code&gt; go from 0 to 1 twice (once for each cycle) in the same</span>
+<span class="cm">		 * time it takes the &lt;code&gt;totalProgress&lt;/code&gt; property to go from 0 to 1 once.</span>
+<span class="cm">		 **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">totalProgress</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalTime</span> <span class="o">/</span> <span class="k">this</span><span class="p">.</span><span class="nx">totalDuration</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">totalProgress</span><span class="p">(</span><span class="nx">n</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="nx">setTotalTime</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">totalDuration</span> <span class="o">*</span> <span class="nx">n</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Duration of the timeline in seconds (or frames for frames-based timelines) including any repeats</span>
+<span class="cm">		 * or repeatDelays. &quot;duration&quot;, by contrast, does NOT include repeats and repeatDelays.</span>
+<span class="cm">		 **/</span>
+		<span class="kd">override</span> <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">totalDuration</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cacheIsDirty</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">var</span> <span class="nx">temp</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="kd">super</span><span class="p">.</span><span class="nx">totalDuration</span><span class="o">;</span> <span class="c1">//just forces refresh</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Instead of Infinity, we use 999999999999 so that we can accommodate reverses.</p>             </td>             <td class="code">               <div class="highlight"><pre>				<span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalDuration</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_repeat</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">?</span> <span class="mi">999999999999</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">*</span> <span class="p">(</span><span class="nx">_repeat</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">_repeatDelay</span> <span class="o">*</span> <span class="nx">_repeat</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">cachedTotalDuration</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** @private **/</span>
+		<span class="kd">override</span> <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">currentTime</span><span class="p">(</span><span class="nx">n</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">_cyclesComplete</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">setTotalTime</span><span class="p">(</span><span class="nx">n</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">yoyo</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">_cyclesComplete</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">setTotalTime</span><span class="p">((</span><span class="k">this</span><span class="p">.</span><span class="nx">duration</span> <span class="o">-</span> <span class="nx">n</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">_cyclesComplete</span> <span class="o">*</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedDuration</span> <span class="o">+</span> <span class="nx">_repeatDelay</span><span class="p">))</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">setTotalTime</span><span class="p">(</span><span class="nx">n</span> <span class="o">+</span> <span class="p">(</span><span class="nx">_cyclesComplete</span> <span class="o">*</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">duration</span> <span class="o">+</span> <span class="nx">_repeatDelay</span><span class="p">))</span><span class="o">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** Number of times that the timeline should repeat; -1 repeats indefinitely. **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">repeat</span><span class="p">()</span><span class="o">:</span><span class="nb">int</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">_repeat</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">repeat</span><span class="p">(</span><span class="nx">n</span><span class="o">:</span><span class="nb">int</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="nx">_repeat</span> <span class="o">=</span> <span class="nx">n</span><span class="o">;</span>
+			<span class="nx">setDirtyCache</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** Amount of time in seconds (or frames for frames-based timelines) between repeats **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">repeatDelay</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">_repeatDelay</span><span class="o">;</span>
+		<span class="p">}</span>
+		
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">repeatDelay</span><span class="p">(</span><span class="nx">n</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> <span class="p">{</span>
+			<span class="nx">_repeatDelay</span> <span class="o">=</span> <span class="nx">n</span><span class="o">;</span>
+			<span class="nx">setDirtyCache</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/** The closest label that is at or before the current time. **/</span>
+		<span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">currentLabel</span><span class="p">()</span><span class="o">:</span><span class="nb">String</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">getLabelBefore</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cachedTime</span> <span class="o">+</span> <span class="mf">0.00000001</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+	<span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

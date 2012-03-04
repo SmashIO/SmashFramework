@@ -1,0 +1,540 @@
+<!DOCTYPE html>  <html> <head>   <title>TimeManager.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               TimeManager.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <hr />
+
+<p>PushButton Engine
+Copyright (C) 2009 PushButton Labs, LLC
+For more information see http://www.pushbuttonengine.com</p>
+
+<p>This file is licensed under the terms of the MIT license, which is included
+in the License.html file at the root directory of this SDK.
+<strong><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em>*</strong>/</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span>
+<span class="p">{</span>
+    
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">PBE</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">PBUtil</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">IPBManager</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBComponent</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBGroup</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">Logger</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">Profiler</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">IPrioritizable</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">SimplePriorityQueue</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">TypeUtility</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">util</span><span class="p">.</span><span class="nx">sprintf</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Stage</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">Event</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">TimerEvent</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nb">Timer</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">getQualifiedClassName</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nf">getTimer</span><span class="o">;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>The process manager manages all time related functionality in the engine.
+It provides mechanisms for performing actions every frame, every tick, or
+at a specific time in the future.</p>
+
+<p>A tick happens at a set interval defined by the TICKS_PER_SECOND constant.
+Using ticks for various tasks that need to happen repeatedly instead of
+performing those tasks every frame results in much more consistent output.
+However, for animation related tasks, frame events should be used so the
+display remains smooth.</p>
+
+<p>@see ITickedObject
+@see IAnimatedObject</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">TimeManager</span> <span class="kd">implements</span> <span class="nx">IPBManager</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stage</span><span class="o">:</span><span class="nb">Stage</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>If true, disables warnings about losing ticks.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">disableSlowWarning</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The number of ticks that will happen every second.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">const</span> <span class="nx">TICKS_PER_SECOND</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>The rate at which ticks are fired, in seconds.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">const</span> <span class="nx">TICK_RATE</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">TICKS_PER_SECOND</span><span class="p">);</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>The rate at which ticks are fired, in milliseconds.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">const</span> <span class="nx">TICK_RATE_MS</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nx">TICK_RATE</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>The maximum number of ticks that can be processed in a frame.</p>
+
+<p>In some cases, a single frame can take an extremely long amount of
+time. If several ticks then need to be processed, a game can
+quickly get in a state where it has so many ticks to process
+it can never catch up. This is known as a death spiral.</p>
+
+<p>To prevent this we have a safety limit. Time is dropped so the
+system can catch up in extraordinary cases. If your game is just
+slow, then you will see that the ProcessManager can never catch up
+and you will constantly get the "too many ticks per frame" warning,
+if you have disableSlowWarning set to true.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">const</span> <span class="nx">MAX_TICKS_PER_FRAME</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+        
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">timer</span><span class="o">:</span><span class="nb">Timer</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>The scale at which time advances. If this is set to 2, the game
+will play twice as fast. A value of 0.5 will run the
+game at half speed. A value of 1 is normal.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">timeScale</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_timeScale</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>@private</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">timeScale</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_timeScale</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>TweenMax uses timeScale as a config property, so by also having a
+capitalized version, we can tween TimeScale instead and get along 
+just fine.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">TimeScale</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">timeScale</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>@private</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">TimeScale</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">timeScale</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Used to determine how far we are between ticks. 0.0 at the start of a tick, and
+1.0 at the end. Useful for smoothly interpolating visual elements.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">interpolationFactor</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_interpolationFactor</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>The amount of time that has been processed by the process manager. This does
+take the time scale into account. Time is in milliseconds.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">virtualTime</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_virtualTime</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Current time reported by getTimer(), updated every frame. Use this to avoid
+costly calls to getTimer(), or if you want a unique number representing the
+current frame.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">platformTime</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_platformTime</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Integer identifying this frame. Incremented by one for every frame.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">frameCounter</span><span class="p">()</span><span class="o">:</span><span class="nb">uint</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_frameCounter</span><span class="o">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">initialize</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">started</span><span class="p">)</span>
+                <span class="nx">start</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">started</span><span class="p">)</span>
+                <span class="nx">stop</span><span class="p">();</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Starts the process manager. This is automatically called when the first object
+is added to the process manager. If the manager is stopped manually, then this
+will have to be called to restart it.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">start</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">started</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="s2">&quot;start&quot;</span><span class="o">,</span> <span class="s2">&quot;The ProcessManager is already started.&quot;</span><span class="p">);</span>
+                <span class="k">return</span><span class="o">;</span>
+            <span class="p">}</span>
+            
+            <span class="nx">lastTime</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="o">;</span>
+            <span class="nx">elapsed</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">timer</span><span class="p">)</span>
+                <span class="nx">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Timer</span><span class="p">(</span><span class="mi">32</span><span class="p">);</span>
+            <span class="nx">timer</span><span class="p">.</span><span class="nx">delay</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">frameRate</span><span class="o">;</span>
+            <span class="nx">timer</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+            <span class="nx">timer</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nb">TimerEvent</span><span class="p">.</span><span class="nx">TIMER</span><span class="o">,</span> <span class="nx">onFrame</span><span class="p">);</span>
+            <span class="nx">started</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>Stops the process manager. This is automatically called when the last object
+is removed from the process manager, but can also be called manually to, for
+example, pause the game.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">stop</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">started</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="s2">&quot;stop&quot;</span><span class="o">,</span> <span class="s2">&quot;The TimeManager isn&#39;t started.&quot;</span><span class="p">);</span>
+                <span class="k">return</span><span class="o">;</span>
+            <span class="p">}</span>
+            
+            <span class="nx">started</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">timer</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>Returns true if the process manager is advancing.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">isTicking</span><span class="p">()</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">started</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Schedules a function to be called at a specified time in the future.</p>
+
+<p>@param delay The number of milliseconds in the future to call the function.
+@param thisObject The object on which the function should be called. This
+becomes the 'this' variable in the function.
+@param callback The function to call.
+@param arguments The arguments to pass to the function when it is called.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">schedule</span><span class="p">(</span><span class="nx">delay</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">thisObject</span><span class="o">:</span><span class="nb">Object</span><span class="o">,</span> <span class="nx">callback</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="p">...</span><span class="k">arguments</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">started</span><span class="p">)</span>
+                <span class="nx">start</span><span class="p">();</span>
+            
+            <span class="k">var</span> <span class="nx">schedule</span><span class="o">:</span><span class="nx">ScheduleEntry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ScheduleEntry</span><span class="p">();</span>
+            <span class="nx">schedule</span><span class="p">.</span><span class="nx">dueTime</span> <span class="o">=</span> <span class="nx">_virtualTime</span> <span class="o">+</span> <span class="nx">delay</span><span class="o">;</span>
+            <span class="nx">schedule</span><span class="p">.</span><span class="nx">thisObject</span> <span class="o">=</span> <span class="nx">thisObject</span><span class="o">;</span>
+            <span class="nx">schedule</span><span class="p">.</span><span class="nx">callback</span> <span class="o">=</span> <span class="nx">callback</span><span class="o">;</span>
+            <span class="nx">schedule</span><span class="p">.</span><span class="k">arguments</span> <span class="o">=</span> <span class="k">arguments</span><span class="o">;</span>
+            
+            <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">enqueue</span><span class="p">(</span><span class="nx">schedule</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Registers an object to receive frame callbacks.</p>
+
+<p>@param object The object to add.
+@param priority The priority of the object. Objects added with higher priorities
+will receive their callback before objects with lower priorities. The highest
+(first-processed) priority is Number.MAX<em>VALUE. The lowest (last-processed) 
+priority is -Number.MAX</em>VALUE.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">addAnimatedObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:</span><span class="nx">IAnimated</span><span class="o">,</span> <span class="nx">priority</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">addObject</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="nx">priority</span><span class="o">,</span> <span class="nx">animatedObjects</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>Registers an object to receive tick callbacks.</p>
+
+<p>@param object The object to add.
+@param priority The priority of the object. Objects added with higher priorities
+will receive their callback before objects with lower priorities. The highest
+(first-processed) priority is Number.MAX<em>VALUE. The lowest (last-processed) 
+priority is -Number.MAX</em>VALUE.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">addTickedObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:</span><span class="nx">ITicked</span><span class="o">,</span> <span class="nx">priority</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">addObject</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="nx">priority</span><span class="o">,</span> <span class="nx">tickedObjects</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>Queue an IQueuedObject for callback. This is a very cheap way to have a callback
+happen on an object. If an object is queued when it is already in the queue, it
+is removed, then added.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">queueObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:</span><span class="nx">IQueued</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p>Assert if this is in the past.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span><span class="p">(</span><span class="nx">object</span><span class="p">.</span><span class="nx">nextThinkTime</span> <span class="o">&lt;</span> <span class="nx">_virtualTime</span><span class="p">)</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Tried to queue something into the past, but no flux capacitor is present!&quot;</span><span class="p">);</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="nx">object</span><span class="p">.</span><span class="nx">nextThinkTime</span> <span class="o">&gt;=</span> <span class="nx">_virtualTime</span> <span class="o">&amp;&amp;</span> <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">object</span><span class="p">))</span>
+                <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">enqueue</span><span class="p">(</span><span class="nx">object</span><span class="p">))</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">print</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="s2">&quot;Thinking queue length maxed out!&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <p>Remove an IQueuedObject for consideration for callback. No error results if it
+was not in the queue.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">dequeueObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:</span><span class="nx">IQueued</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">object</span><span class="p">))</span>
+                <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>Unregisters an object from receiving frame callbacks.</p>
+
+<p>@param object The object to remove.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">removeAnimatedObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:</span><span class="nx">IAnimated</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">removeObject</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="nx">animatedObjects</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <p>Unregisters an object from receiving tick callbacks.</p>
+
+<p>@param object The object to remove.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">removeTickedObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:</span><span class="nx">ITicked</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">removeObject</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="nx">tickedObjects</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">msPerTick</span><span class="p">()</span><span class="o">:</span><span class="nb">Number</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">TICK_RATE_MS</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>Forces the process manager to advance by the specified amount. This should
+only be used for unit testing.</p>
+
+<p>@param amount The amount of time to simulate.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">testAdvance</span><span class="p">(</span><span class="nx">amount</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">advance</span><span class="p">(</span><span class="nx">amount</span> <span class="o">*</span> <span class="nx">_timeScale</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <p>Forces the process manager to seek its virtualTime by the specified amount.
+This moves virtualTime without calling advance and without processing ticks or frames.
+WARNING: USE WITH CAUTION AND ONLY IF YOU REALLY KNOW THE CONSEQUENCES!</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">seek</span><span class="p">(</span><span class="nx">amount</span><span class="o">:</span><span class="nb">Number</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_virtualTime</span> <span class="o">+=</span> <span class="nx">amount</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <p>Deferred function callback - called back at start of processing for next frame. Useful
+any time you are going to do setTimeout(someFunc, 1) - it's a lot cheaper to do it 
+this way.
+@param method Function to call.
+@param args Any arguments.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">callLater</span><span class="p">(</span><span class="nx">method</span><span class="o">:</span><span class="nb">Function</span><span class="o">,</span> <span class="nx">args</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="kc">null</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">dm</span><span class="o">:</span><span class="nx">DeferredMethod</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DeferredMethod</span><span class="p">();</span>
+            <span class="nx">dm</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">method</span><span class="o">;</span>
+            <span class="nx">dm</span><span class="p">.</span><span class="nx">args</span> <span class="o">=</span> <span class="nx">args</span><span class="o">;</span>
+            <span class="nx">deferredMethodQueue</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">dm</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>@return How many objects are depending on the TimeManager right now?</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">private</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">listenerCount</span><span class="p">()</span><span class="o">:</span><span class="nb">int</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">tickedObjects</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="nx">animatedObjects</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Internal function add an object to a list with a given priority.
+@param object Object to add.
+@param priority Priority; this is used to keep the list ordered.
+@param list List to add to.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">addObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:*,</span> <span class="nx">priority</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">list</span><span class="o">:</span><span class="nb">Array</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <p>If we are in a tick, defer the add.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span><span class="p">(</span><span class="nx">duringAdvance</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Unimplemented!&quot;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <p>group.callLater(addObject, [ object, priority, list]);</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">return</span><span class="o">;</span>
+            <span class="p">}</span>
+            
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">started</span><span class="p">)</span>
+                <span class="nx">start</span><span class="p">();</span>
+            
+            <span class="k">var</span> <span class="nx">position</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">listener</span> <span class="o">==</span> <span class="nx">object</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="s2">&quot;AddProcessObject&quot;</span><span class="o">,</span> <span class="s2">&quot;This object has already been added to the process manager.&quot;</span><span class="p">);</span>
+                    <span class="k">return</span><span class="o">;</span>
+                <span class="p">}</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">priority</span> <span class="o">&lt;</span> <span class="nx">priority</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="nx">position</span> <span class="o">=</span> <span class="nx">i</span><span class="o">;</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="k">var</span> <span class="nx">processObject</span><span class="o">:</span><span class="nx">ProcessObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ProcessObject</span><span class="p">();</span>
+            <span class="nx">processObject</span><span class="p">.</span><span class="nx">listener</span> <span class="o">=</span> <span class="nx">object</span><span class="o">;</span>
+            <span class="nx">processObject</span><span class="p">.</span><span class="nx">priority</span> <span class="o">=</span> <span class="nx">priority</span><span class="o">;</span>
+            <span class="nx">processObject</span><span class="p">.</span><span class="nx">profilerKey</span> <span class="o">=</span> <span class="nx">TypeUtility</span><span class="p">.</span><span class="nx">getObjectClassName</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            
+            <span class="k">if</span> <span class="p">(</span><span class="nx">position</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">position</span> <span class="o">&gt;=</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+                <span class="nx">list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">processObject</span><span class="p">);</span>
+            <span class="k">else</span>
+                <span class="nx">list</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">position</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="nx">processObject</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <p>Peer to addObject; removes an object from a list. 
+@param object Object to remove.
+@param list List from which to remove.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">removeObject</span><span class="p">(</span><span class="nx">object</span><span class="o">:*,</span> <span class="nx">list</span><span class="o">:</span><span class="nb">Array</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">listenerCount</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="nx">stop</span><span class="p">();</span>
+            
+            <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">listener</span> <span class="o">==</span> <span class="nx">object</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">duringAdvance</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                        <span class="nx">needPurgeEmpty</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">else</span>
+                    <span class="p">{</span>
+                        <span class="nx">list</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="o">,</span> <span class="mi">1</span><span class="p">);</span>                        
+                    <span class="p">}</span>
+                    
+                    <span class="k">return</span><span class="o">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="s2">&quot;RemoveProcessObject&quot;</span><span class="o">,</span> <span class="s2">&quot;This object has not been added to the process manager.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <p>Main callback; this is called every frame and allows game logic to run. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">onFrame</span><span class="p">(</span><span class="nx">event</span><span class="o">:</span><span class="nb">TimerEvent</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <p>This is called from a system event, so it had better be at the 
+root of the profiler stack!</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">ensureAtRoot</span><span class="p">();</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <p>Track current time.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">currentTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nf">getTimer</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">lastTime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">lastTime</span> <span class="o">=</span> <span class="nx">currentTime</span><span class="o">;</span>
+                <span class="k">return</span><span class="o">;</span>
+            <span class="p">}</span>
+            
+            <span class="nx">timer</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <p>Bump the frame counter.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_frameCounter</span><span class="o">++;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <p>Calculate time since last frame and advance that much.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">deltaTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">currentTime</span> <span class="o">-</span> <span class="nx">lastTime</span><span class="p">)</span> <span class="o">*</span> <span class="nx">_timeScale</span><span class="o">;</span>
+            <span class="nx">advance</span><span class="p">(</span><span class="nx">deltaTime</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <p>Note new last time.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">lastTime</span> <span class="o">=</span> <span class="nx">currentTime</span><span class="o">;</span>
+            
+            <span class="nx">timer</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+            <span class="nx">event</span><span class="p">.</span><span class="nf">updateAfterEvent</span><span class="p">();</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">stage</span><span class="p">)</span>
+                <span class="nx">stage</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">advance</span><span class="p">(</span><span class="nx">deltaTime</span><span class="o">:</span><span class="nb">Number</span><span class="o">,</span> <span class="nx">suppressSafety</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="s2">&quot;advance&quot;</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-41">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>               <p>Update platform time, to avoid lots of costly calls to getTimer.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_platformTime</span> <span class="o">=</span> <span class="nf">getTimer</span><span class="p">();</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-42">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>               <p>Note virtual time we started advancing from.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">startTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nx">_virtualTime</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-43">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>               <p>Add time to the accumulator.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">elapsed</span> <span class="o">+=</span> <span class="nx">deltaTime</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-44">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-44">&#182;</a>               </div>               <p>Perform ticks, respecting tick caps.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">tickCount</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="k">while</span> <span class="p">(</span><span class="nx">elapsed</span> <span class="o">&gt;=</span> <span class="nx">TICK_RATE_MS</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">suppressSafety</span> <span class="o">||</span> <span class="nx">tickCount</span> <span class="o">&lt;</span> <span class="nx">MAX_TICKS_PER_FRAME</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="nx">fireTick</span><span class="p">();</span>
+                <span class="nx">tickCount</span><span class="o">++;</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-45">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-45">&#182;</a>               </div>               <p>Safety net - don't do more than a few ticks per frame to avoid death spirals.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span> <span class="p">(</span><span class="nx">tickCount</span> <span class="o">&gt;=</span> <span class="nx">MAX_TICKS_PER_FRAME</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">suppressSafety</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">disableSlowWarning</span><span class="p">)</span>
+            <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-46">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-46">&#182;</a>               </div>               <p>By default, only show when profiling.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="s2">&quot;advance&quot;</span><span class="o">,</span> <span class="s2">&quot;Exceeded maximum number of ticks for frame (&quot;</span> <span class="o">+</span> <span class="nx">elapsed</span><span class="p">.</span><span class="nx">toFixed</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;ms dropped) .&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-47">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-47">&#182;</a>               </div>               <p>Make sure that we don't fall behind too far. This helps correct
+for short-term drops in framerate as well as the scenario where
+we are consistently running behind.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">elapsed</span> <span class="o">=</span> <span class="nx">PBUtil</span><span class="p">.</span><span class="nx">clamp</span><span class="p">(</span><span class="nx">elapsed</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">300</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-48">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-48">&#182;</a>               </div>               <p>Make sure we don't lose time to accumulation error.
+Not sure this gains us anything, so disabling -- BJG
+_virtualTime = startTime + deltaTime;</p>             </td>             <td class="code">               <div class="highlight"><pre>            </pre></div>             </td>           </tr>                               <tr id="section-49">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-49">&#182;</a>               </div>               <p>We process scheduled items again after tick processing to ensure between-tick schedules are hit
+Commenting this out because it can cause too-often calling of callLater methods. -- BJG
+processScheduledObjects();</p>             </td>             <td class="code">               <div class="highlight"><pre>            </pre></div>             </td>           </tr>                               <tr id="section-50">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-50">&#182;</a>               </div>               <p>Update objects wanting OnFrame callbacks.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="s2">&quot;frame&quot;</span><span class="p">);</span>
+            <span class="nx">duringAdvance</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nx">_interpolationFactor</span> <span class="o">=</span> <span class="nx">elapsed</span> <span class="o">/</span> <span class="nx">TICK_RATE_MS</span><span class="o">;</span>
+            <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">animatedObjects</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">var</span> <span class="nx">animatedObject</span><span class="o">:</span><span class="nx">ProcessObject</span> <span class="o">=</span> <span class="nx">animatedObjects</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="nx">as</span> <span class="nx">ProcessObject</span><span class="o">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">animatedObject</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="nx">animatedObject</span><span class="p">.</span><span class="nx">profilerKey</span><span class="p">);</span>
+                <span class="p">(</span><span class="nx">animatedObject</span><span class="p">.</span><span class="nx">listener</span> <span class="nx">as</span> <span class="nx">IAnimated</span><span class="p">).</span><span class="nx">onFrame</span><span class="p">();</span>
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="nx">animatedObject</span><span class="p">.</span><span class="nx">profilerKey</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="nx">duringAdvance</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="s2">&quot;frame&quot;</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-51">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-51">&#182;</a>               </div>               <p>Purge the lists if needed.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span><span class="p">(</span><span class="nx">needPurgeEmpty</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">needPurgeEmpty</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="s2">&quot;purgeEmpty&quot;</span><span class="p">);</span>
+                
+                <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">j</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">j</span><span class="o">&lt;</span><span class="nx">animatedObjects</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">animatedObjects</span><span class="p">[</span><span class="nx">j</span><span class="p">])</span>
+                        <span class="k">continue</span><span class="o">;</span>
+                    
+                    <span class="nx">animatedObjects</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">j</span><span class="o">,</span> <span class="mi">1</span><span class="p">);</span>
+                    <span class="nx">j</span><span class="o">--;</span>
+                <span class="p">}</span>
+                
+                <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">k</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">k</span><span class="o">&lt;</span><span class="nx">tickedObjects</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span>
+                <span class="p">{</span>                    
+                    <span class="k">if</span><span class="p">(</span><span class="nx">tickedObjects</span><span class="p">[</span><span class="nx">k</span><span class="p">])</span>
+                        <span class="k">continue</span><span class="o">;</span>
+                    
+                    <span class="nx">tickedObjects</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">k</span><span class="o">,</span> <span class="mi">1</span><span class="p">);</span>
+                    <span class="nx">k</span><span class="o">--;</span>
+                <span class="p">}</span>
+                
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="s2">&quot;purgeEmpty&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+            
+            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="s2">&quot;advance&quot;</span><span class="p">);</span>
+            
+            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">ensureAtRoot</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">fireTick</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-52">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-52">&#182;</a>               </div>               <p>Ticks always happen on interpolation boundary.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_interpolationFactor</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-53">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-53">&#182;</a>               </div>               <p>Process pending events at this tick.
+This is done in the loop to ensure the correct order of events.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">processScheduledObjects</span><span class="p">();</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-54">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-54">&#182;</a>               </div>               <p>Do the onTick callbacks, noting time in profiler appropriately.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="s2">&quot;tick&quot;</span><span class="p">);</span>
+            
+            <span class="nx">duringAdvance</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">j</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">j</span><span class="o">&lt;</span><span class="nx">tickedObjects</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">var</span> <span class="nx">object</span><span class="o">:</span><span class="nx">ProcessObject</span> <span class="o">=</span> <span class="nx">tickedObjects</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="nx">as</span> <span class="nx">ProcessObject</span><span class="o">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">object</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="nx">object</span><span class="p">.</span><span class="nx">profilerKey</span><span class="p">);</span>
+                <span class="p">(</span><span class="nx">object</span><span class="p">.</span><span class="nx">listener</span> <span class="nx">as</span> <span class="nx">ITicked</span><span class="p">).</span><span class="nx">onTick</span><span class="p">();</span>
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="nx">object</span><span class="p">.</span><span class="nx">profilerKey</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="nx">duringAdvance</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            
+            <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="s2">&quot;tick&quot;</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-55">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-55">&#182;</a>               </div>               <p>Update virtual time by subtracting from accumulator.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_virtualTime</span> <span class="o">+=</span> <span class="nx">TICK_RATE_MS</span><span class="o">;</span>
+            <span class="nx">elapsed</span> <span class="o">-=</span> <span class="nx">TICK_RATE_MS</span><span class="o">;</span>            
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">processScheduledObjects</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-56">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-56">&#182;</a>               </div>               <p>Do any deferred methods.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">oldDeferredMethodQueue</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">deferredMethodQueue</span><span class="o">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">oldDeferredMethodQueue</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="s2">&quot;callLater&quot;</span><span class="p">);</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-57">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-57">&#182;</a>               </div>               <p>Put a new array in the queue to avoid getting into corrupted
+state due to more calls being added.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="nx">deferredMethodQueue</span> <span class="o">=</span> <span class="p">[];</span>
+                
+                <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">j</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">j</span><span class="o">&lt;</span><span class="nx">oldDeferredMethodQueue</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">var</span> <span class="nx">curDM</span><span class="o">:</span><span class="nx">DeferredMethod</span> <span class="o">=</span> <span class="nx">oldDeferredMethodQueue</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="nx">as</span> <span class="nx">DeferredMethod</span><span class="o">;</span>
+                    <span class="nx">curDM</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="nx">curDM</span><span class="p">.</span><span class="nx">args</span><span class="p">);</span>
+                <span class="p">}</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-58">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-58">&#182;</a>               </div>               <p>Wipe the old array now we're done with it.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="nx">oldDeferredMethodQueue</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="s2">&quot;callLater&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-59">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-59">&#182;</a>               </div>               <p>Process any queued items.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span><span class="p">(</span><span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">size</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="s2">&quot;Queue&quot;</span><span class="p">);</span>
+                
+                <span class="k">while</span><span class="p">(</span><span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">size</span> <span class="o">&amp;&amp;</span> <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">front</span><span class="p">.</span><span class="nx">priority</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="nx">_virtualTime</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">var</span> <span class="nx">itemRaw</span><span class="o">:</span><span class="nx">IPrioritizable</span> <span class="o">=</span> <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">dequeue</span><span class="p">();</span>
+                    <span class="k">var</span> <span class="nx">qItem</span><span class="o">:</span><span class="nx">IQueued</span> <span class="o">=</span> <span class="nx">itemRaw</span> <span class="nx">as</span> <span class="nx">IQueued</span><span class="o">;</span>
+                    <span class="k">var</span> <span class="nx">sItem</span><span class="o">:</span><span class="nx">ScheduleEntry</span> <span class="o">=</span> <span class="nx">itemRaw</span> <span class="nx">as</span> <span class="nx">ScheduleEntry</span><span class="o">;</span>
+                    
+                    <span class="k">var</span> <span class="nx">type</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="nx">TypeUtility</span><span class="p">.</span><span class="nx">getObjectClassName</span><span class="p">(</span><span class="nx">itemRaw</span><span class="p">);</span>
+                    
+                    <span class="nx">Profiler</span><span class="p">.</span><span class="nx">enter</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">qItem</span><span class="p">)</span>
+                    <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-60">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-60">&#182;</a>               </div>               <p>Check here to avoid else block that throws an error - empty callback
+means it unregistered.</p>             </td>             <td class="code">               <div class="highlight"><pre>                        <span class="k">if</span><span class="p">(</span><span class="nx">qItem</span><span class="p">.</span><span class="nx">nextThinkCallback</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span>
+                            <span class="nx">qItem</span><span class="p">.</span><span class="nx">nextThinkCallback</span><span class="p">();</span>
+                    <span class="p">}</span>
+                    <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">sItem</span> <span class="o">&amp;&amp;</span> <span class="nx">sItem</span><span class="p">.</span><span class="nx">callback</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">sItem</span><span class="p">.</span><span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">sItem</span><span class="p">.</span><span class="nx">thisObject</span><span class="o">,</span> <span class="nx">sItem</span><span class="p">.</span><span class="k">arguments</span><span class="p">);</span>                    
+                    <span class="p">}</span>
+                    <span class="k">else</span>
+                    <span class="p">{</span>
+                        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Unknown type found in thinkHeap.&quot;</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>                    
+                    
+                <span class="p">}</span>
+                
+                <span class="nx">Profiler</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="s2">&quot;Queue&quot;</span><span class="p">);</span>                
+            <span class="p">}</span>
+        <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-61">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-61">&#182;</a>               </div>               <p>Dumps the contents of the thinking queue to the console.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">printThinkingQueue</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">Logger</span><span class="p">.</span><span class="nx">print</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">sprintf</span><span class="p">(</span><span class="s2">&quot;%-11s%-80s%-3s&quot;</span><span class="o">,</span> <span class="s2">&quot;Priority&quot;</span><span class="o">,</span> <span class="s2">&quot;Class Name&quot;</span><span class="o">,</span> <span class="s2">&quot;Has Owner&quot;</span><span class="p">));</span>         </pre></div>             </td>           </tr>                               <tr id="section-62">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-62">&#182;</a>               </div>               <p>Get the contents of the think heap as an array</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">queue</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="nx">thinkHeap</span><span class="p">.</span><span class="nx">toArray</span><span class="p">();</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-63">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-63">&#182;</a>               </div>               <p>traverse the think heap and print it to the console. </p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span> <span class="nx">queue</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">var</span> <span class="nx">item</span><span class="o">:</span><span class="nx">IPrioritizable</span> <span class="o">=</span> <span class="nx">queue</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+                <span class="k">var</span> <span class="nx">component</span><span class="o">:</span><span class="nx">PBComponent</span> <span class="o">=</span> <span class="nx">item</span> <span class="nx">as</span> <span class="nx">PBComponent</span><span class="o">;</span>
+                <span class="k">var</span> <span class="nx">hasOwner</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span><span class="o">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="nx">component</span> <span class="o">&amp;&amp;</span> <span class="nx">component</span><span class="p">.</span><span class="nx">owner</span><span class="p">)</span>
+                    <span class="nx">hasOwner</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span><span class="o">;</span>
+                <span class="k">var</span> <span class="nx">queueEntry</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="nx">sprintf</span><span class="p">(</span> <span class="s2">&quot;%-11s%-80s%-3s&quot;</span><span class="o">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">priority</span><span class="o">,</span> <span class="nx">TypeUtility</span><span class="p">.</span><span class="nx">getObjectClassName</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span><span class="o">,</span> <span class="nx">hasOwner</span><span class="p">);</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">print</span><span class="p">(</span><span class="nx">TimeManager</span><span class="o">,</span> <span class="nx">queueEntry</span><span class="p">);</span>
+            <span class="p">}</span>
+            
+            <span class="nx">Logger</span><span class="p">.</span><span class="nx">print</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="s2">&quot;There are &quot;</span> <span class="o">+</span> <span class="nx">queue</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="s2">&quot; items in the queue.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">deferredMethodQueue</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">started</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_virtualTime</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_interpolationFactor</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_timeScale</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">lastTime</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">elapsed</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">animatedObjects</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">tickedObjects</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">needPurgeEmpty</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_platformTime</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_frameCounter</span><span class="o">:</span><span class="nb">uint</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">duringAdvance</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">thinkHeap</span><span class="o">:</span><span class="nx">SimplePriorityQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SimplePriorityQueue</span><span class="p">(</span><span class="mi">4096</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="nx">ProcessObject</span>
+<span class="p">{</span>
+    <span class="kd">public</span> <span class="k">var</span> <span class="nx">profilerKey</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="k">var</span> <span class="nx">listener</span><span class="o">:*</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="k">var</span> <span class="nx">priority</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+<span class="p">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="nx">DeferredMethod</span>
+<span class="p">{</span>
+    <span class="kd">public</span> <span class="k">var</span> <span class="nx">method</span><span class="o">:</span><span class="nb">Function</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;;</span>
+    <span class="kd">public</span> <span class="k">var</span> <span class="nx">args</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

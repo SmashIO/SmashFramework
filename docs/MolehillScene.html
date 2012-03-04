@@ -1,0 +1,57 @@
+<!DOCTYPE html>  <html> <head>   <title>MolehillScene.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               MolehillScene.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">demos</span><span class="p">.</span><span class="nx">molehill</span>
+<span class="p">{</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">PBUtil</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBGameObject</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBGroup</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">ITicked</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">TimeManager</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Stage</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nb">Point</span><span class="o">;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Demo showing how to do a little Molehill rendering. This is an 
+advanced demo is light on the docs.</p>
+
+<p>If you are getting a bad FPS (&lt;20), make sure wmode = direct</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">MolehillScene</span> <span class="kd">extends</span> <span class="nx">PBGroup</span> <span class="kd">implements</span> <span class="nx">ITicked</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stage</span><span class="o">:</span><span class="nb">Stage</span><span class="o">;</span>
+        
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">timeManager</span><span class="o">:</span><span class="nx">TimeManager</span><span class="o">;</span>
+        
+        <span class="kd">public</span> <span class="kd">override</span> <span class="kd">function</span> <span class="nx">initialize</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="kd">super</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
+            
+            <span class="nx">registerManager</span><span class="p">(</span><span class="nx">QuadScene</span><span class="o">,</span> <span class="k">new</span> <span class="nx">QuadScene</span><span class="p">());</span>
+            
+            <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+                <span class="nx">createQuad</span><span class="p">();</span>
+            
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">addTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">override</span> <span class="kd">function</span> <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">removeTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            
+            <span class="kd">super</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">createQuad</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">go</span><span class="o">:</span><span class="nx">MolehillGameObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MolehillGameObject</span><span class="p">();</span>
+            <span class="nx">go</span><span class="p">.</span><span class="nx">owningGroup</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+            
+            <span class="nx">go</span><span class="p">.</span><span class="nx">render</span><span class="p">.</span><span class="nx">size</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Point</span><span class="p">(</span><span class="nx">PBUtil</span><span class="p">.</span><span class="nx">pickWithBias</span><span class="p">(</span><span class="mi">10</span><span class="o">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">,</span> <span class="nx">PBUtil</span><span class="p">.</span><span class="nx">pickWithBias</span><span class="p">(</span><span class="mi">10</span><span class="o">,</span> <span class="mi">100</span><span class="p">));</span>
+            <span class="nx">go</span><span class="p">.</span><span class="nx">render</span><span class="p">.</span><span class="nx">addBinding</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="o">,</span> <span class="s2">&quot;@mover.position&quot;</span><span class="p">);</span>
+
+            <span class="nx">go</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">onTick</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Add some neat behavior here!</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

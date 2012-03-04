@@ -1,0 +1,169 @@
+<!DOCTYPE html>  <html> <head>   <title>FSMDemoScene.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               FSMDemoScene.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Excruciating simple demo showing how we can implement complex movement of
+an object using a simple finite state machine. Hold A or S to move the 
+object.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">demos</span><span class="p">.</span><span class="nx">demo_09_stateMachineDemo</span>
+<span class="p">{</span>
+    
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBGroup</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">KeyboardKey</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">KeyboardManager</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">ITicked</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">TimeManager</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">DisplayObject</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Sprite</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Stage</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nb">TextField</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nb">TextFieldAutoSize</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nb">TextFormat</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nb">Dictionary</span><span class="o">;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Implementation</h2>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">FSMDemoScene</span> <span class="kd">extends</span> <span class="nx">PBGroup</span> <span class="kd">implements</span> <span class="nx">ITicked</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stage</span><span class="o">:</span><span class="nb">Stage</span><span class="o">;</span>
+        
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">timeManager</span><span class="o">:</span><span class="nx">TimeManager</span><span class="o">;</span>
+        
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">keyboardManager</span><span class="o">:</span><span class="nx">KeyboardManager</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Variable to hold our current state. We use strings but a lot of times
+you will want to hold a reference to the actual state description (if
+your state machine is data driven) or to a numerical token. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">state</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="s2">&quot;Idle&quot;</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>When did we enter the current state? Used for states that have a delay. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stateEnterTime</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Position on the X axis of our controlled object. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">position</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">circleSprite</span><span class="o">:</span><span class="nb">Sprite</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Sprite</span><span class="p">();</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stateIndicator</span><span class="o">:</span><span class="nb">TextField</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextField</span><span class="p">();</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Initialize Demo</h2>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">override</span> <span class="kd">function</span> <span class="nx">initialize</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="kd">super</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
+            
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">addChild</span><span class="p">(</span><span class="nx">circleSprite</span><span class="p">);</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">addChild</span><span class="p">(</span><span class="nx">stateIndicator</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Set up a TextField to show our current state.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">stateIndicator</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">stageHeight</span> <span class="o">-</span> <span class="mi">64</span><span class="o">;</span>
+            <span class="nx">stateIndicator</span><span class="p">.</span><span class="nx">autoSize</span> <span class="o">=</span> <span class="nb">TextFieldAutoSize</span><span class="p">.</span><span class="nx">LEFT</span><span class="o">;</span>
+            <span class="nx">stateIndicator</span><span class="p">.</span><span class="nx">mouseEnabled</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">stateIndicator</span><span class="p">.</span><span class="nx">textColor</span> <span class="o">=</span> <span class="mh">0x0</span><span class="o">;</span>
+            <span class="nx">stateIndicator</span><span class="p">.</span><span class="nx">defaultTextFormat</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextFormat</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="mi">48</span><span class="o">,</span> <span class="mh">0x0</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+            
+            <span class="nx">redrawCircle</span><span class="p">();</span>
+            
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">addTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h2>Goto A State</h2>
+
+<p>Helper function to immediately change to a given state. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">gotoState</span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span> 
+        <span class="p">{</span>
+            <span class="nx">state</span> <span class="o">=</span> <span class="nx">name</span><span class="o">;</span>
+            <span class="nx">stateEnterTime</span> <span class="o">=</span> <span class="nx">timeManager</span><span class="p">.</span><span class="nx">virtualTime</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Advance FSM</h2>
+
+<p>This function advances the state machine. As you can see, every state
+is represented in the switch() statement. Each state has a rule on how
+to advance (for instance: wait a few ms, check for key down). If the
+rule isn't met, the state does nothing and is called on the next tick.
+If it is met, then gotoState() is called and the state is changed to
+a new state.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">advanceState</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Branch based on our current state. In a more powerful FSM system,
+you might have a bunch of state descriptions and look them up
+in a dictionary, and have a list of transition rules per state
+kept in each state's description. But for simplicity we do this.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">switch</span><span class="p">(</span><span class="nx">state</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">case</span> <span class="s2">&quot;Idle&quot;</span><span class="o">:</span>
+                    </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>If we're idle, we can start going left or right based on
+user input. Else stay idle.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    
+                    <span class="k">if</span><span class="p">(</span><span class="nx">keyboardManager</span><span class="p">.</span><span class="nx">isKeyDown</span><span class="p">(</span><span class="nx">KeyboardKey</span><span class="p">.</span><span class="nx">A</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">))</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;StartLeft&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    
+                    <span class="k">if</span><span class="p">(</span><span class="nx">keyboardManager</span><span class="p">.</span><span class="nx">isKeyDown</span><span class="p">(</span><span class="nx">KeyboardKey</span><span class="p">.</span><span class="nx">S</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">))</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;StartRight&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                
+                <span class="k">case</span> <span class="s2">&quot;StartLeft&quot;</span><span class="o">:</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Wait 100ms, then go to the Left state.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    <span class="k">if</span><span class="p">(</span><span class="nx">timeManager</span><span class="p">.</span><span class="nx">virtualTime</span> <span class="o">-</span> <span class="nx">stateEnterTime</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;Left&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                
+                <span class="k">case</span> <span class="s2">&quot;StartRight&quot;</span><span class="o">:</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Wait 100ms, then go to the Right state.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    <span class="k">if</span><span class="p">(</span><span class="nx">timeManager</span><span class="p">.</span><span class="nx">virtualTime</span> <span class="o">-</span> <span class="nx">stateEnterTime</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;Right&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                
+                <span class="k">case</span> <span class="s2">&quot;Left&quot;</span><span class="o">:</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Every tick we are in the left state, move -1 on the X
+axis. Additionally, if S is pressed, go to the StopLeft
+state.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    <span class="nx">position</span> <span class="o">-=</span> <span class="mi">1</span><span class="o">;</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">keyboardManager</span><span class="p">.</span><span class="nx">isKeyDown</span><span class="p">(</span><span class="nx">KeyboardKey</span><span class="p">.</span><span class="nx">S</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">))</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;StopLeft&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                
+                <span class="k">case</span> <span class="s2">&quot;Right&quot;</span><span class="o">:</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Every tick we are in the right state, move 1 on the X
+axis. Additionally, if A is pressed, go to the StopRight
+state.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    <span class="nx">position</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">;</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">keyboardManager</span><span class="p">.</span><span class="nx">isKeyDown</span><span class="p">(</span><span class="nx">KeyboardKey</span><span class="p">.</span><span class="nx">A</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">))</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;StopRight&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                
+                <span class="k">case</span> <span class="s2">&quot;StopLeft&quot;</span><span class="o">:</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Wait 250ms, then go back to Idle.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    <span class="k">if</span><span class="p">(</span><span class="nx">timeManager</span><span class="p">.</span><span class="nx">virtualTime</span> <span class="o">-</span> <span class="nx">stateEnterTime</span> <span class="o">&gt;</span> <span class="mi">250</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                
+                <span class="k">case</span> <span class="s2">&quot;StopRight&quot;</span><span class="o">:</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>Wait 250ms, then go back to Idle.</p>             </td>             <td class="code">               <div class="highlight"><pre>                    <span class="k">if</span><span class="p">(</span><span class="nx">timeManager</span><span class="p">.</span><span class="nx">virtualTime</span> <span class="o">-</span> <span class="nx">stateEnterTime</span> <span class="o">&gt;</span> <span class="mi">250</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">gotoState</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">);</span>
+                        <span class="k">return</span><span class="o">;</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+            <span class="p">}</span>    
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Tick Handler</h2>
+
+<p>Advance the state machine, then update the visuals. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">onTick</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">advanceState</span><span class="p">();</span>
+            
+            <span class="nx">redrawCircle</span><span class="p">();</span>
+            
+            <span class="nx">stateIndicator</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nx">state</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Circle Drawer</h2>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">redrawCircle</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">beginFill</span><span class="p">(</span><span class="nx">state</span> <span class="o">==</span> <span class="s2">&quot;Idle&quot;</span> <span class="o">?</span> <span class="mh">0x00</span><span class="nx">FF00</span> <span class="o">:</span> <span class="mi">0</span><span class="nx">xFF0000</span><span class="p">);</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">drawCircle</span><span class="p">(</span><span class="mi">100</span> <span class="o">+</span> <span class="nx">position</span> <span class="o">*</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="mi">50</span><span class="p">);</span>            
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Destroy Demo</h2>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">override</span> <span class="kd">function</span> <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">removeTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">stateIndicator</span><span class="p">);</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">circleSprite</span><span class="p">);</span>
+            
+            <span class="kd">super</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// @docco-chapter 2. Building Gameplay</span>
+<span class="c1">// @docco-order 5</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

@@ -1,0 +1,251 @@
+<!DOCTYPE html>  <html> <head>   <title>TypeUtility.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               TypeUtility.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <hr />
+
+<p>PushButton Engine
+Copyright (C) 2009 PushButton Labs, LLC
+For more information see http://www.pushbuttonengine.com</p>
+
+<p>This file is licensed under the terms of the MIT license, which is included
+in the License.html file at the root directory of this SDK.
+<strong><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em>*</strong>/</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">util</span>
+<span class="p">{</span>    
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">Logger</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nb">Dictionary</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nb">Proxy</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">describeType</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">getDefinitionByName</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">getQualifiedClassName</span><span class="o">;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>TypeUtility is a static class containing methods that aid in type
+introspection and reflection.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">TypeUtility</span>
+    <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Registers a function that will be called when the specified type needs to be
+instantiated. The function should return an instance of the specified type.</p>
+
+<p>@param typeName The name of the type the specified function should handle.
+@param instantiator The function that instantiates the specified type.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">registerInstantiator</span><span class="p">(</span><span class="nx">typeName</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">instantiator</span><span class="o">:</span><span class="nb">Function</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">_instantiators</span><span class="p">[</span><span class="nx">typeName</span><span class="p">])</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s2">&quot;TypeUtility&quot;</span><span class="o">,</span> <span class="s2">&quot;registerInstantiator&quot;</span><span class="o">,</span> <span class="s2">&quot;An instantiator for &quot;</span> <span class="o">+</span> <span class="nx">typeName</span> <span class="o">+</span> <span class="s2">&quot; has already been registered. It will be replaced.&quot;</span><span class="p">);</span>
+            
+            <span class="nx">_instantiators</span><span class="p">[</span><span class="nx">typeName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">instantiator</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Returns the fully qualified name of the type
+of the passed in object.</p>
+
+<p>@param object The object whose type is being retrieved.</p>
+
+<p>@return The name of the specified object's type.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getObjectClassName</span><span class="p">(</span><span class="nx">object</span><span class="o">:*</span><span class="p">)</span><span class="o">:</span><span class="nb">String</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">getQualifiedClassName</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Returns the Class object for the given class.</p>
+
+<p>@param className The fully qualified name of the class being looked up.</p>
+
+<p>@return The Class object of the specified class, or null if wasn't found.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getClassFromName</span><span class="p">(</span><span class="nx">className</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">Class</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">getDefinitionByName</span><span class="p">(</span><span class="nx">className</span><span class="p">)</span> <span class="nx">as</span> <span class="nb">Class</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>This is a clever discovery in the SwiftSuspenders library, so I copied it :P</p>
+
+<p>Basically, some classes throw exeptions and such when we try to get the
+constructor, so canstructor getting is then abstracted, and a simple is
+check is used to see if we can get the costructor or use the more costly
+<code>getQualifiedClassName()</code> method to get the class definition</p>
+
+<p>@param value
+@return</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getClass</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">Object</span><span class="p">)</span><span class="o">:</span><span class="nb">Class</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">value</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            
+            <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="nx">is</span> <span class="nb">Proxy</span> <span class="o">||</span> <span class="nx">value</span> <span class="nx">is</span> <span class="nb">Number</span> <span class="o">||</span> <span class="nx">value</span> <span class="nx">is</span> <span class="nb">XML</span> <span class="o">||</span> <span class="nx">value</span> <span class="nx">is</span> <span class="nb">XMLList</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">var</span> <span class="nx">qname</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="nx">getQualifiedClassName</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+                <span class="k">return</span> <span class="nb">Class</span><span class="p">(</span><span class="nx">getDefinitionByName</span><span class="p">(</span><span class="nx">qname</span><span class="p">));</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="nx">value</span><span class="p">.</span><span class="nx">constructor</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Creates an instance of a type based on its name.</p>
+
+<p>@param className The name of the class to instantiate.</p>
+
+<p>@return An instance of the class, or null if instantiation failed.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">instantiate</span><span class="p">(</span><span class="nx">className</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">suppressError</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span><span class="o">:*</span>
+        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Deal with strings explicitly as they are a primitive.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span> <span class="p">(</span><span class="nx">className</span> <span class="o">==</span> <span class="s2">&quot;String&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Class is also a primitive type.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span><span class="p">(</span><span class="nx">className</span> <span class="o">==</span> <span class="s2">&quot;Class&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">Class</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Check for overrides.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span> <span class="p">(</span><span class="nx">_instantiators</span><span class="p">[</span><span class="nx">className</span><span class="p">])</span>
+                <span class="k">return</span> <span class="nx">_instantiators</span><span class="p">[</span><span class="nx">className</span><span class="p">]();</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Give it a shot!</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">try</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="k">new</span> <span class="p">(</span><span class="nx">getDefinitionByName</span><span class="p">(</span><span class="nx">className</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="nb">Error</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">suppressError</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="s2">&quot;Instantiate&quot;</span><span class="o">,</span> <span class="s2">&quot;Failed to instantiate &quot;</span> <span class="o">+</span> <span class="nx">className</span> <span class="o">+</span> <span class="s2">&quot; due to &quot;</span> <span class="o">+</span> <span class="nx">e</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+                    <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="kc">null</span><span class="o">,</span> <span class="s2">&quot;Instantiate&quot;</span><span class="o">,</span> <span class="s2">&quot;Is &quot;</span> <span class="o">+</span> <span class="nx">className</span> <span class="o">+</span> <span class="s2">&quot; included in your SWF? Make sure you call context.registerType(&quot;</span> <span class="o">+</span> <span class="nx">className</span> <span class="o">+</span> <span class="s2">&quot;); somewhere in your project.&quot;</span><span class="p">);</span>				 
+                <span class="p">}</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>If we get here, couldn't new it.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Gets the type of a field as a string for a specific field on an object.</p>
+
+<p>@param object The object on which the field exists.
+@param field The name of the field whose type is being looked up.</p>
+
+<p>@return The fully qualified name of the type of the specified field, or
+null if the field wasn't found.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getFieldType</span><span class="p">(</span><span class="nx">object</span><span class="o">:*,</span> <span class="nx">field</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">String</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">typeXML</span><span class="o">:</span><span class="nb">XML</span> <span class="o">=</span> <span class="nx">getTypeDescription</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Look for a matching accessor.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">for</span> <span class="k">each</span><span class="p">(</span><span class="k">var</span> <span class="nx">property</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">typeXML</span><span class="p">.</span><span class="nx">child</span><span class="p">(</span><span class="s2">&quot;accessor&quot;</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">property</span><span class="p">.</span><span class="nx">attribute</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">field</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="nx">property</span><span class="p">.</span><span class="nx">attribute</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Look for a matching variable.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">for</span> <span class="k">each</span><span class="p">(</span><span class="k">var</span> <span class="nx">variable</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">typeXML</span><span class="p">.</span><span class="nx">child</span><span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">variable</span><span class="p">.</span><span class="nx">attribute</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">field</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="nx">variable</span><span class="p">.</span><span class="nx">attribute</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Determines if an object is an instance of a dynamic class.</p>
+
+<p>@param object The object to check.</p>
+
+<p>@return True if the object is dynamic, false otherwise.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">isDynamic</span><span class="p">(</span><span class="nx">object</span><span class="o">:*</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">object</span> <span class="nx">is</span> <span class="nb">Class</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">object</span><span class="o">,</span> <span class="s2">&quot;isDynamic&quot;</span><span class="o">,</span> <span class="s2">&quot;The object is a Class type, which is always dynamic&quot;</span><span class="p">);</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="p">}</span>
+            
+            <span class="k">var</span> <span class="nx">typeXml</span><span class="o">:</span><span class="nb">XML</span> <span class="o">=</span> <span class="nx">getTypeDescription</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">typeXml</span><span class="p">.</span><span class="err">@</span><span class="nx">isDynamic</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>Determine the type, specified by metadata, for a container class like an Array.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getTypeHint</span><span class="p">(</span><span class="nx">object</span><span class="o">:*,</span> <span class="nx">field</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">String</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">description</span><span class="o">:</span><span class="nb">XML</span> <span class="o">=</span> <span class="nx">getTypeDescription</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">description</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            
+            <span class="k">for</span> <span class="k">each</span> <span class="p">(</span><span class="k">var</span> <span class="nx">variable</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">description</span><span class="p">.</span><span class="o">*</span><span class="p">)</span>
+            <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>Skip if it's not the field we want.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span> <span class="p">(</span><span class="nx">variable</span><span class="p">.</span><span class="err">@</span><span class="nx">name</span> <span class="o">!=</span> <span class="nx">field</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Only check variables/accessors.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span> <span class="p">(</span><span class="nx">variable</span><span class="p">.</span><span class="nx">name</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;variable&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">variable</span><span class="p">.</span><span class="nx">name</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;accessor&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Scan for TypeHint metadata.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">for</span> <span class="k">each</span> <span class="p">(</span><span class="k">var</span> <span class="nx">metadataXML</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">variable</span><span class="p">.</span><span class="o">*</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">metadataXML</span><span class="p">.</span><span class="err">@</span><span class="nx">name</span> <span class="o">==</span> <span class="s2">&quot;TypeHint&quot;</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="k">var</span> <span class="nx">value</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="nx">metadataXML</span><span class="p">.</span><span class="nx">arg</span><span class="p">.</span><span class="err">@</span><span class="nx">value</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+                        
+                        <span class="k">return</span> <span class="nx">value</span><span class="o">;</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>                        <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">==</span> <span class="s2">&quot;dynamic&quot;</span><span class="p">)</span>
+                        <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">isNaN</span><span class="p">(</span><span class="nx">object</span><span class="p">[</span><span class="nx">field</span><span class="p">]))</span>
+                        <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>Is a number...</p>             </td>             <td class="code">               <div class="highlight"><pre>                        <span class="k">return</span> <span class="nx">getQualifiedClassName</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span>
+                        <span class="p">}</span>
+                        <span class="k">else</span>
+                        <span class="p">{</span>
+                        <span class="k">return</span> <span class="nx">getQualifiedClassName</span><span class="p">(</span><span class="nx">object</span><span class="p">[</span><span class="nx">field</span><span class="p">]);</span>
+                        <span class="p">}</span>
+                        <span class="p">}</span>
+                        <span class="k">else</span>
+                        <span class="p">{</span>
+                        <span class="k">return</span> <span class="nx">value</span><span class="o">;</span>
+                        <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <p>Get the xml for the metadata of the field.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getEditorData</span><span class="p">(</span><span class="nx">object</span><span class="o">:*,</span> <span class="nx">field</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">XML</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">description</span><span class="o">:</span><span class="nb">XML</span> <span class="o">=</span> <span class="nx">getTypeDescription</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">description</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            
+            <span class="k">for</span> <span class="k">each</span> <span class="p">(</span><span class="k">var</span> <span class="nx">variable</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">description</span><span class="p">.</span><span class="o">*</span><span class="p">)</span>
+            <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>Skip if it's not the field we want.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span> <span class="p">(</span><span class="nx">variable</span><span class="p">.</span><span class="err">@</span><span class="nx">name</span> <span class="o">!=</span> <span class="nx">field</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <p>Only check variables/accessors.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span> <span class="p">(</span><span class="nx">variable</span><span class="p">.</span><span class="nx">name</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;variable&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">variable</span><span class="p">.</span><span class="nx">name</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;accessor&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>Scan for EditorData metadata.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">for</span> <span class="k">each</span> <span class="p">(</span><span class="k">var</span> <span class="nx">metadataXML</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">variable</span><span class="p">.</span><span class="o">*</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">metadataXML</span><span class="p">.</span><span class="err">@</span><span class="nx">name</span> <span class="o">==</span> <span class="s2">&quot;EditorData&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="nx">metadataXML</span><span class="o">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <p>Gets the xml description of an object's type through a call to the
+flash.utils.describeType method. Results are cached, so only the first
+call will impact performance.</p>
+
+<p>@param object The object to describe.</p>
+
+<p>@return The xml description of the object.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getTypeDescription</span><span class="p">(</span><span class="nx">object</span><span class="o">:*</span><span class="p">)</span><span class="o">:</span><span class="nb">XML</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">className</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="nx">getObjectClassName</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_typeDescriptions</span><span class="p">[</span><span class="nx">className</span><span class="p">])</span>
+                <span class="nx">_typeDescriptions</span><span class="p">[</span><span class="nx">className</span><span class="p">]</span> <span class="o">=</span> <span class="nx">describeType</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            
+            <span class="k">return</span> <span class="nx">_typeDescriptions</span><span class="p">[</span><span class="nx">className</span><span class="p">];</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <p>Gets the xml description of a class through a call to the
+flash.utils.describeType method. Results are cached, so only the first
+call will impact performance.</p>
+
+<p>@param className The name of the class to describe.</p>
+
+<p>@return The xml description of the class.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getClassDescription</span><span class="p">(</span><span class="nx">className</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">XML</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_typeDescriptions</span><span class="p">[</span><span class="nx">className</span><span class="p">])</span>
+            <span class="p">{</span>
+                <span class="k">try</span>
+                <span class="p">{</span>
+                    <span class="nx">_typeDescriptions</span><span class="p">[</span><span class="nx">className</span><span class="p">]</span> <span class="o">=</span> <span class="nx">describeType</span><span class="p">(</span><span class="nx">getDefinitionByName</span><span class="p">(</span><span class="nx">className</span><span class="p">));</span>
+                <span class="p">}</span>
+                <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="nb">Error</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="nx">_typeDescriptions</span><span class="p">[</span><span class="nx">className</span><span class="p">];</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getListOfPublicFields</span><span class="p">(</span><span class="nx">object</span><span class="o">:*</span><span class="p">)</span><span class="o">:</span><span class="nb">Array</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">fields</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="p">[];</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="nx">object</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">object</span> <span class="o">==</span> <span class="kc">undefined</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nx">fields</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>Get the list of public fields.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">var</span> <span class="nx">sourceFields</span><span class="o">:</span><span class="nb">XML</span> <span class="o">=</span> <span class="nx">getTypeDescription</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+            
+            <span class="k">for</span> <span class="k">each</span><span class="p">(</span><span class="k">var</span> <span class="nx">fieldInfo</span><span class="o">:</span><span class="nb">XML</span> <span class="k">in</span> <span class="nx">sourceFields</span><span class="p">.</span><span class="o">*</span><span class="p">)</span>
+            <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Skip anything that is not a field.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span><span class="p">(</span><span class="nx">fieldInfo</span><span class="p">.</span><span class="nx">name</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;variable&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">fieldInfo</span><span class="p">.</span><span class="nx">name</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;accessor&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                </pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <p>Skip write-only stuff.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span><span class="p">(</span><span class="nx">fieldInfo</span><span class="p">.</span><span class="err">@</span><span class="nx">access</span> <span class="o">==</span> <span class="s2">&quot;writeonly&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                
+                <span class="k">var</span> <span class="nx">fieldName</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="nx">fieldInfo</span><span class="p">.</span><span class="err">@</span><span class="nx">name</span><span class="o">;</span>
+                <span class="nx">fields</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">fieldName</span><span class="p">);</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <p>Deal with dynamic fields, too.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">for</span><span class="p">(</span><span class="k">var</span> <span class="nx">field</span><span class="o">:</span><span class="nb">String</span> <span class="k">in</span> <span class="nx">object</span><span class="p">)</span>
+                <span class="nx">fields</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">field</span><span class="p">);</span>
+            
+            <span class="k">return</span> <span class="nx">fields</span><span class="o">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_typeDescriptions</span><span class="o">:</span><span class="nb">Dictionary</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Dictionary</span><span class="p">();</span>
+        <span class="kd">private</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_instantiators</span><span class="o">:</span><span class="nb">Dictionary</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Dictionary</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

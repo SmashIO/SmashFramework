@@ -1,0 +1,91 @@
+<!DOCTYPE html>  <html> <head>   <title>KeyboardManager.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               KeyboardManager.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">input</span>
+<span class="p">{</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">IPBManager</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">ITicked</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">TimeManager</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Stage</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">KeyboardEvent</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">KeyboardManager</span> <span class="kd">implements</span> <span class="nx">ITicked</span><span class="o">,</span> <span class="nx">IPBManager</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stage</span><span class="o">:</span><span class="nb">Stage</span><span class="o">;</span>
+        
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">timeManager</span><span class="o">:</span><span class="nx">TimeManager</span><span class="o">;</span>
+        
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_keyState</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>     <span class="c1">// The most recent information on key states</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_keyStateOld</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>  <span class="c1">// The state of the keys on the previous tick</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_justPressed</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>  <span class="c1">// An array of keys that were just pressed within the last tick.</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_justReleased</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span> <span class="c1">// An array of keys that were just released within the last tick.</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">initialize</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nb">KeyboardEvent</span><span class="p">.</span><span class="nx">KEY_DOWN</span><span class="o">,</span> <span class="nx">onKeyDown</span><span class="p">);</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nb">KeyboardEvent</span><span class="p">.</span><span class="nx">KEY_UP</span><span class="o">,</span> <span class="nx">onKeyUp</span><span class="p">);</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">addTickedObject</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="mf">10.0</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">removeTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">KeyboardEvent</span><span class="p">.</span><span class="nx">KEY_DOWN</span><span class="o">,</span> <span class="nx">onKeyDown</span><span class="p">);</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">KeyboardEvent</span><span class="p">.</span><span class="nx">KEY_UP</span><span class="o">,</span> <span class="nx">onKeyUp</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">protected</span> <span class="kd">function</span> <span class="nx">onKeyDown</span><span class="p">(</span><span class="nx">ke</span><span class="o">:</span><span class="nb">KeyboardEvent</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_keyState</span><span class="p">[</span><span class="nx">ke</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">protected</span> <span class="kd">function</span> <span class="nx">onKeyUp</span><span class="p">(</span><span class="nx">ke</span><span class="o">:</span><span class="nb">KeyboardEvent</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_keyState</span><span class="p">[</span><span class="nx">ke</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">onTick</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">cnt</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">cnt</span> <span class="o">&lt;</span> <span class="nx">_keyState</span><span class="p">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">cnt</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">_keyState</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_keyStateOld</span><span class="p">[</span><span class="nx">cnt</span><span class="p">])</span>
+                    <span class="nx">_justPressed</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="k">else</span>
+                    <span class="nx">_justPressed</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_keyState</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">_keyStateOld</span><span class="p">[</span><span class="nx">cnt</span><span class="p">])</span>
+                    <span class="nx">_justReleased</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="k">else</span>
+                    <span class="nx">_justReleased</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                
+                <span class="nx">_keyStateOld</span><span class="p">[</span><span class="nx">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_keyState</span><span class="p">[</span><span class="nx">cnt</span><span class="p">];</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Returns whether or not a key was pressed since the last tick.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">wasKeyJustPressed</span><span class="p">(</span><span class="nx">keyCode</span><span class="o">:</span><span class="nb">int</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_justPressed</span><span class="p">[</span><span class="nx">keyCode</span><span class="p">];</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Returns whether or not a key was released since the last tick.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">wasKeyJustReleased</span><span class="p">(</span><span class="nx">keyCode</span><span class="o">:</span><span class="nb">int</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_justReleased</span><span class="p">[</span><span class="nx">keyCode</span><span class="p">];</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Returns whether or not a specific key is down.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">isKeyDown</span><span class="p">(</span><span class="nx">keyCode</span><span class="o">:</span><span class="nb">int</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_keyState</span><span class="p">[</span><span class="nx">keyCode</span><span class="p">];</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Returns true if any key is down.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">isAnyKeyDown</span><span class="p">()</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="k">each</span><span class="p">(</span><span class="k">var</span> <span class="nx">b</span><span class="o">:</span><span class="nb">Boolean</span> <span class="k">in</span> <span class="nx">_keyState</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

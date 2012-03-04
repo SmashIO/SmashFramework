@@ -1,0 +1,206 @@
+<!DOCTYPE html>  <html> <head>   <title>ObjectType.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               ObjectType.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <hr />
+
+<p>PushButton Engine
+Copyright (C) 2009 PushButton Labs, LLC
+For more information see http://www.pushbuttonengine.com</p>
+
+<p>This file is licensed under the terms of the MIT license, which is included
+in the License.html file at the root directory of this SDK.
+<strong><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em><em>*</em>*</strong>/</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">util</span>
+<span class="p">{</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">debug</span><span class="p">.</span><span class="nx">Logger</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nb">Dictionary</span><span class="o">;</span>
+    
+    <span class="p">[</span><span class="nx">EditorData</span><span class="p">(</span><span class="nx">editAs</span><span class="o">=</span><span class="s2">&quot;Array&quot;</span><span class="o">,</span> <span class="nx">typeHint</span><span class="o">=</span><span class="s2">&quot;String&quot;</span><span class="p">)]</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>An ObjectType is an abstraction of a bitmask that can be used to associate
+objects with type names. ObjectTypes are namespaced so that we can separate
+flags that are unrelated.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">ObjectType</span> <span class="cm">/*implements ISerializable*/</span>
+    <span class="p">{</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_namespace</span><span class="o">:</span><span class="nx">ObjectTypeNamespace</span><span class="o">;</span>
+        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_bits</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">ObjectType</span><span class="p">(...</span><span class="k">arguments</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nx">_namespace</span> <span class="o">=</span> <span class="nx">getNamespace</span><span class="p">(</span><span class="s2">&quot;global&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="k">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span><span class="k">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="nx">is</span> <span class="nb">Array</span><span class="p">)</span>
+                    <span class="nx">typeNames</span> <span class="o">=</span> <span class="k">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+                <span class="k">else</span>
+                    <span class="nx">typeName</span> <span class="o">=</span> <span class="k">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="k">arguments</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">typeNames</span> <span class="o">=</span> <span class="k">arguments</span><span class="o">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="kd">namespace</span><span class="p">()</span><span class="o">:</span><span class="nb">String</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">name</span><span class="o">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="kd">namespace</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_namespace</span> <span class="o">=</span> <span class="nx">getNamespace</span><span class="p">(</span><span class="nx">value</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>TODO: Remap the bit names when we switch?</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span><span class="p">(</span><span class="nx">_bits</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="nx">Logger</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="s2">&quot;set namespace&quot;</span><span class="o">,</span> <span class="s2">&quot;Discarding bits due to change in namespace!&quot;</span><span class="p">);</span> 
+            <span class="nx">_bits</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The bitmask that this type wraps. This should not be used directly. Instead,
+use the various test methods on the ObjectTypeManager.</p>
+
+<p>@see com.pblabs.engine.core.ObjectTypeManager.doesTypeMatch()
+@see com.pblabs.engine.core.ObjectTypeManager.doesTypeOverlap()
+@see com.pblabs.engine.core.ObjectTypeManager.doTypesMatch()
+@see com.pblabs.engine.core.ObjectTypeManager.doTypesOverlap()</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">bits</span><span class="p">()</span><span class="o">:</span><span class="nb">int</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_bits</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>The name of the type associated with this object type. If multiple names have
+been assigned, the one with the least significant bit is returned.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">typeName</span><span class="p">()</span><span class="o">:</span><span class="nb">String</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">typeCount</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">_bits</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">i</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">getTypeName</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">i</span><span class="p">);</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>@private</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">typeName</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_bits</span> <span class="o">=</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">getType</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>A list of all the type names associated with this object type.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">typeNames</span><span class="p">()</span><span class="o">:</span><span class="nb">Array</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">array</span><span class="o">:</span><span class="nb">Array</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">typeCount</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">_bits</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">i</span><span class="p">))</span>
+                    <span class="nx">array</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">_namespace</span><span class="p">.</span><span class="nx">getTypeName</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">i</span><span class="p">));</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="nx">array</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>@private</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">typeNames</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">Array</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_bits</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="k">for</span> <span class="k">each</span> <span class="p">(</span><span class="k">var</span> <span class="nx">typeName</span><span class="o">:</span><span class="nb">String</span> <span class="k">in</span> <span class="nx">value</span><span class="p">)</span>
+            <span class="nx">_bits</span> <span class="o">|=</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">getType</span><span class="p">(</span><span class="nx">typeName</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Add typeName to current ObjectType</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">typeName</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">_bits</span> <span class="o">|=</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">getType</span><span class="p">(</span><span class="nx">typeName</span><span class="p">);</span>	  	
+        <span class="p">}</span>      
+        </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Remove typeName from current ObjectType</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">remove</span><span class="p">(</span><span class="nx">typeName</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span> 		
+            <span class="nx">_bits</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="nx">wildcard</span><span class="p">.</span><span class="nx">bits</span> <span class="o">-</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">getType</span><span class="p">(</span><span class="nx">typeName</span><span class="p">));</span>	  		  	
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Perform a bitwise-and against another ObjectType and return true if they match.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">and</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="nx">ObjectType</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">((</span><span class="nx">other</span><span class="p">.</span><span class="nx">bits</span> <span class="o">&amp;</span> <span class="nx">bits</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">else</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Determines whether an object type is of the specified type.</p>             </td>             <td class="code">               <div class="highlight"><pre>         </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>@param typeName The name of the type to check.</p>
+
+<p>@return True if the specified type is of the specified type name. Keep in
+mind, the type must match exactly, meaning, if it has multiple type names
+associated with it, this will always return false.</p>
+
+<p>@see #DoesTypeOverlap()</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">match</span><span class="p">(</span><span class="nx">typeName</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">t</span><span class="o">:*</span> <span class="o">=</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">typeList</span><span class="p">[</span><span class="nx">typeName</span><span class="p">];</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nx">t</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">_bits</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">t</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Determines whether an object type contains the specified type.</p>
+
+<p>@param type The type to check.
+@param typeName The name of the type to check.</p>
+
+<p>@return True if the specified type is of the specified type name. Keep in
+mind, the type must only contain the type name, meaning, if it has multiple
+type names associated with it, only one of them has to match.</p>
+
+<p>@see #DoesTypeMatch()</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">overlap</span><span class="p">(</span><span class="nx">typeName</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">t</span><span class="o">:*</span> <span class="o">=</span> <span class="nx">_namespace</span><span class="p">.</span><span class="nx">typeList</span><span class="p">[</span><span class="nx">typeName</span><span class="p">];</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nx">t</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">_bits</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">t</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Determines whether two object types are of the same type.</p>
+
+<p>@param type1 The type to check.
+@param type2 The type to check against.</p>
+
+<p>@return True if type1 and type2 contain the exact same types.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">matches</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="nx">ObjectType</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">_bits</span> <span class="o">==</span> <span class="nx">other</span><span class="p">.</span><span class="nx">_bits</span><span class="o">;</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Determines whether two object types have overlapping types.</p>
+
+<p>@param type1 The type to check.
+@param type2 The type to check against.</p>
+
+<p>@return True if type1 has any of the type contained in type2.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">overlaps</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="nx">ObjectType</span><span class="p">)</span><span class="o">:</span><span class="nb">Boolean</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">other</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            
+            <span class="k">return</span> <span class="p">(</span><span class="nx">_bits</span> <span class="o">&amp;</span> <span class="nx">other</span><span class="p">.</span><span class="nx">_bits</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">protected</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_namespaces</span><span class="o">:</span><span class="nb">Dictionary</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Dictionary</span><span class="p">();</span>
+        <span class="kd">protected</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getNamespace</span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">createIfAbsent</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nx">ObjectTypeNamespace</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">createIfAbsent</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span><span class="p">(</span><span class="nx">_namespaces</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span>
+                    <span class="nx">_namespaces</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ObjectTypeNamespace</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>					
+                
+                <span class="k">return</span> <span class="nx">_namespaces</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="nx">as</span> <span class="nx">ObjectTypeNamespace</span><span class="o">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">_namespaces</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="nx">as</span> <span class="nx">ObjectTypeNamespace</span><span class="o">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">getFlag</span><span class="p">(</span><span class="nx">flag</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="kd">namespace</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="s2">&quot;global&quot;</span><span class="o">,</span> <span class="nx">createIfAbsent</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span><span class="o">:</span><span class="nb">uint</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">ns</span><span class="o">:</span><span class="nx">ObjectTypeNamespace</span> <span class="o">=</span> <span class="nx">getNamespace</span><span class="p">(</span><span class="kd">namespace</span><span class="o">,</span> <span class="nx">createIfAbsent</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">ns</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">0</span><span class="nx">xFFFFFFFF</span><span class="o">;</span>
+            <span class="k">return</span> <span class="nx">ns</span><span class="p">.</span><span class="nx">getType</span><span class="p">(</span><span class="nx">flag</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">static</span> <span class="k">var</span> <span class="nx">_wildcard</span><span class="o">:</span><span class="nx">ObjectType</span><span class="o">;</span>
+        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">wildcard</span><span class="p">()</span><span class="o">:</span><span class="nx">ObjectType</span>
+        <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">_wildcard</span><span class="p">)</span>
+                <span class="nx">_wildcard</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ObjectType</span><span class="p">();</span>
+            
+            <span class="nx">_wildcard</span><span class="p">.</span><span class="nx">_bits</span> <span class="o">=</span> <span class="mi">0</span><span class="nx">xFFFFFFFF</span><span class="o">;</span>
+            
+            <span class="k">return</span> <span class="nx">_wildcard</span><span class="o">;</span>         
+        <span class="p">}</span>
+        
+        
+        <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nx">registerFlag</span><span class="p">(</span><span class="nx">flag</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">bitIndex</span><span class="o">:</span><span class="nb">uint</span><span class="o">,</span> <span class="kd">namespace</span><span class="o">:</span><span class="nb">String</span> <span class="o">=</span> <span class="s2">&quot;global&quot;</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="k">var</span> <span class="nx">ns</span><span class="o">:</span><span class="nx">ObjectTypeNamespace</span> <span class="o">=</span> <span class="nx">getNamespace</span><span class="p">(</span><span class="kd">namespace</span><span class="o">,</span> <span class="kc">true</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ns</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">return</span><span class="o">;</span>
+            <span class="p">}</span>
+            
+            <span class="nx">ns</span><span class="p">.</span><span class="nx">registerFlag</span><span class="p">(</span><span class="nx">bitIndex</span><span class="o">,</span> <span class="nx">flag</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

@@ -1,0 +1,72 @@
+<!DOCTYPE html>  <html> <head>   <title>OneButtonDemoScene.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               OneButtonDemoScene.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Excruciating simple, self-contained demo showing how you can drive game
+state off of a button. Does not use any components at all, demonstrating
+a convenient way to build simple gameplay prototypes. </p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">demos</span><span class="p">.</span><span class="nx">demo_06_oneButtonDemo</span>
+<span class="p">{</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">PBUtil</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBGroup</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">KeyboardKey</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">KeyboardManager</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">ITicked</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">TimeManager</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Sprite</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Stage</span><span class="o">;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Implementation</h2>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">OneButtonDemoScene</span> <span class="kd">extends</span> <span class="nx">PBGroup</span> <span class="kd">implements</span> <span class="nx">ITicked</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">stage</span><span class="o">:</span><span class="nb">Stage</span><span class="o">;</span>
+        
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">timeManager</span><span class="o">:</span><span class="nx">TimeManager</span><span class="o">;</span>
+        
+        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">keyboardManager</span><span class="o">:</span><span class="nx">KeyboardManager</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Variable that holds our current state. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">state</span><span class="o">:</span><span class="nb">Boolean</span><span class="o">;</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Sprite used to display that state. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">circleSprite</span><span class="o">:</span><span class="nb">Sprite</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Sprite</span><span class="p">();</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Initialize Demo</h2>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">override</span> <span class="kd">function</span> <span class="nx">initialize</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="kd">super</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
+            
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">addChild</span><span class="p">(</span><span class="nx">circleSprite</span><span class="p">);</span>
+            
+            <span class="nx">redrawCircle</span><span class="p">();</span>
+            
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">addTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Tick Handler</h2>
+
+<p>On every tick, we sample the state and update our visuals.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">onTick</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">state</span> <span class="o">=</span> <span class="nx">keyboardManager</span><span class="p">.</span><span class="nx">isKeyDown</span><span class="p">(</span><span class="nx">KeyboardKey</span><span class="p">.</span><span class="nx">A</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">);</span>
+            
+            <span class="nx">redrawCircle</span><span class="p">();</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Circle Drawer</h2>
+
+<p>Simple method to display a circle in the center of the stage. </p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">redrawCircle</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">beginFill</span><span class="p">(</span><span class="nx">state</span> <span class="o">?</span> <span class="mh">0x00</span><span class="nx">FF00</span> <span class="o">:</span> <span class="mi">0</span><span class="nx">xFF0000</span><span class="p">);</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">drawCircle</span><span class="p">(</span>
+                <span class="nx">stage</span><span class="p">.</span><span class="nx">stageWidth</span> <span class="o">/</span> <span class="mi">2</span><span class="o">,</span> 
+                <span class="nx">stage</span><span class="p">.</span><span class="nx">stageHeight</span> <span class="o">/</span> <span class="mi">2</span><span class="o">,</span> 
+                <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="nx">stage</span><span class="p">.</span><span class="nx">stageHeight</span><span class="o">,</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">stageWidth</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.5</span><span class="p">);</span>
+            <span class="nx">circleSprite</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">endFill</span><span class="p">();</span>
+        <span class="p">}</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h2>Tear Down Demo</h2>
+
+<p>Clean everything up.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">override</span> <span class="kd">function</span> <span class="nx">destroy</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">removeTickedObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">circleSprite</span><span class="p">);</span>
+            
+            <span class="kd">super</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// @docco-chapter 2. Building Gameplay</span>
+<span class="c1">// @docco-order 2</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

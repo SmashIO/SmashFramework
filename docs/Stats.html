@@ -1,0 +1,245 @@
+<!DOCTYPE html>  <html> <head>   <title>Stats.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               Stats.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Hi-ReS! Stats</p>
+
+<p>Released under MIT license:
+http://www.opensource.org/licenses/mit-license.php</p>
+
+<p>How to use:</p>
+
+<pre><code> addChild( new Stats() );
+</code></pre>
+
+<p>version log:</p>
+
+<pre><code> 08.12.14                1.4             Mr.doob                 + Code optimisations and version info on MOUSE_OVER
+ 08.07.12                1.3             Mr.doob                 + Some speed and code optimisations
+ 08.02.15                1.2             Mr.doob                 + Class renamed to Stats (previously FPS)
+ 08.01.05                1.2             Mr.doob                 + Click changes the fps of flash (half up increases,
+                                                                                   half down decreases)
+ 08.01.04                1.1             Mr.doob and Theo        + Log shape for MEM
+                                                                 + More room for MS
+                                                                 + Shameless ripoff of Alternativa's FPS look :P
+ 07.12.13                1.0             Mr.doob                 + First version
+</code></pre>
+
+<p>*/</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">debug</span>
+<span class="p">{</span>
+    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">time</span><span class="p">.</span><span class="nx">TimeManager</span><span class="o">;</span>
+    
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Bitmap</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">BitmapData</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Sprite</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">Event</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">MouseEvent</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">TimerEvent</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nb">Rectangle</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">system</span><span class="p">.</span><span class="nb">Capabilities</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">system</span><span class="p">.</span><span class="nb">System</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nb">TextField</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nb">TextFormat</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nf">getTimer</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">Stats</span> <span class="kd">extends</span> <span class="nb">Sprite</span>
+    <span class="p">{</span>
+        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">Stats</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="nx">addEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">ADDED_TO_STAGE</span><span class="o">,</span> <span class="nx">onAddedToStage</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">timeManager</span><span class="o">:</span><span class="nx">TimeManager</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">timer</span><span class="o">:</span><span class="nb">int</span><span class="o">,</span> <span class="nx">ms</span><span class="o">:</span><span class="nb">int</span><span class="o">,</span> <span class="nx">msPrev</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">fpsText</span><span class="o">:</span><span class="nb">TextField</span><span class="o">,</span> <span class="nx">msText</span><span class="o">:</span><span class="nb">TextField</span><span class="o">,</span> <span class="nx">memText</span><span class="o">:</span><span class="nb">TextField</span><span class="o">,</span> <span class="nx">verText</span><span class="o">:</span><span class="nb">TextField</span><span class="o">,</span> <span class="nx">format</span><span class="o">:</span><span class="nb">TextFormat</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">graph</span><span class="o">:</span><span class="nb">BitmapData</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">mem</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">rectangle</span><span class="o">:</span><span class="nb">Rectangle</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">ver</span><span class="o">:</span><span class="nb">Sprite</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">counterText</span><span class="o">:</span><span class="nb">TextField</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">counters</span><span class="o">:</span><span class="nb">Sprite</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">criticalCounterLastValues</span><span class="o">:</span><span class="nb">Object</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">();</span>        
+        <span class="kd">private</span> <span class="k">var</span> <span class="nx">criticalCounterCurrentValues</span><span class="o">:</span><span class="nb">Object</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">();</span>        
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">onAddedToStage</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="nb">Event</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">ADDED_TO_STAGE</span><span class="o">,</span> <span class="nx">onAddedToStage</span><span class="p">);</span>
+            <span class="nx">addEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">REMOVED_FROM_STAGE</span><span class="o">,</span> <span class="nx">onRemovedFromStage</span><span class="p">);</span>
+            
+            <span class="nx">graphics</span><span class="p">.</span><span class="nx">beginFill</span><span class="p">(</span><span class="mh">0x33</span><span class="p">);</span>
+            <span class="nx">graphics</span><span class="p">.</span><span class="nx">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">65</span><span class="o">,</span> <span class="mi">40</span><span class="p">);</span>
+            <span class="nx">graphics</span><span class="p">.</span><span class="nx">endFill</span><span class="p">();</span>
+            
+            <span class="nx">ver</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Sprite</span><span class="p">();</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">beginFill</span><span class="p">(</span><span class="mh">0x33</span><span class="p">);</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">65</span><span class="o">,</span> <span class="mi">30</span><span class="p">);</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">endFill</span><span class="p">();</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">90</span><span class="o">;</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">visible</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">addChild</span><span class="p">(</span><span class="nx">ver</span><span class="p">);</span>
+            
+            <span class="nx">counters</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Sprite</span><span class="p">();</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">beginFill</span><span class="p">(</span><span class="mh">0x33</span><span class="p">);</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">drawRect</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">400</span><span class="o">,</span> <span class="mi">300</span><span class="p">);</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nx">endFill</span><span class="p">();</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">110</span><span class="o">;</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">visible</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">addChild</span><span class="p">(</span><span class="nx">counters</span><span class="p">);</span>
+            
+            <span class="nx">verText</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextField</span><span class="p">();</span>
+            <span class="nx">fpsText</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextField</span><span class="p">();</span>
+            <span class="nx">msText</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextField</span><span class="p">();</span>
+            <span class="nx">memText</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextField</span><span class="p">();</span>
+            <span class="nx">counterText</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextField</span><span class="p">();</span>
+            
+            <span class="nx">format</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">TextFormat</span><span class="p">(</span><span class="s2">&quot;_sans&quot;</span><span class="o">,</span> <span class="mi">9</span><span class="p">);</span>
+            
+            <span class="nx">verText</span><span class="p">.</span><span class="nx">defaultTextFormat</span> <span class="o">=</span> <span class="nx">fpsText</span><span class="p">.</span><span class="nx">defaultTextFormat</span> <span class="o">=</span> <span class="nx">msText</span><span class="p">.</span><span class="nx">defaultTextFormat</span> <span class="o">=</span> <span class="nx">memText</span><span class="p">.</span><span class="nx">defaultTextFormat</span> <span class="o">=</span> <span class="nx">format</span><span class="o">;</span>
+            <span class="nx">verText</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">fpsText</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">msText</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">memText</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="mi">65</span><span class="o">;</span>
+            <span class="nx">verText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="nx">fpsText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="nx">msText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="nx">memText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            
+            <span class="nx">verText</span><span class="p">.</span><span class="nx">textColor</span> <span class="o">=</span> <span class="mi">0</span><span class="nx">xFFFFFF</span><span class="o">;</span>
+            <span class="nx">verText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nb">Capabilities</span><span class="p">.</span><span class="nx">version</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;\n&quot;</span> <span class="o">+</span> <span class="nb">Capabilities</span><span class="p">.</span><span class="nx">version</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">addChild</span><span class="p">(</span><span class="nx">verText</span><span class="p">);</span>
+            
+            <span class="nx">counterText</span><span class="p">.</span><span class="nx">defaultTextFormat</span> <span class="o">=</span> <span class="nx">format</span><span class="o">;</span>
+            <span class="nx">counterText</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="mi">400</span><span class="o">;</span>
+            <span class="nx">counterText</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="mi">300</span><span class="o">;</span>
+            <span class="nx">counterText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="nx">fpsText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="nx">msText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="nx">memText</span><span class="p">.</span><span class="nx">selectable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            
+            <span class="nx">counterText</span><span class="p">.</span><span class="nx">textColor</span> <span class="o">=</span> <span class="mi">0</span><span class="nx">xFFFFFF</span><span class="o">;</span>
+            <span class="nx">counterText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">addChild</span><span class="p">(</span><span class="nx">counterText</span><span class="p">);</span>
+            
+            <span class="nx">fpsText</span><span class="p">.</span><span class="nx">textColor</span> <span class="o">=</span> <span class="mi">0</span><span class="nx">xFFFF00</span><span class="o">;</span>
+            <span class="nx">fpsText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;FPS: &quot;</span><span class="o">;</span>
+            <span class="nx">addChild</span><span class="p">(</span><span class="nx">fpsText</span><span class="p">);</span>
+            
+            <span class="nx">msText</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+            <span class="nx">msText</span><span class="p">.</span><span class="nx">textColor</span> <span class="o">=</span> <span class="mh">0x00</span><span class="nx">FF00</span><span class="o">;</span>
+            <span class="nx">msText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;MS: &quot;</span><span class="o">;</span>
+            <span class="nx">addChild</span><span class="p">(</span><span class="nx">msText</span><span class="p">);</span>
+            
+            <span class="nx">memText</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+            <span class="nx">memText</span><span class="p">.</span><span class="nx">textColor</span> <span class="o">=</span> <span class="mh">0x00</span><span class="nx">FFFF</span><span class="o">;</span>
+            <span class="nx">memText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;MEM: &quot;</span><span class="o">;</span>
+            <span class="nx">addChild</span><span class="p">(</span><span class="nx">memText</span><span class="p">);</span>
+            
+            <span class="nx">graph</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">BitmapData</span><span class="p">(</span><span class="mi">65</span><span class="o">,</span> <span class="mi">50</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="mh">0x33</span><span class="p">);</span>
+            <span class="k">var</span> <span class="nx">gBitmap</span><span class="o">:</span><span class="nb">Bitmap</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Bitmap</span><span class="p">(</span><span class="nx">graph</span><span class="p">);</span>
+            <span class="nx">gBitmap</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">40</span><span class="o">;</span>
+            <span class="nx">addChild</span><span class="p">(</span><span class="nx">gBitmap</span><span class="p">);</span>
+            
+            <span class="nx">rectangle</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Rectangle</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+            
+            <span class="nx">addEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">CLICK</span><span class="o">,</span> <span class="nx">onClick</span><span class="p">);</span>
+            <span class="nx">addEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">MOUSE_OVER</span><span class="o">,</span> <span class="nx">onMouseOver</span><span class="p">);</span>
+            <span class="nx">addEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">MOUSE_OUT</span><span class="o">,</span> <span class="nx">onMouseOut</span><span class="p">);</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">timer</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nb">TimerEvent</span><span class="p">.</span><span class="nx">TIMER</span><span class="o">,</span> <span class="nx">update</span><span class="p">);</span>
+            
+            <span class="nx">fpsTimes</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">15</span><span class="o">;</span>
+            
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">onRemovedFromStage</span><span class="p">(</span><span class="nx">event</span><span class="o">:</span><span class="nb">Event</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">addEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">ADDED_TO_STAGE</span><span class="o">,</span> <span class="nx">onAddedToStage</span><span class="p">);</span>
+            
+            <span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">Event</span><span class="p">.</span><span class="nx">REMOVED_FROM_STAGE</span><span class="o">,</span> <span class="nx">onRemovedFromStage</span><span class="p">);</span>
+            <span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">CLICK</span><span class="o">,</span> <span class="nx">onClick</span><span class="p">);</span>
+            <span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">MOUSE_OVER</span><span class="o">,</span> <span class="nx">onMouseOver</span><span class="p">);</span>
+            <span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">MouseEvent</span><span class="p">.</span><span class="nx">MOUSE_OUT</span><span class="o">,</span> <span class="nx">onMouseOut</span><span class="p">);</span>
+            <span class="nx">timeManager</span><span class="p">.</span><span class="nx">timer</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="nb">TimerEvent</span><span class="p">.</span><span class="nx">TIMER</span><span class="o">,</span> <span class="nx">update</span><span class="p">);</span>	
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">onClick</span><span class="p">(</span><span class="nx">event</span><span class="o">:</span><span class="nb">MouseEvent</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">mouseY</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">height</span> <span class="o">*</span> <span class="p">.</span><span class="mi">35</span><span class="p">)</span> <span class="o">?</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">frameRate</span><span class="o">--</span> <span class="o">:</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">frameRate</span><span class="o">++;</span>
+            <span class="nx">fpsText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;FPS: X / &quot;</span> <span class="o">+</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">frameRate</span><span class="o">;</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">onMouseOut</span><span class="p">(</span><span class="nx">event</span><span class="o">:</span><span class="nb">MouseEvent</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">visible</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">visible</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">onMouseOver</span><span class="p">(</span><span class="nx">event</span><span class="o">:</span><span class="nb">MouseEvent</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">ver</span><span class="p">.</span><span class="nx">visible</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nx">counters</span><span class="p">.</span><span class="nx">visible</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">fpsTimes</span><span class="o">:</span><span class="nx">Vector</span><span class="p">.</span><span class="o">&lt;</span><span class="nb">Number</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vector</span><span class="p">.</span><span class="o">&lt;</span><span class="nb">Number</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="kd">public</span> <span class="k">var</span> <span class="nx">fpsTimesIndex</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="kd">private</span> <span class="kd">function</span> <span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="nb">Event</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+        <span class="p">{</span>
+            <span class="nx">timer</span> <span class="o">=</span> <span class="nf">getTimer</span><span class="p">();</span>
+            
+            <span class="kd">const</span> <span class="nx">frameTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="p">(</span><span class="nx">timer</span> <span class="o">-</span> <span class="nx">ms</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">stageFps</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nx">stage</span> <span class="o">?</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">frameRate</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="nx">fpsTimesIndex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">fpsTimesIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">15</span><span class="o">;</span>
+            <span class="nx">fpsTimes</span><span class="p">[</span><span class="nx">fpsTimesIndex</span><span class="p">]</span> <span class="o">=</span> <span class="nx">frameTime</span><span class="o">;</span>
+            <span class="kd">const</span> <span class="nx">avgTime</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="p">(</span><span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> 
+                <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> 
+                <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fpsTimes</span><span class="p">[</span><span class="mi">14</span><span class="p">])</span> <span class="o">/</span> <span class="mf">15.0</span><span class="o">;</span>
+            
+            <span class="nx">msPrev</span> <span class="o">=</span> <span class="nx">timer</span><span class="o">;</span>
+            <span class="nx">mem</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">((</span><span class="nb">System</span><span class="p">.</span><span class="nx">totalMemory</span> <span class="o">*</span> <span class="mf">0.000000954</span><span class="p">).</span><span class="nx">toFixed</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
+            
+            <span class="k">var</span> <span class="nx">fpsGraph</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">50</span> <span class="o">/</span> <span class="nx">stageFps</span> <span class="o">*</span> <span class="nx">avgTime</span><span class="p">);</span>
+            <span class="k">var</span> <span class="nx">memGraph</span><span class="o">:</span><span class="nb">Number</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="mi">50</span><span class="o">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">mem</span> <span class="o">*</span> <span class="mi">5000</span><span class="p">)))</span> <span class="o">-</span> <span class="mi">2</span><span class="o">;</span>
+            
+            <span class="nx">graph</span><span class="p">.</span><span class="nx">scroll</span><span class="p">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="p">);</span>
+            
+            <span class="nx">graph</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="nx">rectangle</span><span class="o">,</span> <span class="mh">0x33</span><span class="p">);</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Do a vertical line if the time was over 100ms</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span> <span class="p">(</span><span class="nx">timer</span> <span class="o">-</span> <span class="nx">ms</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+                    <span class="nx">graph</span><span class="p">.</span><span class="nx">setPixel32</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="nx">i</span><span class="o">,</span> <span class="mi">0</span><span class="nx">xFF0000</span><span class="p">);</span>
+            <span class="p">}</span>          
+            
+            <span class="nx">graph</span><span class="p">.</span><span class="nx">setPixel32</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="nx">fpsGraph</span><span class="o">,</span> <span class="mi">0</span><span class="nx">xFFFF00</span><span class="p">);</span>
+            <span class="nx">graph</span><span class="p">.</span><span class="nx">setPixel32</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="p">(</span><span class="nx">frameTime</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">,</span> <span class="mh">0x00</span><span class="nx">FF00</span><span class="p">);</span>
+            <span class="nx">graph</span><span class="p">.</span><span class="nx">setPixel32</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="nx">memGraph</span><span class="o">,</span> <span class="mh">0x00</span><span class="nx">FFFF</span><span class="p">);</span>
+            
+            <span class="nx">fpsText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;FPS: &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1000</span> <span class="sr">/ avgTime).toFixed(0) + &quot; /</span> <span class="s2">&quot; + stageFps;</span>
+<span class="s2">            memText.text = &quot;</span><span class="nx">MEM</span><span class="o">:</span> <span class="s2">&quot; + mem;</span>
+<span class="s2">            </span>
+<span class="s2">            msText.text = &quot;</span><span class="nx">MS</span><span class="o">:</span> <span class="err">&quot;</span> <span class="o">+</span> <span class="nx">frameTime</span><span class="o">;</span>
+            <span class="nx">ms</span> <span class="o">=</span> <span class="nx">timer</span><span class="o">;</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Update counters</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">if</span> <span class="p">(</span><span class="nx">counters</span><span class="p">.</span><span class="nx">visible</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">counterText</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nx">Counters</span><span class="p">.</span><span class="nx">getCounterText</span><span class="p">();</span>
+            <span class="p">}</span>
+            </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>See if any of the critical counters changed and draw a line for that counter if it did.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">Counters</span><span class="p">.</span><span class="nx">getCriticalCounterSnapshot</span><span class="p">(</span><span class="nx">criticalCounterCurrentValues</span><span class="p">);</span>
+            <span class="k">for</span> <span class="p">(</span><span class="k">var</span> <span class="nx">key</span><span class="o">:</span><span class="nb">String</span> <span class="k">in</span> <span class="nx">criticalCounterCurrentValues</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">var</span> <span class="nx">newCounterVal</span><span class="o">:</span><span class="nb">int</span> <span class="o">=</span> <span class="nx">criticalCounterCurrentValues</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">criticalCounterLastValues</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">criticalCounterLastValues</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">!=</span> <span class="nx">newCounterVal</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span><span class="o">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="nx">graph</span><span class="p">.</span><span class="nx">setPixel32</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="nx">i</span><span class="o">,</span> <span class="nx">Counters</span><span class="p">.</span><span class="nx">getCriticalCounterColor</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+                    <span class="p">}</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Copy current counter values into old counter values</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">criticalCounterCurrentValues</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">criticalCounterLastValues</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">criticalCounterCurrentValues</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>   
+            <span class="p">}</span>
+            
+            <span class="nx">stage</span><span class="p">.</span><span class="nx">invalidate</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
