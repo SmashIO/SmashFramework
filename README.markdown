@@ -1,5 +1,5 @@
-SMASHAS CORE FRAMEWORK
-======================
+SMASH CORE FRAMEWORK
+====================
 
 Welcome to the [Smash Framework](http://www.smash.io)!
 
