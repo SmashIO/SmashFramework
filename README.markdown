@@ -26,7 +26,7 @@ Smash needs the following compiler arguments: --keep-as3-metadata+=TypeHint,Edit
 Contributing & Details
 ----------------------
 
-Visit the official Smash Framework repository at GitHub: [http://github.com/SmashIO/SmashAS](http://github.com/SmashIO/SmashEngine). Follow it for updates. Fork Smash and submit your improvements!  ([Forking Instructions](http://help.github.com/forking/))
+Visit the official Smash Framework repository at GitHub: [http://github.com/SmashIO/SmashFramework](http://github.com/SmashIO/SmashFramework). Follow it for updates. Fork Smash and submit your improvements!  ([Forking Instructions](http://help.github.com/forking/))
 
 The Smash Framework is covered under the MIT license in its entirety,
 not including 3rd party components. Please read LICENSE for more 
