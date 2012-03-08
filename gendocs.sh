@@ -1,3 +1,2 @@
 date
-/projects/libraries/docco/bin \
-    `find /projects/libraries/SmashEngine/* | grep \\.as | grep -v greensock`
+docco \ `find -X /projects/libraries/SmashEngine/src/* | grep \\.as | grep -v greensock`
