@@ -1,9 +1,9 @@
-SMASH CORE FRAMEWORK
-====================
+SMASHAS CORE FRAMEWORK
+======================
 
 Welcome to the [Smash Framework](http://www.smash.io)!
 
-Smash Engine is a framework for Flash game development. Build your game 
+The SmashAS Framework is a framework for Flash game development. Build your game 
 with reusable gameplay, physics, rendering - some 
 written by others, and some written by you. There are lots of great libraries 
 for game development on Flash, and Smash Engine helps you use them more 
