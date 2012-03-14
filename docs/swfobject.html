@@ -1,0 +1,761 @@
+<!DOCTYPE html>  <html> <head>   <title>swfobject.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                        </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               swfobject.js             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/*!	SWFObject v2.2 &lt;http://code.google.com/p/swfobject/&gt; </span>
+<span class="cm">	is released under the MIT License &lt;http://www.opensource.org/licenses/mit-license.php&gt; </span>
+<span class="cm">*/</span>
+
+<span class="kd">var</span> <span class="nx">swfobject</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+	
+	<span class="kd">var</span> <span class="nx">UNDEF</span> <span class="o">=</span> <span class="s2">&quot;undefined&quot;</span><span class="p">,</span>
+		<span class="nx">OBJECT</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+		<span class="nx">SHOCKWAVE_FLASH</span> <span class="o">=</span> <span class="s2">&quot;Shockwave Flash&quot;</span><span class="p">,</span>
+		<span class="nx">SHOCKWAVE_FLASH_AX</span> <span class="o">=</span> <span class="s2">&quot;ShockwaveFlash.ShockwaveFlash&quot;</span><span class="p">,</span>
+		<span class="nx">FLASH_MIME_TYPE</span> <span class="o">=</span> <span class="s2">&quot;application/x-shockwave-flash&quot;</span><span class="p">,</span>
+		<span class="nx">EXPRESS_INSTALL_ID</span> <span class="o">=</span> <span class="s2">&quot;SWFObjectExprInst&quot;</span><span class="p">,</span>
+		<span class="nx">ON_READY_STATE_CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onreadystatechange&quot;</span><span class="p">,</span>
+		
+		<span class="nx">win</span> <span class="o">=</span> <span class="nb">window</span><span class="p">,</span>
+		<span class="nx">doc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">,</span>
+		<span class="nx">nav</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">,</span>
+		
+		<span class="nx">plugin</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="nx">domLoadFnArr</span> <span class="o">=</span> <span class="p">[</span><span class="nx">main</span><span class="p">],</span>
+		<span class="nx">regObjArr</span> <span class="o">=</span> <span class="p">[],</span>
+		<span class="nx">objIdArr</span> <span class="o">=</span> <span class="p">[],</span>
+		<span class="nx">listenersArr</span> <span class="o">=</span> <span class="p">[],</span>
+		<span class="nx">storedAltContent</span><span class="p">,</span>
+		<span class="nx">storedAltContentId</span><span class="p">,</span>
+		<span class="nx">storedCallbackFn</span><span class="p">,</span>
+		<span class="nx">storedCallbackObj</span><span class="p">,</span>
+		<span class="nx">isDomLoaded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="nx">isExpressInstallActive</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="nx">dynamicStylesheet</span><span class="p">,</span>
+		<span class="nx">dynamicStylesheetMedia</span><span class="p">,</span>
+		<span class="nx">autoHideShow</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+	
+	<span class="cm">/* Centralized function for browser feature detection</span>
+<span class="cm">		- User agent string detection is only used when no good alternative is possible</span>
+<span class="cm">		- Is executed directly for optimal performance</span>
+<span class="cm">	*/</span>	
+	<span class="nx">ua</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">w3cdom</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementById</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">createElement</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">,</span>
+			<span class="nx">u</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+			<span class="nx">p</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">platform</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+			<span class="nx">windows</span> <span class="o">=</span> <span class="nx">p</span> <span class="o">?</span> <span class="sr">/win/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">:</span> <span class="sr">/win/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">u</span><span class="p">),</span>
+			<span class="nx">mac</span> <span class="o">=</span> <span class="nx">p</span> <span class="o">?</span> <span class="sr">/mac/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">:</span> <span class="sr">/mac/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">u</span><span class="p">),</span>
+			<span class="nx">webkit</span> <span class="o">=</span> <span class="sr">/webkit/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">u</span><span class="p">)</span> <span class="o">?</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^.*webkit\/(\d+(\.\d+)?).*$/</span><span class="p">,</span> <span class="s2">&quot;$1&quot;</span><span class="p">))</span> <span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// returns either the webkit version or false if not webkit</span>
+			<span class="nx">ie</span> <span class="o">=</span> <span class="o">!+</span><span class="s2">&quot;\v1&quot;</span><span class="p">,</span> <span class="c1">// feature detection based on Andrea Giammarchi&#39;s solution: http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html</span>
+			<span class="nx">playerVersion</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+			<span class="nx">d</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">plugins</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">plugins</span><span class="p">[</span><span class="nx">SHOCKWAVE_FLASH</span><span class="p">]</span> <span class="o">==</span> <span class="nx">OBJECT</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">d</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">plugins</span><span class="p">[</span><span class="nx">SHOCKWAVE_FLASH</span><span class="p">].</span><span class="nx">description</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">mimeTypes</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">mimeTypes</span><span class="p">[</span><span class="nx">FLASH_MIME_TYPE</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">nav</span><span class="p">.</span><span class="nx">mimeTypes</span><span class="p">[</span><span class="nx">FLASH_MIME_TYPE</span><span class="p">].</span><span class="nx">enabledPlugin</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// navigator.mimeTypes[&quot;application/x-shockwave-flash&quot;].enabledPlugin indicates whether plug-ins are enabled or disabled in Safari 3+</span>
+				<span class="nx">plugin</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="nx">ie</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// cascaded feature detection for Internet Explorer</span>
+				<span class="nx">d</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^.*\s+(\S+\s+\S+$)/</span><span class="p">,</span> <span class="s2">&quot;$1&quot;</span><span class="p">);</span>
+				<span class="nx">playerVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^(.*)\..*$/</span><span class="p">,</span> <span class="s2">&quot;$1&quot;</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+				<span class="nx">playerVersion</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^.*\.(.*)\s.*$/</span><span class="p">,</span> <span class="s2">&quot;$1&quot;</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+				<span class="nx">playerVersion</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sr">/[a-zA-Z]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="o">?</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^.*[a-zA-Z]+(.*)$/</span><span class="p">,</span> <span class="s2">&quot;$1&quot;</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">win</span><span class="p">.</span><span class="nx">ActiveXObject</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">try</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActiveXObject</span><span class="p">(</span><span class="nx">SHOCKWAVE_FLASH_AX</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// a will return null when ActiveX is disabled</span>
+					<span class="nx">d</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">GetVariable</span><span class="p">(</span><span class="s2">&quot;$version&quot;</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">ie</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// cascaded feature detection for Internet Explorer</span>
+						<span class="nx">d</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">);</span>
+						<span class="nx">playerVersion</span> <span class="o">=</span> <span class="p">[</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">),</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">10</span><span class="p">),</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">10</span><span class="p">)];</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="p">{</span> <span class="nx">w3</span><span class="o">:</span><span class="nx">w3cdom</span><span class="p">,</span> <span class="nx">pv</span><span class="o">:</span><span class="nx">playerVersion</span><span class="p">,</span> <span class="nx">wk</span><span class="o">:</span><span class="nx">webkit</span><span class="p">,</span> <span class="nx">ie</span><span class="o">:</span><span class="nx">ie</span><span class="p">,</span> <span class="nx">win</span><span class="o">:</span><span class="nx">windows</span><span class="p">,</span> <span class="nx">mac</span><span class="o">:</span><span class="nx">mac</span> <span class="p">};</span>
+	<span class="p">}(),</span>
+	
+	<span class="cm">/* Cross-browser onDomLoad</span>
+<span class="cm">		- Will fire an event as soon as the DOM of a web page is loaded</span>
+<span class="cm">		- Internet Explorer workaround based on Diego Perini&#39;s solution: http://javascript.nwbox.com/IEContentLoaded/</span>
+<span class="cm">		- Regular onload serves as fallback</span>
+<span class="cm">	*/</span> 
+	<span class="nx">onDomLoad</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+		<span class="k">if</span> <span class="p">((</span><span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="s2">&quot;complete&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">||</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">body</span><span class="p">)))</span> <span class="p">{</span> <span class="c1">// function is fired after onload, e.g. when script is inserted dynamically </span>
+			<span class="nx">callDomLoadFunctions</span><span class="p">();</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isDomLoaded</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">doc</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;DOMContentLoaded&quot;</span><span class="p">,</span> <span class="nx">callDomLoadFunctions</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span>		
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">doc</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="nx">ON_READY_STATE_CHANGE</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="s2">&quot;complete&quot;</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">doc</span><span class="p">.</span><span class="nx">detachEvent</span><span class="p">(</span><span class="nx">ON_READY_STATE_CHANGE</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">);</span>
+						<span class="nx">callDomLoadFunctions</span><span class="p">();</span>
+					<span class="p">}</span>
+				<span class="p">});</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">win</span> <span class="o">==</span> <span class="nx">top</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// if not inside an iframe</span>
+					<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">isDomLoaded</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+						<span class="k">try</span> <span class="p">{</span>
+							<span class="nx">doc</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">doScroll</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">);</span>
+						<span class="p">}</span>
+						<span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+							<span class="k">return</span><span class="p">;</span>
+						<span class="p">}</span>
+						<span class="nx">callDomLoadFunctions</span><span class="p">();</span>
+					<span class="p">})();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span><span class="p">)</span> <span class="p">{</span>
+				<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">isDomLoaded</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="sr">/loaded|complete/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">readyState</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+						<span class="k">return</span><span class="p">;</span>
+					<span class="p">}</span>
+					<span class="nx">callDomLoadFunctions</span><span class="p">();</span>
+				<span class="p">})();</span>
+			<span class="p">}</span>
+			<span class="nx">addLoadEvent</span><span class="p">(</span><span class="nx">callDomLoadFunctions</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}();</span>
+	
+	<span class="kd">function</span> <span class="nx">callDomLoadFunctions</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">isDomLoaded</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+		<span class="k">try</span> <span class="p">{</span> <span class="c1">// test if we can really add/remove elements to/from the DOM; we don&#39;t want to fire it too early</span>
+			<span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">));</span>
+			<span class="nx">t</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+		<span class="nx">isDomLoaded</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">dl</span> <span class="o">=</span> <span class="nx">domLoadFnArr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">dl</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">domLoadFnArr</span><span class="p">[</span><span class="nx">i</span><span class="p">]();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="kd">function</span> <span class="nx">addDomLoadEvent</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">isDomLoaded</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">fn</span><span class="p">();</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span> 
+			<span class="nx">domLoadFnArr</span><span class="p">[</span><span class="nx">domLoadFnArr</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">;</span> <span class="c1">// Array.push() is only available in IE5.5+</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Cross-browser onload</span>
+<span class="cm">		- Based on James Edwards&#39; solution: http://brothercake.com/site/resources/scripts/onload/</span>
+<span class="cm">		- Will fire an event as soon as a web page including all of its assets are loaded </span>
+<span class="cm">	 */</span>
+	<span class="kd">function</span> <span class="nx">addLoadEvent</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">win</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">win</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">doc</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">win</span><span class="p">.</span><span class="nx">attachEvent</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">addListener</span><span class="p">(</span><span class="nx">win</span><span class="p">,</span> <span class="s2">&quot;onload&quot;</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">win</span><span class="p">.</span><span class="nx">onload</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">fnOld</span> <span class="o">=</span> <span class="nx">win</span><span class="p">.</span><span class="nx">onload</span><span class="p">;</span>
+			<span class="nx">win</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nx">fnOld</span><span class="p">();</span>
+				<span class="nx">fn</span><span class="p">();</span>
+			<span class="p">};</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="nx">win</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Main function</span>
+<span class="cm">		- Will preferably execute onDomLoad, otherwise onload (as a fallback)</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span> 
+		<span class="k">if</span> <span class="p">(</span><span class="nx">plugin</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">testPlayerVersion</span><span class="p">();</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="nx">matchVersions</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Detect the Flash Player version for non-Internet Explorer browsers</span>
+<span class="cm">		- Detecting the plug-in version via the object element is more precise than using the plugins collection item&#39;s description:</span>
+<span class="cm">		  a. Both release and build numbers can be detected</span>
+<span class="cm">		  b. Avoid wrong descriptions by corrupt installers provided by Adobe</span>
+<span class="cm">		  c. Avoid wrong descriptions by multiple Flash Player entries in the plugin Array, caused by incorrect browser imports</span>
+<span class="cm">		- Disadvantage of this method is that it depends on the availability of the DOM, while the plugins collection is immediately available</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">testPlayerVersion</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="nx">OBJECT</span><span class="p">);</span>
+		<span class="nx">o</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="nx">FLASH_MIME_TYPE</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">t</span><span class="p">.</span><span class="nx">GetVariable</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">GetVariable</span><span class="p">(</span><span class="s2">&quot;$version&quot;</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">d</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">);</span>
+						<span class="nx">ua</span><span class="p">.</span><span class="nx">pv</span> <span class="o">=</span> <span class="p">[</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">),</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">10</span><span class="p">),</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">d</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">10</span><span class="p">)];</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">counter</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">counter</span><span class="o">++</span><span class="p">;</span>
+					<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+					<span class="k">return</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="nx">b</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+				<span class="nx">t</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+				<span class="nx">matchVersions</span><span class="p">();</span>
+			<span class="p">})();</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="nx">matchVersions</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Perform Flash Player and SWF version matching; static publishing only</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">matchVersions</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">rl</span> <span class="o">=</span> <span class="nx">regObjArr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">rl</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">rl</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// for each registered object element</span>
+				<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">regObjArr</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">id</span><span class="p">;</span>
+				<span class="kd">var</span> <span class="nx">cb</span> <span class="o">=</span> <span class="nx">regObjArr</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">callbackFn</span><span class="p">;</span>
+				<span class="kd">var</span> <span class="nx">cbObj</span> <span class="o">=</span> <span class="p">{</span><span class="nx">success</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span><span class="nx">id</span><span class="p">};</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">pv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">hasPlayerVersion</span><span class="p">(</span><span class="nx">regObjArr</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">swfVersion</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&lt;</span> <span class="mi">312</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// Flash Player version &gt;= published SWF version: Houston, we have a match!</span>
+							<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+								<span class="nx">cbObj</span><span class="p">.</span><span class="nx">success</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+								<span class="nx">cbObj</span><span class="p">.</span><span class="nx">ref</span> <span class="o">=</span> <span class="nx">getObjectById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+								<span class="nx">cb</span><span class="p">(</span><span class="nx">cbObj</span><span class="p">);</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+						<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">regObjArr</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">expressInstall</span> <span class="o">&amp;&amp;</span> <span class="nx">canExpressInstall</span><span class="p">())</span> <span class="p">{</span> <span class="c1">// show the Adobe Express Install dialog if set by the web page author and if supported</span>
+							<span class="kd">var</span> <span class="nx">att</span> <span class="o">=</span> <span class="p">{};</span>
+							<span class="nx">att</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">regObjArr</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">expressInstall</span><span class="p">;</span>
+							<span class="nx">att</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&quot;0&quot;</span><span class="p">;</span>
+							<span class="nx">att</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&quot;0&quot;</span><span class="p">;</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="nx">att</span><span class="p">.</span><span class="nx">styleclass</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">);</span> <span class="p">}</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;align&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="nx">att</span><span class="p">.</span><span class="nx">align</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;align&quot;</span><span class="p">);</span> <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>parse HTML object param element's name-value pairs</p>             </td>             <td class="code">               <div class="highlight"><pre>							<span class="kd">var</span> <span class="nx">par</span> <span class="o">=</span> <span class="p">{};</span>
+							<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;param&quot;</span><span class="p">);</span>
+							<span class="kd">var</span> <span class="nx">pl</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+							<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">pl</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+								<span class="k">if</span> <span class="p">(</span><span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;movie&quot;</span><span class="p">)</span> <span class="p">{</span>
+									<span class="nx">par</span><span class="p">[</span><span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">);</span>
+								<span class="p">}</span>
+							<span class="p">}</span>
+							<span class="nx">showExpressInstall</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
+						<span class="p">}</span>
+						<span class="k">else</span> <span class="p">{</span> <span class="c1">// Flash Player and SWF version mismatch or an older Webkit engine that ignores the HTML object element&#39;s nested param elements: display alternative content instead of SWF</span>
+							<span class="nx">displayAltContent</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">cbObj</span><span class="p">);</span> <span class="p">}</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">else</span> <span class="p">{</span>	<span class="c1">// if no Flash Player is installed or the fp version cannot be detected we let the HTML object element do its job (either show a SWF or alternative content)</span>
+					<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+						<span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">getObjectById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="c1">// test whether there is an HTML object element or not</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">o</span><span class="p">.</span><span class="nx">SetVariable</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span> 
+							<span class="nx">cbObj</span><span class="p">.</span><span class="nx">success</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+							<span class="nx">cbObj</span><span class="p">.</span><span class="nx">ref</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
+						<span class="p">}</span>
+						<span class="nx">cb</span><span class="p">(</span><span class="nx">cbObj</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="kd">function</span> <span class="nx">getObjectById</span><span class="p">(</span><span class="nx">objectIdStr</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">objectIdStr</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">==</span> <span class="s2">&quot;OBJECT&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">o</span><span class="p">.</span><span class="nx">SetVariable</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">r</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="nx">o</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="nx">OBJECT</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">r</span> <span class="o">=</span> <span class="nx">n</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Requirements for Adobe Express Install</span>
+<span class="cm">		- only one instance can be active at a time</span>
+<span class="cm">		- fp 6.0.65 or higher</span>
+<span class="cm">		- Win/Mac OS only</span>
+<span class="cm">		- no Webkit engines older than version 312</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">canExpressInstall</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">!</span><span class="nx">isExpressInstallActive</span> <span class="o">&amp;&amp;</span> <span class="nx">hasPlayerVersion</span><span class="p">(</span><span class="s2">&quot;6.0.65&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">win</span> <span class="o">||</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">mac</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&lt;</span> <span class="mi">312</span><span class="p">);</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Show the Adobe Express Install dialog</span>
+<span class="cm">		- Reference: http://www.adobe.com/cfusion/knowledgebase/index.cfm?id=6a253b75</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">showExpressInstall</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">isExpressInstallActive</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="nx">storedCallbackFn</span> <span class="o">=</span> <span class="nx">callbackFn</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="nx">storedCallbackObj</span> <span class="o">=</span> <span class="p">{</span><span class="nx">success</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span><span class="nx">replaceElemIdStr</span><span class="p">};</span>
+		<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">replaceElemIdStr</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">==</span> <span class="s2">&quot;OBJECT&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// static publishing</span>
+				<span class="nx">storedAltContent</span> <span class="o">=</span> <span class="nx">abstractAltContent</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+				<span class="nx">storedAltContentId</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="p">{</span> <span class="c1">// dynamic publishing</span>
+				<span class="nx">storedAltContent</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">;</span>
+				<span class="nx">storedAltContentId</span> <span class="o">=</span> <span class="nx">replaceElemIdStr</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="nx">att</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">EXPRESS_INSTALL_ID</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">att</span><span class="p">.</span><span class="nx">width</span> <span class="o">==</span> <span class="nx">UNDEF</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="sr">/%$/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">att</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">att</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">310</span><span class="p">))</span> <span class="p">{</span> <span class="nx">att</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="s2">&quot;310&quot;</span><span class="p">;</span> <span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">att</span><span class="p">.</span><span class="nx">height</span> <span class="o">==</span> <span class="nx">UNDEF</span> <span class="o">||</span> <span class="p">(</span><span class="o">!</span><span class="sr">/%$/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">att</span><span class="p">.</span><span class="nx">height</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">att</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">137</span><span class="p">))</span> <span class="p">{</span> <span class="nx">att</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="s2">&quot;137&quot;</span><span class="p">;</span> <span class="p">}</span>
+			<span class="nx">doc</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">47</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; - Flash Player Installation&quot;</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">pt</span> <span class="o">=</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span> <span class="o">?</span> <span class="s2">&quot;ActiveX&quot;</span> <span class="o">:</span> <span class="s2">&quot;PlugIn&quot;</span><span class="p">,</span>
+				<span class="nx">fv</span> <span class="o">=</span> <span class="s2">&quot;MMredirectURL=&quot;</span> <span class="o">+</span> <span class="nb">encodeURI</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">).</span><span class="nx">toString</span><span class="p">().</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/&amp;/g</span><span class="p">,</span><span class="s2">&quot;%26&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&amp;MMplayerType=&quot;</span> <span class="o">+</span> <span class="nx">pt</span> <span class="o">+</span> <span class="s2">&quot;&amp;MMdoctitle=&quot;</span> <span class="o">+</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">par</span><span class="p">.</span><span class="nx">flashvars</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">par</span><span class="p">.</span><span class="nx">flashvars</span> <span class="o">+=</span> <span class="s2">&quot;&amp;&quot;</span> <span class="o">+</span> <span class="nx">fv</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="p">{</span>
+				<span class="nx">par</span><span class="p">.</span><span class="nx">flashvars</span> <span class="o">=</span> <span class="nx">fv</span><span class="p">;</span>
+			<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>IE only: when a SWF is loading (AND: not available in cache) wait for the readyState of the object element to become 4 before removing it,
+because you cannot properly cancel a loading SWF file without breaking browser load references, also obj.onreadystatechange doesn't work</p>             </td>             <td class="code">               <div class="highlight"><pre>			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span> <span class="o">&amp;&amp;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">newObj</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+				<span class="nx">replaceElemIdStr</span> <span class="o">+=</span> <span class="s2">&quot;SWFObjectNew&quot;</span><span class="p">;</span>
+				<span class="nx">newObj</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">);</span>
+				<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">newObj</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// insert placeholder div that will be replaced by the object element that loads expressinstall.swf</span>
+				<span class="nx">obj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">;</span>
+				<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+					<span class="p">}</span>
+					<span class="k">else</span> <span class="p">{</span>
+						<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">})();</span>
+			<span class="p">}</span>
+			<span class="nx">createSWF</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Functions to abstract and display alternative content</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">displayAltContent</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span> <span class="o">&amp;&amp;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>IE only: when a SWF is loading (AND: not available in cache) wait for the readyState of the object element to become 4 before removing it,
+because you cannot properly cancel a loading SWF file without breaking browser load references, also obj.onreadystatechange doesn't work</p>             </td>             <td class="code">               <div class="highlight"><pre>			<span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+			<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// insert placeholder div that will be replaced by the alternative content</span>
+			<span class="nx">el</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">replaceChild</span><span class="p">(</span><span class="nx">abstractAltContent</span><span class="p">(</span><span class="nx">obj</span><span class="p">),</span> <span class="nx">el</span><span class="p">);</span>
+			<span class="nx">obj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">;</span>
+			<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="k">else</span> <span class="p">{</span>
+					<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">})();</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">replaceChild</span><span class="p">(</span><span class="nx">abstractAltContent</span><span class="p">(</span><span class="nx">obj</span><span class="p">),</span> <span class="nx">obj</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span> 
+
+	<span class="kd">function</span> <span class="nx">abstractAltContent</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">ac</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">win</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ac</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">nestedObj</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="nx">OBJECT</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">nestedObj</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">nestedObj</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">;</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">cl</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+					<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cl</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">c</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeType</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">c</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeName</span> <span class="o">==</span> <span class="s2">&quot;PARAM&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="nx">c</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeType</span> <span class="o">==</span> <span class="mi">8</span><span class="p">))</span> <span class="p">{</span>
+							<span class="nx">ac</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">c</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">cloneNode</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">ac</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Cross-browser dynamic SWF creation</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">createSWF</span><span class="p">(</span><span class="nx">attObj</span><span class="p">,</span> <span class="nx">parObj</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&lt;</span> <span class="mi">312</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">r</span><span class="p">;</span> <span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">attObj</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// if no &#39;id&#39; is defined for the object element, it will inherit the &#39;id&#39; from the alternative content</span>
+				<span class="nx">attObj</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Internet Explorer + the HTML object element + W3C DOM methods do not combine: fall back to outerHTML</span>
+				<span class="kd">var</span> <span class="nx">att</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">attObj</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">attObj</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span> <span class="c1">// filter out prototype additions from other potential libraries</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">parObj</span><span class="p">.</span><span class="nx">movie</span> <span class="o">=</span> <span class="nx">attObj</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+						<span class="p">}</span>
+						<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;styleclass&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// &#39;class&#39; is an ECMA4 reserved keyword</span>
+							<span class="nx">att</span> <span class="o">+=</span> <span class="s1">&#39; class=&quot;&#39;</span> <span class="o">+</span> <span class="nx">attObj</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">;</span>
+						<span class="p">}</span>
+						<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;classid&quot;</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">att</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">i</span> <span class="o">+</span> <span class="s1">&#39;=&quot;&#39;</span> <span class="o">+</span> <span class="nx">attObj</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="kd">var</span> <span class="nx">par</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="k">in</span> <span class="nx">parObj</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">parObj</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">j</span><span class="p">])</span> <span class="p">{</span> <span class="c1">// filter out prototype additions from other potential libraries</span>
+						<span class="nx">par</span> <span class="o">+=</span> <span class="s1">&#39;&lt;param name=&quot;&#39;</span> <span class="o">+</span> <span class="nx">j</span> <span class="o">+</span> <span class="s1">&#39;&quot; value=&quot;&#39;</span> <span class="o">+</span> <span class="nx">parObj</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;&quot; /&gt;&#39;</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="nx">el</span><span class="p">.</span><span class="nx">outerHTML</span> <span class="o">=</span> <span class="s1">&#39;&lt;object classid=&quot;clsid:D27CDB6E-AE6D-11cf-96B8-444553540000&quot;&#39;</span> <span class="o">+</span> <span class="nx">att</span> <span class="o">+</span> <span class="s1">&#39;&gt;&#39;</span> <span class="o">+</span> <span class="nx">par</span> <span class="o">+</span> <span class="s1">&#39;&lt;/object&gt;&#39;</span><span class="p">;</span>
+				<span class="nx">objIdArr</span><span class="p">[</span><span class="nx">objIdArr</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">attObj</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span> <span class="c1">// stored to fix object &#39;leaks&#39; on unload (dynamic publishing only)</span>
+				<span class="nx">r</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">attObj</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>	
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="p">{</span> <span class="c1">// well-behaving browsers</span>
+				<span class="kd">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="nx">OBJECT</span><span class="p">);</span>
+				<span class="nx">o</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="nx">FLASH_MIME_TYPE</span><span class="p">);</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">m</span> <span class="k">in</span> <span class="nx">attObj</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">attObj</span><span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">m</span><span class="p">])</span> <span class="p">{</span> <span class="c1">// filter out prototype additions from other potential libraries</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;styleclass&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// &#39;class&#39; is an ECMA4 reserved keyword</span>
+							<span class="nx">o</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="nx">attObj</span><span class="p">[</span><span class="nx">m</span><span class="p">]);</span>
+						<span class="p">}</span>
+						<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;classid&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// filter out IE specific attribute</span>
+							<span class="nx">o</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">m</span><span class="p">,</span> <span class="nx">attObj</span><span class="p">[</span><span class="nx">m</span><span class="p">]);</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">n</span> <span class="k">in</span> <span class="nx">parObj</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">parObj</span><span class="p">[</span><span class="nx">n</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">n</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">n</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;movie&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// filter out prototype additions from other potential libraries and IE specific param element</span>
+						<span class="nx">createObjParam</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">parObj</span><span class="p">[</span><span class="nx">n</span><span class="p">]);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="nx">el</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">replaceChild</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">el</span><span class="p">);</span>
+				<span class="nx">r</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="kd">function</span> <span class="nx">createObjParam</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">pName</span><span class="p">,</span> <span class="nx">pValue</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;param&quot;</span><span class="p">);</span>
+		<span class="nx">p</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nx">pName</span><span class="p">);</span>	
+		<span class="nx">p</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="nx">pValue</span><span class="p">);</span>
+		<span class="nx">el</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Cross-browser SWF removal</span>
+<span class="cm">		- Especially needed to safely and completely remove a SWF in Internet Explorer</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">removeSWF</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span> <span class="o">&amp;&amp;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">==</span> <span class="s2">&quot;OBJECT&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">obj</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">;</span>
+				<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">removeObjectInIE</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+					<span class="p">}</span>
+					<span class="k">else</span> <span class="p">{</span>
+						<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">})();</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="p">{</span>
+				<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="kd">function</span> <span class="nx">removeObjectInIE</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Functions to optimize JavaScript compression</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="k">try</span> <span class="p">{</span>
+			<span class="nx">el</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{}</span>
+		<span class="k">return</span> <span class="nx">el</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="kd">function</span> <span class="nx">createElement</span><span class="p">(</span><span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">el</span><span class="p">);</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Updated attachEvent function for Internet Explorer</span>
+<span class="cm">		- Stores attachEvent information in an Array, so on unload the detachEvent functions can be called to avoid memory leaks</span>
+<span class="cm">	*/</span>	
+	<span class="kd">function</span> <span class="nx">addListener</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">eventType</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">target</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+		<span class="nx">listenersArr</span><span class="p">[</span><span class="nx">listenersArr</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">target</span><span class="p">,</span> <span class="nx">eventType</span><span class="p">,</span> <span class="nx">fn</span><span class="p">];</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Flash Player and SWF content version matching</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">hasPlayerVersion</span><span class="p">(</span><span class="nx">rv</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">pv</span> <span class="o">=</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">pv</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=</span> <span class="nx">rv</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+		<span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">);</span>
+		<span class="nx">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// supports short notation, e.g. &quot;9&quot; instead of &quot;9.0.0&quot;</span>
+		<span class="nx">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">v</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="k">return</span> <span class="p">(</span><span class="nx">pv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">||</span> <span class="p">(</span><span class="nx">pv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">pv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nx">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">||</span> <span class="p">(</span><span class="nx">pv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nx">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">pv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nx">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">pv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nx">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Cross-browser dynamic CSS creation</span>
+<span class="cm">		- Based on Bobby van der Sluis&#39; solution: http://www.bobbyvandersluis.com/articles/dynamicCSS.php</span>
+<span class="cm">	*/</span>	
+	<span class="kd">function</span> <span class="nx">createCSS</span><span class="p">(</span><span class="nx">sel</span><span class="p">,</span> <span class="nx">decl</span><span class="p">,</span> <span class="nx">media</span><span class="p">,</span> <span class="nx">newStyle</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">mac</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+		<span class="kd">var</span> <span class="nx">h</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">h</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// to also support badly authored HTML pages that lack a head element</span>
+		<span class="kd">var</span> <span class="nx">m</span> <span class="o">=</span> <span class="p">(</span><span class="nx">media</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">media</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span> <span class="o">?</span> <span class="nx">media</span> <span class="o">:</span> <span class="s2">&quot;screen&quot;</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">newStyle</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">dynamicStylesheet</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+			<span class="nx">dynamicStylesheetMedia</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">dynamicStylesheet</span> <span class="o">||</span> <span class="nx">dynamicStylesheetMedia</span> <span class="o">!=</span> <span class="nx">m</span><span class="p">)</span> <span class="p">{</span> </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>create dynamic stylesheet + get a global reference to it</p>             </td>             <td class="code">               <div class="highlight"><pre>			<span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">);</span>
+			<span class="nx">s</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;text/css&quot;</span><span class="p">);</span>
+			<span class="nx">s</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;media&quot;</span><span class="p">,</span> <span class="nx">m</span><span class="p">);</span>
+			<span class="nx">dynamicStylesheet</span> <span class="o">=</span> <span class="nx">h</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">s</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">styleSheets</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">&amp;&amp;</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">styleSheets</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">dynamicStylesheet</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">styleSheets</span><span class="p">[</span><span class="nx">doc</span><span class="p">.</span><span class="nx">styleSheets</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+			<span class="p">}</span>
+			<span class="nx">dynamicStylesheetMedia</span> <span class="o">=</span> <span class="nx">m</span><span class="p">;</span>
+		<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>add style rule</p>             </td>             <td class="code">               <div class="highlight"><pre>		<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">dynamicStylesheet</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">dynamicStylesheet</span><span class="p">.</span><span class="nx">addRule</span> <span class="o">==</span> <span class="nx">OBJECT</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">dynamicStylesheet</span><span class="p">.</span><span class="nx">addRule</span><span class="p">(</span><span class="nx">sel</span><span class="p">,</span> <span class="nx">decl</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">dynamicStylesheet</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">createTextNode</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">dynamicStylesheet</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="nx">sel</span> <span class="o">+</span> <span class="s2">&quot; {&quot;</span> <span class="o">+</span> <span class="nx">decl</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">));</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="kd">function</span> <span class="nx">setVisibility</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">isVisible</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">autoHideShow</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span><span class="p">;</span> <span class="p">}</span>
+		<span class="kd">var</span> <span class="nx">v</span> <span class="o">=</span> <span class="nx">isVisible</span> <span class="o">?</span> <span class="s2">&quot;visible&quot;</span> <span class="o">:</span> <span class="s2">&quot;hidden&quot;</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">isDomLoaded</span> <span class="o">&amp;&amp;</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">visibility</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="nx">createCSS</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">,</span> <span class="s2">&quot;visibility:&quot;</span> <span class="o">+</span> <span class="nx">v</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="cm">/* Filter to avoid XSS attacks</span>
+<span class="cm">	*/</span>
+	<span class="kd">function</span> <span class="nx">urlEncodeIfNecessary</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">regex</span> <span class="o">=</span> <span class="sr">/[\\\&quot;&lt;&gt;\.;]/</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">hasBadChars</span> <span class="o">=</span> <span class="nx">regex</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="k">return</span> <span class="nx">hasBadChars</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nb">encodeURIComponent</span> <span class="o">!=</span> <span class="nx">UNDEF</span> <span class="o">?</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">:</span> <span class="nx">s</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="cm">/* Release memory to avoid memory leaks caused by closures, fix hanging audio/video threads and force open sockets/NetConnections to disconnect (Internet Explorer only)</span>
+<span class="cm">	*/</span>
+	<span class="kd">var</span> <span class="nx">cleanup</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nb">window</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="s2">&quot;onunload&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>remove listeners to avoid memory leaks</p>             </td>             <td class="code">               <div class="highlight"><pre>				<span class="kd">var</span> <span class="nx">ll</span> <span class="o">=</span> <span class="nx">listenersArr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">ll</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">listenersArr</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">detachEvent</span><span class="p">(</span><span class="nx">listenersArr</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="nx">listenersArr</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]);</span>
+				<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>cleanup dynamically embedded objects to fix audio/video threads and force open sockets and NetConnections to disconnect</p>             </td>             <td class="code">               <div class="highlight"><pre>				<span class="kd">var</span> <span class="nx">il</span> <span class="o">=</span> <span class="nx">objIdArr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">il</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">removeSWF</span><span class="p">(</span><span class="nx">objIdArr</span><span class="p">[</span><span class="nx">j</span><span class="p">]);</span>
+				<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>cleanup library's main closures to avoid memory leaks</p>             </td>             <td class="code">               <div class="highlight"><pre>				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">ua</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">ua</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="nx">ua</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">l</span> <span class="k">in</span> <span class="nx">swfobject</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">swfobject</span><span class="p">[</span><span class="nx">l</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="nx">swfobject</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+			<span class="p">});</span>
+		<span class="p">}</span>
+	<span class="p">}();</span>
+	
+	<span class="k">return</span> <span class="p">{</span>
+		<span class="cm">/* Public API</span>
+<span class="cm">			- Reference: http://code.google.com/p/swfobject/wiki/documentation</span>
+<span class="cm">		*/</span> 
+		<span class="nx">registerObject</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">objectIdStr</span><span class="p">,</span> <span class="nx">swfVersionStr</span><span class="p">,</span> <span class="nx">xiSwfUrlStr</span><span class="p">,</span> <span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span> <span class="o">&amp;&amp;</span> <span class="nx">objectIdStr</span> <span class="o">&amp;&amp;</span> <span class="nx">swfVersionStr</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">regObj</span> <span class="o">=</span> <span class="p">{};</span>
+				<span class="nx">regObj</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">objectIdStr</span><span class="p">;</span>
+				<span class="nx">regObj</span><span class="p">.</span><span class="nx">swfVersion</span> <span class="o">=</span> <span class="nx">swfVersionStr</span><span class="p">;</span>
+				<span class="nx">regObj</span><span class="p">.</span><span class="nx">expressInstall</span> <span class="o">=</span> <span class="nx">xiSwfUrlStr</span><span class="p">;</span>
+				<span class="nx">regObj</span><span class="p">.</span><span class="nx">callbackFn</span> <span class="o">=</span> <span class="nx">callbackFn</span><span class="p">;</span>
+				<span class="nx">regObjArr</span><span class="p">[</span><span class="nx">regObjArr</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">regObj</span><span class="p">;</span>
+				<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">objectIdStr</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">callbackFn</span><span class="p">({</span><span class="nx">success</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span><span class="nx">objectIdStr</span><span class="p">});</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">getObjectById</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">objectIdStr</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">getObjectById</span><span class="p">(</span><span class="nx">objectIdStr</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">embedSWF</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">swfUrlStr</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="nx">widthStr</span><span class="p">,</span> <span class="nx">heightStr</span><span class="p">,</span> <span class="nx">swfVersionStr</span><span class="p">,</span> <span class="nx">xiSwfUrlStr</span><span class="p">,</span> <span class="nx">flashvarsObj</span><span class="p">,</span> <span class="nx">parObj</span><span class="p">,</span> <span class="nx">attObj</span><span class="p">,</span> <span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">callbackObj</span> <span class="o">=</span> <span class="p">{</span><span class="nx">success</span><span class="o">:</span><span class="kc">false</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span><span class="nx">replaceElemIdStr</span><span class="p">};</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">wk</span> <span class="o">&lt;</span> <span class="mi">312</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">swfUrlStr</span> <span class="o">&amp;&amp;</span> <span class="nx">replaceElemIdStr</span> <span class="o">&amp;&amp;</span> <span class="nx">widthStr</span> <span class="o">&amp;&amp;</span> <span class="nx">heightStr</span> <span class="o">&amp;&amp;</span> <span class="nx">swfVersionStr</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+				<span class="nx">addDomLoadEvent</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+					<span class="nx">widthStr</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span> <span class="c1">// auto-convert to string</span>
+					<span class="nx">heightStr</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+					<span class="kd">var</span> <span class="nx">att</span> <span class="o">=</span> <span class="p">{};</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">attObj</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">attObj</span> <span class="o">===</span> <span class="nx">OBJECT</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">attObj</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// copy object to avoid the use of references, because web authors often reuse attObj for multiple SWFs</span>
+							<span class="nx">att</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">attObj</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="nx">att</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">swfUrlStr</span><span class="p">;</span>
+					<span class="nx">att</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">widthStr</span><span class="p">;</span>
+					<span class="nx">att</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">heightStr</span><span class="p">;</span>
+					<span class="kd">var</span> <span class="nx">par</span> <span class="o">=</span> <span class="p">{};</span> 
+					<span class="k">if</span> <span class="p">(</span><span class="nx">parObj</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">parObj</span> <span class="o">===</span> <span class="nx">OBJECT</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="k">in</span> <span class="nx">parObj</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// copy object to avoid the use of references, because web authors often reuse parObj for multiple SWFs</span>
+							<span class="nx">par</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parObj</span><span class="p">[</span><span class="nx">j</span><span class="p">];</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">flashvarsObj</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">flashvarsObj</span> <span class="o">===</span> <span class="nx">OBJECT</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">flashvarsObj</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// copy object to avoid the use of references, because web authors often reuse flashvarsObj for multiple SWFs</span>
+							<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">par</span><span class="p">.</span><span class="nx">flashvars</span> <span class="o">!=</span> <span class="nx">UNDEF</span><span class="p">)</span> <span class="p">{</span>
+								<span class="nx">par</span><span class="p">.</span><span class="nx">flashvars</span> <span class="o">+=</span> <span class="s2">&quot;&amp;&quot;</span> <span class="o">+</span> <span class="nx">k</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">flashvarsObj</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
+							<span class="p">}</span>
+							<span class="k">else</span> <span class="p">{</span>
+								<span class="nx">par</span><span class="p">.</span><span class="nx">flashvars</span> <span class="o">=</span> <span class="nx">k</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">flashvarsObj</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">hasPlayerVersion</span><span class="p">(</span><span class="nx">swfVersionStr</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// create SWF</span>
+						<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">createSWF</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">);</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">att</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">replaceElemIdStr</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+						<span class="p">}</span>
+						<span class="nx">callbackObj</span><span class="p">.</span><span class="nx">success</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+						<span class="nx">callbackObj</span><span class="p">.</span><span class="nx">ref</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">;</span>
+					<span class="p">}</span>
+					<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">xiSwfUrlStr</span> <span class="o">&amp;&amp;</span> <span class="nx">canExpressInstall</span><span class="p">())</span> <span class="p">{</span> <span class="c1">// show Adobe Express Install</span>
+						<span class="nx">att</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">xiSwfUrlStr</span><span class="p">;</span>
+						<span class="nx">showExpressInstall</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="nx">callbackFn</span><span class="p">);</span>
+						<span class="k">return</span><span class="p">;</span>
+					<span class="p">}</span>
+					<span class="k">else</span> <span class="p">{</span> <span class="c1">// show alternative content</span>
+						<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span> <span class="nx">callbackFn</span><span class="p">(</span><span class="nx">callbackObj</span><span class="p">);</span> <span class="p">}</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span> <span class="nx">callbackFn</span><span class="p">(</span><span class="nx">callbackObj</span><span class="p">);</span>	<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">switchOffAutoHideShow</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">autoHideShow</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+		<span class="p">},</span>
+		
+		<span class="nx">ua</span><span class="o">:</span> <span class="nx">ua</span><span class="p">,</span>
+		
+		<span class="nx">getFlashPlayerVersion</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="p">{</span> <span class="nx">major</span><span class="o">:</span><span class="nx">ua</span><span class="p">.</span><span class="nx">pv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">minor</span><span class="o">:</span><span class="nx">ua</span><span class="p">.</span><span class="nx">pv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">release</span><span class="o">:</span><span class="nx">ua</span><span class="p">.</span><span class="nx">pv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">};</span>
+		<span class="p">},</span>
+		
+		<span class="nx">hasFlashPlayerVersion</span><span class="o">:</span> <span class="nx">hasPlayerVersion</span><span class="p">,</span>
+		
+		<span class="nx">createSWF</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">attObj</span><span class="p">,</span> <span class="nx">parObj</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">createSWF</span><span class="p">(</span><span class="nx">attObj</span><span class="p">,</span> <span class="nx">parObj</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">else</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">showExpressInstall</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="nx">callbackFn</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span> <span class="o">&amp;&amp;</span> <span class="nx">canExpressInstall</span><span class="p">())</span> <span class="p">{</span>
+				<span class="nx">showExpressInstall</span><span class="p">(</span><span class="nx">att</span><span class="p">,</span> <span class="nx">par</span><span class="p">,</span> <span class="nx">replaceElemIdStr</span><span class="p">,</span> <span class="nx">callbackFn</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">removeSWF</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">objElemIdStr</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">removeSWF</span><span class="p">(</span><span class="nx">objElemIdStr</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">createCSS</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selStr</span><span class="p">,</span> <span class="nx">declStr</span><span class="p">,</span> <span class="nx">mediaStr</span><span class="p">,</span> <span class="nx">newStyleBoolean</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">w3</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">createCSS</span><span class="p">(</span><span class="nx">selStr</span><span class="p">,</span> <span class="nx">declStr</span><span class="p">,</span> <span class="nx">mediaStr</span><span class="p">,</span> <span class="nx">newStyleBoolean</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">addDomLoadEvent</span><span class="o">:</span> <span class="nx">addDomLoadEvent</span><span class="p">,</span>
+		
+		<span class="nx">addLoadEvent</span><span class="o">:</span> <span class="nx">addLoadEvent</span><span class="p">,</span>
+		
+		<span class="nx">getQueryParamValue</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span> <span class="o">||</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">q</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="sr">/\?/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">q</span><span class="p">))</span> <span class="p">{</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span> <span class="p">}</span> <span class="c1">// strip question mark</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">param</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">urlEncodeIfNecessary</span><span class="p">(</span><span class="nx">q</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="kd">var</span> <span class="nx">pairs</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">);</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pairs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">pairs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">pairs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="nx">param</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">urlEncodeIfNecessary</span><span class="p">(</span><span class="nx">pairs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">substring</span><span class="p">((</span><span class="nx">pairs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)));</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+		<span class="p">},</span>
+		</pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>For internal usage only</p>             </td>             <td class="code">               <div class="highlight"><pre>		<span class="nx">expressInstallCallback</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">isExpressInstallActive</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">getElementById</span><span class="p">(</span><span class="nx">EXPRESS_INSTALL_ID</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">obj</span> <span class="o">&amp;&amp;</span> <span class="nx">storedAltContent</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">obj</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">replaceChild</span><span class="p">(</span><span class="nx">storedAltContent</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">storedAltContentId</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">setVisibility</span><span class="p">(</span><span class="nx">storedAltContentId</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">ua</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span> <span class="nx">storedAltContent</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s2">&quot;block&quot;</span><span class="p">;</span> <span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">storedCallbackFn</span><span class="p">)</span> <span class="p">{</span> <span class="nx">storedCallbackFn</span><span class="p">(</span><span class="nx">storedCallbackObj</span><span class="p">);</span> <span class="p">}</span>
+				<span class="p">}</span>
+				<span class="nx">isExpressInstallActive</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="p">}</span> 
+		<span class="p">}</span>
+	<span class="p">};</span>
+<span class="p">}();</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

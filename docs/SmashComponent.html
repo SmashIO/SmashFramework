@@ -1,16 +1,16 @@
-<!DOCTYPE html>  <html> <head>   <title>PBComponent.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               PBComponent.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span>
+<!DOCTYPE html>  <html> <head>   <title>SmashComponent.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                        </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               SmashComponent.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">io</span><span class="p">.</span><span class="nx">smash</span><span class="p">.</span><span class="nx">core</span>
 <span class="p">{</span>
-    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">pb_internal</span><span class="o">;</span>
-    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">property</span><span class="p">.</span><span class="nx">PropertyManager</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">io</span><span class="p">.</span><span class="nx">smash</span><span class="p">.</span><span class="nx">smash_internal</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">io</span><span class="p">.</span><span class="nx">smash</span><span class="p">.</span><span class="nx">property</span><span class="p">.</span><span class="nx">PropertyManager</span><span class="o">;</span>
     
-    <span class="nx">use</span> <span class="kd">namespace</span> <span class="nx">pb_internal</span><span class="o">;</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Base class for most game functionality. Contained in a PBGameObject.</p>
+    <span class="nx">use</span> <span class="kd">namespace</span> <span class="nx">smash_internal</span><span class="o">;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Base class for most game functionality. Contained in a SmashGameObject.</p>
 
-<p>Dependency injection is fulfilled based on the PBGroup containing the
-owning PBGameObject.</p>
+<p>Dependency injection is fulfilled based on the SmashGroup containing the
+owning SmashGameObject.</p>
 
 <p>Provides a generic data binding system as well as callbacks when
-the component is added to or removed from a PBGameObject.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">PBComponent</span>
+the component is added to or removed from a SmashGameObject.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">SmashComponent</span>
     <span class="p">{</span>
         <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
         <span class="kd">public</span> <span class="k">var</span> <span class="nx">propertyManager</span><span class="o">:</span><span class="nx">PropertyManager</span><span class="o">;</span>
@@ -20,21 +20,21 @@ the component is added to or removed from a PBGameObject.</p>             </td> 
         <span class="kd">private</span> <span class="k">var</span> <span class="nx">_safetyFlag</span><span class="o">:</span><span class="nb">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
         <span class="kd">private</span> <span class="k">var</span> <span class="nx">_name</span><span class="o">:</span><span class="nb">String</span><span class="o">;</span>
         
-        <span class="nx">pb_internal</span> <span class="k">var</span> <span class="nx">_owner</span><span class="o">:</span><span class="nx">PBGameObject</span><span class="o">;</span>
+        <span class="nx">smash_internal</span> <span class="k">var</span> <span class="nx">_owner</span><span class="o">:</span><span class="nx">SmashGameObject</span><span class="o">;</span>
         
         <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">name</span><span class="p">()</span><span class="o">:</span><span class="nb">String</span>
         <span class="p">{</span>
             <span class="k">return</span> <span class="nx">_name</span><span class="o">;</span>
         <span class="p">}</span>
         </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The name of the component. Can't be changed while it is registered
-with an owning PBGameObject.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">name</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
+with an owning SmashGameObject.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">set</span> <span class="nx">name</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
         <span class="p">{</span>
             <span class="k">if</span><span class="p">(</span><span class="nx">_owner</span><span class="p">)</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Already added to PBGameObject, can&#39;t change name of PBComponent.&quot;</span><span class="p">);</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Already added to SmashGameObject, can&#39;t change name of SmashComponent.&quot;</span><span class="p">);</span>
             
             <span class="nx">_name</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
         <span class="p">}</span>
-        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>What PBGameObject contains us, if any?</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">owner</span><span class="p">()</span><span class="o">:</span><span class="nx">PBGameObject</span>
+        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>What SmashGameObject contains us, if any?</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="kd">get</span> <span class="nx">owner</span><span class="p">()</span><span class="o">:</span><span class="nx">SmashGameObject</span>
         <span class="p">{</span>
             <span class="k">return</span> <span class="nx">_owner</span><span class="o">;</span>
         <span class="p">}</span>
@@ -45,7 +45,7 @@ use them, bindings have no overhead.</p>
 
 <p>@param fieldName Name of a field on this object to copy data to.
 @param propertyReference A reference to a value on another component,
-                         PBGameObject, or other part of the system.
+                         SmashGameObject, or other part of the system.
                          Usually "@componentName.fieldName".</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="kd">function</span> <span class="nx">addBinding</span><span class="p">(</span><span class="nx">fieldName</span><span class="o">:</span><span class="nb">String</span><span class="o">,</span> <span class="nx">propertyReference</span><span class="o">:</span><span class="nb">String</span><span class="p">)</span><span class="o">:</span><span class="nx">void</span>
         <span class="p">{</span>
             <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">bindings</span><span class="p">)</span>
@@ -80,7 +80,7 @@ called at start of onTick or onFrame handler.</p>             </td>             
                 <span class="nx">propertyManager</span><span class="p">.</span><span class="nx">applyBinding</span><span class="p">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">bindings</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
         <span class="p">}</span>
         
-        <span class="nx">pb_internal</span> <span class="kd">function</span> <span class="nx">doAdd</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="nx">smash_internal</span> <span class="kd">function</span> <span class="nx">doAdd</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
         <span class="p">{</span>
             <span class="nx">_safetyFlag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
             <span class="nx">onAdd</span><span class="p">();</span>
@@ -88,19 +88,19 @@ called at start of onTick or onFrame handler.</p>             </td>             
                 <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;You forget to call super.onAdd() in an onAdd override.&quot;</span><span class="p">);</span>
         <span class="p">}</span>
         
-        <span class="nx">pb_internal</span> <span class="kd">function</span> <span class="nx">doRemove</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
+        <span class="nx">smash_internal</span> <span class="kd">function</span> <span class="nx">doRemove</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
         <span class="p">{</span>
             <span class="nx">_safetyFlag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
             <span class="nx">onRemove</span><span class="p">();</span>
             <span class="k">if</span><span class="p">(</span><span class="nx">_safetyFlag</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;You forget to call super.onRemove() in an onRemove handler.&quot;</span><span class="p">);</span>
         <span class="p">}</span>
-        </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Called when component is added to a PBGameObject. Do component setup
+        </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Called when component is added to a SmashGameObject. Do component setup
 logic here.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">protected</span> <span class="kd">function</span> <span class="nx">onAdd</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
         <span class="p">{</span>
             <span class="nx">_safetyFlag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
         <span class="p">}</span>
-        </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Called when component is removed frmo a PBGameObject. Do component
+        </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Called when component is removed frmo a SmashGameObject. Do component
 teardown logic here.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">protected</span> <span class="kd">function</span> <span class="nx">onRemove</span><span class="p">()</span><span class="o">:</span><span class="nx">void</span>
         <span class="p">{</span>
             <span class="nx">_safetyFlag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>

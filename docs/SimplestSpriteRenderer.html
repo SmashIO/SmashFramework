@@ -1,4 +1,4 @@
-<!DOCTYPE html>  <html> <head>   <title>SimplestSpriteRenderer.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                   <b> 1. First Steps </b>                          <a class="source" href="PBEDemos.html">       PBEDemos.as      </a>                          <a class="source" href="SimplestRendererScene.html">       SimplestRendererScene.as      </a>                          <a class="source" href="SimplestSpriteRenderer.html">       SimplestSpriteRenderer.as      </a>                          <a class="source" href="BindingDemoScene.html">       BindingDemoScene.as      </a>                          <a class="source" href="SimplestSpatialComponent.html">       SimplestSpatialComponent.as      </a>                          <a class="source" href="MouseFollowerScene.html">       MouseFollowerScene.as      </a>                          <a class="source" href="SimplestMouseFollowComponent.html">       SimplestMouseFollowComponent.as      </a>                          <a class="source" href="CirclePickupScene.html">       CirclePickupScene.as      </a>                          <a class="source" href="GemManager.html">       GemManager.as      </a>                          <b> 2. Building Gameplay </b>                          <a class="source" href="CirclePickupWithTimeManagerScene.html">       CirclePickupWithTimeManagerScene.as      </a>                          <a class="source" href="OneButtonDemoScene.html">       OneButtonDemoScene.as      </a>                          <a class="source" href="OneButtonWithTweenDemoScene.html">       OneButtonWithTweenDemoScene.as      </a>                          <a class="source" href="TwoButtonDemoScene.html">       TwoButtonDemoScene.as      </a>                          <a class="source" href="CarDemoScene.html">       CarDemoScene.as      </a>                          <a class="source" href="FSMDemoScene.html">       FSMDemoScene.as      </a>                               </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               SimplestSpriteRenderer.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Many games have very complex rendering systems.</p>
+<!DOCTYPE html>  <html> <head>   <title>SimplestSpriteRenderer.as</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">        <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                        </div>         </div>       </div>      <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs" colspan="2">             <h1>               SimplestSpriteRenderer.as             </h1>           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Many games have very complex rendering systems.</p>
 
 <p>But rendering in Flash can be really simple. All you need is a 
 DisplayObject, like a Sprite. SimplestRendererScene puts a Sprite with a
@@ -7,45 +7,45 @@ circle in it on the stage, and makes it easy to control the position.</p>
 <p>You could think of SimplestSpriteRenderer as being a "view" in an MVC
 context.</p>
 
-<p>This component demonstrates three important parts of PBE:</p>
+<p>This component demonstrates three important parts of Smash:</p>
 
 <ol>
 <li><strong>Component lifecycle.</strong> Components have onAdd called when they 
-are added to a PBGameObject, and onRemove called when they are
-are removed. They are automatically removed when the PBGameObject
+are added to a SmashGameObject, and onRemove called when they are
+are removed. They are automatically removed when the SmashGameObject
 is destroy()ed. So they are ideal for doing setup/teardown of
 your component. We use them here to add and remove the Sprite to
 the Stage.</li>
 <li><strong>Dependency injection.</strong> Values registered with the owning
-PBGroup are available for injection. Injection is really simple,
+SmashGroup are available for injection. Injection is really simple,
 you just make a public var of the type you want and annotate it
-with [Inject]. When the component is added to a PBGameObject,
-the PBGameObject automatically does injection using its owning
-PBGroup. We use this to get at the Stage we should be using.</li>
+with [Inject]. When the component is added to a SmashGameObject,
+the SmashGameObject automatically does injection using its owning
+SmashGroup. We use this to get at the Stage we should be using.</li>
 <li><strong>Data bindings.</strong> Many application frameworks (like Flex/MXML)
 allow you to automatically pull data from one place in your app
-to another. In PBE, every component has a list of "bindings" -
+to another. In Smash, every component has a list of "bindings" -
 sources to pull data into the component. We'll discuss bindings
 in more detail elsewhere, but it's important to call
 applyBindings() to make sure they are applied before your
 component does per-tick or per-frame processing.</li>
-</ol>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">simplest</span>
+</ol>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">package</span> <span class="nx">io</span><span class="p">.</span><span class="nx">smash</span><span class="p">.</span><span class="nx">simplest</span>
 <span class="p">{</span>
-    <span class="kd">import</span> <span class="nx">com</span><span class="p">.</span><span class="nx">pblabs</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">PBComponent</span><span class="o">;</span>
+    <span class="kd">import</span> <span class="nx">io</span><span class="p">.</span><span class="nx">smash</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">SmashComponent</span><span class="o">;</span>
     
     <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Sprite</span><span class="o">;</span>
     <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">display</span><span class="p">.</span><span class="nb">Stage</span><span class="o">;</span>
     <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nb">Event</span><span class="o">;</span>
     <span class="kd">import</span> <span class="nx">flash</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nb">Point</span><span class="o">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>SimplestSpriteRenderer</h2>
 
-<p>Every component inherits from PBComponent. Beyond that, everything
-a component can do is optional.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">SimplestSpriteRenderer</span> <span class="kd">extends</span> <span class="nx">PBComponent</span>
+<p>Every component inherits from SmashComponent. Beyond that, everything
+a component can do is optional.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">public</span> <span class="kd">class</span> <span class="nx">SimplestSpriteRenderer</span> <span class="kd">extends</span> <span class="nx">SmashComponent</span>
     <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The Sprite instance we'll manage.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">public</span> <span class="k">var</span> <span class="nx">sprite</span><span class="o">:</span><span class="nb">Sprite</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Sprite</span><span class="p">();</span>
         </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>We also want to have our own storage for the position, so that we're
 not constantly touching the Sprite.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="kd">protected</span> <span class="k">var</span> <span class="nx">_position</span><span class="o">:</span><span class="nb">Point</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Point</span><span class="p">();</span>
         </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Any public variable with [Inject] before it will be injected. stage
 requires an instance of Stage be available; if one is not 
-registered on the PBGroup that this component's PBGameObject belongs
+registered on the SmashGroup that this component's SmashGameObject belongs
 to, then you'll get an error when you try to initialize this 
 component.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="p">[</span><span class="nx">Inject</span><span class="p">]</span>
         <span class="kd">public</span> <span class="k">var</span> <span class="nx">stage</span><span class="o">:</span><span class="nb">Stage</span><span class="o">;</span>
@@ -68,8 +68,8 @@ referencing.</p>             </td>             <td class="code">               <
             <span class="k">return</span> <span class="nx">_position</span><span class="o">;</span>
         <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Initialization and Destruction</h2>
 
-<p>onAdd and onRemove are called by PBE when a component is added or
-removed from a PBGameObject. They are the best places to do startup
+<p>onAdd and onRemove are called by Smash when a component is added or
+removed from a SmashGameObject. They are the best places to do startup
 and shutdown logic. The constructor is not as good of a place,
 because injection won't have happened and if the user is setting
 any properties on the component, they can't be set till after the
