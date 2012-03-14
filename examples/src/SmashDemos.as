@@ -3,7 +3,7 @@
  * 
  * Smash Framework is an industrial strength open source Flash game framework.
  *
- * Its home page is <a href="http://SmashLabs.github.com/SmashEngine">http://SmashLabs.github.com/SmashEngine</a>.
+ * Its home page is <a href="http://www.smash.io">http://www.smash.io</a>.
  *
  * You can click the Jump To.. button in the top right of the page to navigate
  * to different parts of the documentation.
