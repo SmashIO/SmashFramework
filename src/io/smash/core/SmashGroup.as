@@ -71,6 +71,8 @@ package io.smash.core
             // If no owning group, add to the global list for debug purposes.
             if(owningGroup == null)
             {
+				// todo add root group error
+				
                 owningGroup = Smash._rootGroup;
             }
             else

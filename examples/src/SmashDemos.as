@@ -1,7 +1,7 @@
 /**
  * ## Introduction
  * 
- * Smash Engine is an industrial strength open source Flash game framework.
+ * Smash Framework is an industrial strength open source Flash game framework.
  *
  * Its home page is <a href="http://SmashLabs.github.com/SmashEngine">http://SmashLabs.github.com/SmashEngine</a>.
  *
@@ -11,7 +11,7 @@
  * Smash uses [Docco](http://jashkenas.github.com/docco/) to document itself. As
  * you read these docs, you are reading through the SmashDemos demo framework
  * that ship with Smash. (See all that code on the right hand side?) Each demo
- * covers a specific feature of the engine, and by reading through the docs,
+ * covers a specific feature of the framework, and by reading through the docs,
  * you'll learn all about Smash!
  *
  * ## Compiling SmashDemos
@@ -37,18 +37,6 @@ package
 {
     import com.greensock.OverwriteManager;
     import com.greensock.TweenMax;
-    import io.smash.core.SmashGameObject;
-    import io.smash.core.SmashGroup;
-    import io.smash.debug.Console;
-    import io.smash.debug.ConsoleCommandManager;
-    import io.smash.debug.Logger;
-    import io.smash.input.KeyboardManager;
-    import io.smash.property.PropertyManager;
-    import io.smash.simplest.SimplestMouseFollowComponent;
-    import io.smash.simplest.SimplestSpatialComponent;
-    import io.smash.simplest.SimplestSpriteRenderer;
-    import io.smash.time.TimeManager;
-    import io.smash.util.TypeUtility;
     
     import demos.demo_01_simplestRenderer.SimplestRendererScene;
     import demos.demo_02_bindingDemo.BindingDemoScene;
@@ -59,7 +47,6 @@ package
     import demos.demo_07_twoButtonDemo.TwoButtonDemoScene;
     import demos.demo_08_carDemo.CarDemoScene;
     import demos.demo_09_stateMachineDemo.FSMDemoScene;
-    import demos.molehill.MolehillScene;
     
     import flash.display.Sprite;
     import flash.display.Stage;
@@ -67,15 +54,23 @@ package
     import flash.display.StageScaleMode;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
-    import flash.geom.Point;
     import flash.text.TextField;
     import flash.text.TextFieldAutoSize;
     import flash.text.TextFormat;
     
+    import io.smash.core.SmashGroup;
+    import io.smash.debug.Console;
+    import io.smash.debug.ConsoleCommandManager;
+    import io.smash.debug.Logger;
+    import io.smash.input.KeyboardManager;
+    import io.smash.property.PropertyManager;
+    import io.smash.time.TimeManager;
+    import io.smash.util.TypeUtility;
+    
     /**
      * ## SmashDemos?
      * 
-     * SmashDemos is a sweet Smash Engine demo framework. It switches
+     * SmashDemos is a sweet Smash Framework demo. It switches
      * between different small Smash demo applications, using the < and > keys.
      *
      * If you are brand new to Smash, you might want to start with one of these
@@ -84,12 +79,12 @@ package
      * than digesting the demo framework.
      * 
      * SmashDemos cycles amongst multiple demo "scenes" to show off
-     * various parts of the engine's capabilities. Use < and > to change the 
+     * various parts of the framework's capabilities. Use < and > to change the 
      * demo. Press ~ (tilde) to bring up the console. Type help to learn about
      * the different debug commands.
      * 
      * The demo scenes are all implemented in their own classes that live in 
-     * the demo package. A great way to learn the engine is to read through
+     * the demo package. A great way to learn the framework is to read through
      * each demo, in order, and look at the demo app at the same time.
      */
      
@@ -102,7 +97,7 @@ package
       * the various SmashDemos. It contains some book-keeping and UI code to 
       * manage this, and it makes a few standard things available to the demos.
       */
-    [SWF(frameRate="32",wmode="direct")]
+    [SWF(frameRate="32", width="800", height="600", wmode="direct")]
     public class SmashDemos extends Sprite
     {
         // rootGroup is a SmashGroup that contains the current demo scene. It
@@ -298,11 +293,11 @@ package
 /**
  * ## Legal Notices
  * 
- * <i>The Smash Engine is covered under the MIT license in its entirety,
+ * <i>The Smash Framework is covered under the MIT license in its entirety,
  * not including 3rd party components. Please read LICENSE for more 
  * information on the MIT license.</i>
  *
- * <i>Copyright 2009-2011 Smash Labs, LLC. All rights reserved.</i>
+ * <i>Copyright 2009-2011 SmashIO. All rights reserved.</i>
  */
 // @docco-chapter 1. First Steps
 // @docco-order 1

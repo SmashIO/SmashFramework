@@ -1,26 +1,22 @@
 package io.smash.core
 {
-    import io.smash.Smash;
-    import io.smash.debug.Console;
-    import io.smash.debug.ConsoleCommandManager;
-    import io.smash.input.KeyboardManager;
-    import io.smash.property.PropertyManager;
-    import io.smash.smash_internal;
-    import io.smash.time.TimeManager;
-    import io.smash.util.TypeUtility;
-    
     import flash.display.Sprite;
     import flash.display.Stage;
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
-
-    use namespace smash_internal;
     
+    import io.smash.debug.Console;
+    import io.smash.debug.ConsoleCommandManager;
+    import io.smash.input.KeyboardManager;
+    import io.smash.property.PropertyManager;
+    import io.smash.time.TimeManager;
+    import io.smash.util.TypeUtility;
+
     [SWF(frameRate="32",wmode="direct")]
     public class SmashGame extends Sprite
     {
         // Container for the active scene.
-        public var rootGroup:SmashGroup = Smash._rootGroup;
+        public var rootGroup:SmashGroup = new SmashGroup();
         
         /**
          * Initialize the demo and show the first scene.

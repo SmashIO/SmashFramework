@@ -1,16 +1,9 @@
 package demos.molehill
 {
-    import io.smash.core.ISEManager;
-    import io.smash.debug.Logger;
-    import io.smash.debug.Profiler;
-    import io.smash.time.IAnimated;
-    import io.smash.time.TimeManager;
-    
     import flash.display.BitmapData;
     import flash.display.Stage;
     import flash.display.Stage3D;
     import flash.display3D.Context3D;
-    import flash.display3D.Context3DBlendFactor;
     import flash.display3D.Context3DCompareMode;
     import flash.display3D.Context3DProgramType;
     import flash.display3D.Context3DRenderMode;
@@ -23,10 +16,15 @@ package demos.molehill
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
     
+    import io.smash.core.ISmashManager;
+    import io.smash.debug.Logger;
+    import io.smash.time.IAnimated;
+    import io.smash.time.TimeManager;
+    
     /**
      * Very simple Molehill quad renderer.
      */
-    public class QuadScene implements IAnimated, ISEManager
+    public class QuadScene implements IAnimated, ISmashManager
     {
         [Inject]
         public var stage:Stage;
@@ -118,6 +116,8 @@ package demos.molehill
         
         public function onFrame():void
         {
+			if(!context3D) return;
+			
             // Clear the framebuffer.
             context3D.clear(1, 1, 1);
             
@@ -199,7 +199,9 @@ package demos.molehill
         public function initialize():void
         {
             stage3D = stage.stage3Ds[0];
-            stage3D.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+			stage3D.x = 0;
+			stage3D.y = 0;
+            //stage3D.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
             
             context3D = stage3D.context3D;
 
@@ -222,9 +224,6 @@ package demos.molehill
             
             if(context3D)
                 context3D.dispose();
-            
-            if(stage3D)
-                stage3D.viewPort = new Rectangle();
             
             stage.invalidate();
         }
